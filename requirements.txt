@@ -1,0 +1,12 @@
+pandas==2.2.2
+numpy==1.26.4
+pyarrow==17.0.0
+scikit-learn==1.5.1
+statsmodels==0.14.2
+xgboost==2.1.1
+lightgbm==4.5.0
+matplotlib==3.8.4
+holidays==0.58
+python-dateutil==2.9.0.post0
+tqdm==4.66.5
+streamlit==1.38.0
