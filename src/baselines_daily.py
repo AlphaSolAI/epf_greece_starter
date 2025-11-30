@@ -8,10 +8,8 @@ import warnings
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 
-# UTF-8 για να μη σπάνε τα ελληνικά
+# UTF-8 για να μη σακατεύει τα ελληνικά
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
-
-# Κόβουμε warnings από statsmodels κλπ
 warnings.filterwarnings("ignore")
 
 # Προσπαθούμε να φορτώσουμε pmdarima για auto_arima
@@ -47,7 +45,7 @@ def smape(y_true, y_pred):
 
 def evaluate(y_true, y_pred, name):
     mae = mean_absolute_error(y_true, y_pred)
-    # Χρησιμοποιούμε ** αντί για squared=False (για συμβατότητα με παλιό sklearn)
+    # Χρησιμοποιούμε ** χωρίς squared=False για να παίζει με παλιά sklearn
     rmse = mean_squared_error(y_true, y_pred) ** 0.5
     s = smape(y_true, y_pred)
     return {"model": name, "MAE": mae, "RMSE": rmse, "sMAPE": s}
@@ -59,14 +57,13 @@ def choose_arima_params(y_train: pd.Series):
     Αν δεν υπάρχει pmdarima, επιστρέφει τις default.
     """
     if not HAVE_PMDARIMA:
-        print(
-            f"\n🔧 Χρήση default ARIMA παραμέτρων "
-            f"{DEFAULT_ARIMA_ORDER}, {DEFAULT_SEASONAL_ORDER}"
-        )
+        print("\n🔧 Χρήση default ARIMA παραμέτρων "
+              f"{DEFAULT_ARIMA_ORDER}, {DEFAULT_SEASONAL_ORDER}")
         return DEFAULT_ARIMA_ORDER, DEFAULT_SEASONAL_ORDER
 
-    print("\n🔍 Τρέχει auto_arima στο TRAIN set (χωρίς verbose trace)...")
+    print("\n🔍 Τρέχει auto_arima στο TRAIN set...")
     print(f"   Δείγματα train: {len(y_train)}, seasonality m=7 (εβδομάδα)")
+    print("   [Μπορεί να πάρει λίγα δευτερόλεπτα]\n")
 
     model = pm.auto_arima(
         y_train,
@@ -79,13 +76,13 @@ def choose_arima_params(y_train: pd.Series):
         seasonal=True,
         d=None,
         D=1,
-        trace=False,         # <- ΚΟΒΕΙ το μεγάλο output
+        trace=True,
         error_action="ignore",
         suppress_warnings=True,
         stepwise=True,
     )
 
-    print("✅ auto_arima ολοκληρώθηκε.")
+    print("\n✅ auto_arima ολοκληρώθηκε.")
     print("   Βέλτιστο order:", model.order)
     print("   Βέλτιστο seasonal_order:", model.seasonal_order)
 
