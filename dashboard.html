@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+  <meta charset="UTF-8" />
+  <title>EPF Greece – Model Evaluation Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root{
+      --bg:#0b1220;
+      --card:rgba(15,23,42,.78);
+      --card2:rgba(2,6,23,.72);
+      --text:#e5e7eb;
+      --muted:#9ca3af;
+      --border:rgba(148,163,184,.18);
+      --accent:#38bdf8;
+      --good:#22c55e;
+      --warn:#f59e0b;
+      --bad:#ef4444;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+      background:radial-gradient(circle at top,#182033 0,#050814 55%, #040612 100%);
+      color:var(--text);
+      min-height:100vh;
+    }
+    .page{max-width:1400px;margin:0 auto;padding:22px 18px 34px}
+    header{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:16px}
+    h1{margin:0;font-size:1.35rem;letter-spacing:.02em}
+    .subtitle{margin:6px 0 0;color:var(--muted);font-size:.9rem}
+    .toolbar{
+      display:flex;flex-wrap:wrap;gap:10px;align-items:center;
+      background:linear-gradient(135deg,rgba(15,23,42,.75),rgba(2,6,23,.55));
+      border:1px solid var(--border);
+      border-radius:999px;
+      padding:8px 10px;
+      backdrop-filter:blur(14px);
+      box-shadow:0 18px 42px rgba(0,0,0,.35);
+    }
+    .group{display:flex;align-items:center;gap:6px;padding:2px 6px;border-radius:999px;border:1px solid rgba(148,163,184,.14)}
+    .label{font-size:.78rem;color:var(--muted);padding:0 6px;border-right:1px solid rgba(148,163,184,.18);margin-right:2px}
+    .chip{
+      border:0;
+      background:transparent;
+      color:var(--muted);
+      padding:7px 10px;
+      border-radius:999px;
+      font-size:.82rem;
+      cursor:pointer;
+      transition:all .15s ease;
+      user-select:none;
+      white-space:nowrap;
+    }
+    .chip:hover{background:rgba(148,163,184,.10)}
+    .chip.active{background:rgba(56,189,248,.14);color:var(--accent)}
+    .btn{
+      border:1px solid rgba(148,163,184,.22);
+      background:rgba(2,6,23,.35);
+      color:var(--text);
+      padding:8px 12px;
+      border-radius:999px;
+      cursor:pointer;
+      font-size:.82rem;
+      transition:all .15s ease;
+    }
+    .btn:hover{border-color:rgba(56,189,248,.55)}
+    .grid{display:grid;grid-template-columns:1fr;gap:14px}
+    .card{
+      background:linear-gradient(135deg,var(--card),var(--card2));
+      border:1px solid rgba(148,163,184,.16);
+      border-radius:18px;
+      padding:14px 14px 12px;
+      box-shadow:0 20px 60px rgba(0,0,0,.45);
+      backdrop-filter:blur(16px);
+      overflow:hidden;
+    }
+    .card-title{display:flex;align-items:center;gap:10px;margin:2px 0 6px}
+    .dot{width:7px;height:7px;border-radius:999px;background:var(--accent);box-shadow:0 0 0 4px rgba(56,189,248,.12)}
+    .card-title h2{margin:0;font-size:1.02rem;font-weight:560}
+    .card-sub{margin:0 0 8px;color:var(--muted);font-size:.85rem}
+    .chart-wrap{height:520px}
+    @media (max-width:1000px){.chart-wrap{height:420px}}
+    canvas{width:100% !important;height:100% !important}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    @media (max-width:1100px){.row{grid-template-columns:1fr}}
+    .table-wrap{border:1px solid rgba(148,163,184,.18);border-radius:14px;overflow:hidden;background:rgba(2,6,23,.35)}
+    table{width:100%;border-collapse:collapse;font-size:.86rem}
+    thead{background:rgba(2,6,23,.55)}
+    th,td{padding:10px 12px;text-align:right;border-bottom:1px solid rgba(148,163,184,.10);white-space:nowrap}
+    th:first-child,td:first-child{text-align:left}
+    th{color:var(--muted);font-weight:600}
+    tbody tr:hover{background:rgba(56,189,248,.07)}
+    .pill{
+      display:inline-flex;align-items:center;gap:8px;
+      font-size:.78rem;color:var(--muted);
+      border:1px solid rgba(148,163,184,.22);
+      border-radius:999px;padding:6px 10px;
+      background:rgba(2,6,23,.25);
+    }
+    .tag{font-size:.72rem;padding:2px 8px;border-radius:999px;border:1px solid rgba(148,163,184,.25);color:var(--muted)}
+    .tag.ml{border-color:rgba(56,189,248,.45);color:var(--accent)}
+    .tag.baseline{border-color:rgba(245,158,11,.45);color:#fdba74}
+    .flex{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+    .errors{
+      border:1px solid rgba(245,158,11,.25);
+      background:rgba(245,158,11,.06);
+      border-radius:14px;
+      padding:10px 12px;
+      color:#fde68a;
+      font-size:.85rem;
+    }
+    .errors ul{margin:8px 0 0;padding-left:18px;color:#fef3c7}
+    .muted{color:var(--muted)}
+    .footer{margin-top:8px;color:var(--muted);font-size:.78rem;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+    code{background:rgba(2,6,23,.45);padding:2px 6px;border:1px solid rgba(148,163,184,.18);border-radius:6px;color:var(--accent)}
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div>
+        <h1>⚡ EPF Greece – Model Evaluation Dashboard</h1>
+        <p class="subtitle">Daily / Hourly • Split (Train/Test) • View (All/ML/Baselines) • Export metrics. Κάθε τεχνική έχει δικό της χρώμα.</p>
+      </div>
+
+      <div class="toolbar">
+        <div class="group">
+          <span class="label">Mode</span>
+          <button class="chip active" id="btn-daily">Daily</button>
+          <button class="chip" id="btn-hourly">Hourly</button>
+        </div>
+
+        <div class="group">
+          <span class="label">Split</span>
+          <button class="chip active" id="btn-test">Test</button>
+          <button class="chip" id="btn-train">Train</button>
+        </div>
+
+        <div class="group">
+          <span class="label">View</span>
+          <button class="chip active" id="btn-view-all">All</button>
+          <button class="chip" id="btn-view-ml">ML</button>
+          <button class="chip" id="btn-view-baselines">Baselines</button>
+        </div>
+
+        <div class="group">
+          <span class="label">Actual</span>
+          <button class="chip active" id="btn-actual">Show</button>
+        </div>
+
+        <button class="btn" id="btn-export">Export CSV</button>
+        <button class="btn" id="btn-reload">Reload</button>
+      </div>
+    </header>
+
+    <div class="grid">
+      <section class="card">
+        <div class="flex">
+          <div>
+            <div class="card-title"><span class="dot"></span><h2>Actual vs Models</h2></div>
+            <p class="card-sub" id="chart-subtitle">—</p>
+          </div>
+          <div class="pill" id="summary-pill">
+            <span id="summary-text">—</span>
+          </div>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="chart"></canvas>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="flex" style="margin-bottom:10px">
+          <div>
+            <div class="card-title"><span class="dot"></span><h2>Metrics</h2></div>
+            <p class="card-sub">Τα metrics προέρχονται από το <code>dashboard_data_*.json</code>. Οι πίνακες αλλάζουν με Mode/Split/View.</p>
+          </div>
+          <div class="pill">
+            <span class="muted">Rank by</span>
+            <strong>sMAPE (↓)</strong>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="table-wrap">
+            <table id="tbl-ml">
+              <thead>
+                <tr>
+                  <th colspan="5" style="text-align:left">
+                    ML models <span class="tag ml" style="margin-left:8px">ml</span>
+                  </th>
+                </tr>
+                <tr>
+                  <th>#</th><th>Model</th><th>MAE</th><th>RMSE</th><th>sMAPE (%)</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <div class="table-wrap">
+            <table id="tbl-baselines">
+              <thead>
+                <tr>
+                  <th colspan="5" style="text-align:left">
+                    Baselines <span class="tag baseline" style="margin-left:8px">baseline</span>
+                  </th>
+                </tr>
+                <tr>
+                  <th>#</th><th>Model</th><th>MAE</th><th>RMSE</th><th>sMAPE (%)</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div class="table-wrap">
+          <table id="tbl-all">
+            <thead>
+              <tr>
+                <th colspan="6" style="text-align:left">Αναλυτικός Πίνακας Σφαλμάτων (όλα τα μοντέλα)</th>
+              </tr>
+              <tr>
+                <th>#</th><th>Model</th><th>Type</th><th>MAE</th><th>RMSE</th><th>sMAPE (%)</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div id="errors-box" style="margin-top:12px; display:none" class="errors"></div>
+
+        <div class="footer">
+          <span>Δεδομένα από: <code>dashboard_data_daily.json</code> / <code>dashboard_data_hourly.json</code></span>
+          <span>Τρέξε πριν το refresh: <code>conda run -n epf python -m src.eval daily</code> &amp; <code>hourly</code></span>
+        </div>
+      </section>
+    </div>
+  </div>
+
+<script>
+  const state = {
+    mode: "daily",
+    split: "test",        // "test" | "train"
+    view: "all",          // "all" | "ml" | "baseline"
+    showActual: true,
+    cache: {},            // mode -> json
+  };
+
+  const PALETTE = [
+    "#38bdf8","#a855f7","#22c55e","#f59e0b","#ef4444","#10b981","#eab308","#60a5fa","#f97316",
+    "#fb7185","#c084fc","#4ade80","#93c5fd","#fde047"
+  ];
+
+  function hashString(s){
+    let h = 0;
+    for (let i=0;i<s.length;i++) h = (h*31 + s.charCodeAt(i)) >>> 0;
+    return h;
+  }
+
+  function colorForModel(name){
+    if (name === "Actual") return "#e5e7eb";
+    const idx = hashString(name) % PALETTE.length;
+    return PALETTE[idx];
+  }
+
+  function dashForModel(name){
+    const h = hashString(name) % 5;
+    if (name === "Actual") return [];
+    if (h === 0) return [];
+    if (h === 1) return [6,3];
+    if (h === 2) return [2,3];
+    if (h === 3) return [10,4];
+    return [1,4];
+  }
+
+  function setActive(btnId, active){
+    document.getElementById(btnId).classList.toggle("active", !!active);
+  }
+
+  function setToolbar(){
+    setActive("btn-daily", state.mode==="daily");
+    setActive("btn-hourly", state.mode==="hourly");
+    setActive("btn-test", state.split==="test");
+    setActive("btn-train", state.split==="train");
+    setActive("btn-view-all", state.view==="all");
+    setActive("btn-view-ml", state.view==="ml");
+    setActive("btn-view-baselines", state.view==="baseline");
+    setActive("btn-actual", state.showActual);
+  }
+
+  async function loadData(mode){
+    if (state.cache[mode]) return state.cache[mode];
+    const fileName = mode === "daily" ? "dashboard_data_daily.json" : "dashboard_data_hourly.json";
+    const res = await fetch(fileName, { cache: "no-store" });
+    if (!res.ok) throw new Error(`Failed to load ${fileName}: ${res.status}`);
+    const json = await res.json();
+    state.cache[mode] = json;
+    return json;
+  }
+
+  function getSplitData(json){
+    if (state.split === "train") {
+      return {
+        dates: json.train_dates || [],
+        actual: json.train_actual || [],
+        series: json.train_series || {},
+        metrics: json.metrics_train || [],
+        windowLabel: `TRAIN window (${(json.train_window ?? (json.train_dates||[]).length)} σημεία)`
+      };
+    }
+    return {
+      dates: json.dates || [],
+      actual: json.actual || [],
+      series: json.series || {},
+      metrics: json.metrics || [],
+      windowLabel: `TEST window (${(json.test_window ?? (json.dates||[]).length)} σημεία)`
+    };
+  }
+
+  function normType(t){
+    if (!t) return "unknown";
+    const x = String(t).toLowerCase();
+    if (x.includes("base")) return "baseline";
+    if (x.includes("ml")) return "ml";
+    return x;
+  }
+
+  function filterModels(metrics){
+    if (state.view === "all") return metrics;
+    const want = state.view;
+    return metrics.filter(m => normType(m.Type) === want);
+  }
+
+  function stableSortMetrics(metrics){
+    const copy = metrics.slice();
+    copy.sort((a,b) => (a.sMAPE ?? 1e18) - (b.sMAPE ?? 1e18));
+    return copy;
+  }
+
+  let chart = null;
+
+  function robustMinMax(arr){
+    const x = arr.filter(v => Number.isFinite(v)).slice().sort((a,b)=>a-b);
+    if (x.length === 0) return {min:0,max:1};
+    const q = (p)=> x[Math.floor((x.length-1)*p)];
+    const p01 = q(0.01), p99 = q(0.99);
+    const pad = (p99 - p01) * 0.08 + 1e-6;
+    return {min: p01 - pad, max: p99 + pad};
+  }
+
+  function buildDatasets(splitData){
+    const metrics = stableSortMetrics(filterModels(splitData.metrics || []));
+    const series = splitData.series || {};
+    const datasets = [];
+
+    if (state.showActual) {
+      datasets.push({
+        label: "Actual",
+        data: splitData.actual,
+        borderColor: colorForModel("Actual"),
+        backgroundColor: colorForModel("Actual"),
+        borderWidth: 1,      // λεπτότερο actual
+        pointRadius: 0,
+        tension: 0.12
+      });
+    }
+
+    for (const m of metrics) {
+      const name = m.Model;
+      if (!(name in series)) continue;
+      datasets.push({
+        label: name,
+        data: series[name],
+        borderColor: colorForModel(name),
+        backgroundColor: colorForModel(name),
+        borderWidth: 2,
+        pointRadius: 0,
+        tension: 0.12,
+        borderDash: dashForModel(name)
+      });
+    }
+
+    return {datasets, metricsUsed: metrics};
+  }
+
+  function renderChart(json){
+    const splitData = getSplitData(json);
+    const {datasets, metricsUsed} = buildDatasets(splitData);
+
+    const ctx = document.getElementById("chart").getContext("2d");
+    if (chart) chart.destroy();
+
+    const allVals = [];
+    datasets.forEach(ds => (ds.data || []).forEach(v => {
+      if (v !== null && v !== undefined) allVals.push(Number(v));
+    }));
+    const mm = robustMinMax(allVals);
+
+    chart = new Chart(ctx, {
+      type: "line",
+      data: { labels: splitData.dates, datasets },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: "index", intersect: false },
+        plugins: {
+          legend: { labels: { color: "#e5e7eb", font: { size: 11 } } },
+          tooltip: {
+            callbacks: {
+              label: (c) => {
+                const v = c.parsed.y;
+                if (v === null || v === undefined || Number.isNaN(v)) return `${c.dataset.label}: —`;
+                return `${c.dataset.label}: ${Number(v).toFixed(3)}`;
+              }
+            }
+          }
+        },
+        scales: {
+          x: { ticks: { color: "#9ca3af", maxTicksLimit: 10 }, grid: { color: "rgba(148,163,184,.12)" } },
+          y: { ticks: { color: "#9ca3af" }, grid: { color: "rgba(148,163,184,.12)" }, min: mm.min, max: mm.max }
+        }
+      }
+    });
+
+    document.getElementById("chart-subtitle").textContent =
+      `${state.mode.toUpperCase()} ${splitData.windowLabel} • View=${state.view.toUpperCase()} • (legend click = hide/show)`;
+
+    const best = metricsUsed.length ? metricsUsed[0] : null;
+    document.getElementById("summary-text").textContent = best
+      ? `Best: ${best.Model} (sMAPE ${Number(best.sMAPE).toFixed(3)}%) • Models shown: ${metricsUsed.length}${state.showActual ? " + Actual" : ""}`
+      : `No models to display for current filters.`;
+  }
+
+  function fillTable(tableId, rows, includeType){
+    const tbody = document.querySelector(`#${tableId} tbody`);
+    tbody.innerHTML = "";
+
+    if (!rows.length) {
+      const tr = document.createElement("tr");
+      const td = document.createElement("td");
+      td.colSpan = includeType ? 6 : 5;
+      td.style.textAlign = "center";
+      td.style.color = "#9ca3af";
+      td.textContent = "No rows for current selection.";
+      tr.appendChild(td);
+      tbody.appendChild(tr);
+      return;
+    }
+
+    rows.forEach((m, i) => {
+      const tr = document.createElement("tr");
+      const cols = [];
+      cols.push(i+1);
+      cols.push(m.Model);
+      if (includeType) cols.push(normType(m.Type));
+      cols.push(Number(m.MAE).toFixed(3));
+      cols.push(Number(m.RMSE).toFixed(3));
+      cols.push(Number(m.sMAPE).toFixed(3));
+
+      cols.forEach((val, j) => {
+        const td = document.createElement("td");
+        td.textContent = val;
+        if (j === 1) td.style.fontWeight = "600";
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+
+      tr.style.cursor = "pointer";
+      tr.addEventListener("click", () => {
+        const dsCount = chart?.data?.datasets?.length ?? 0;
+        const alreadyOnly =
+          (dsCount === (state.showActual ? 2 : 1)) &&
+          chart.data.datasets.some(d => d.label === m.Model);
+
+        if (!alreadyOnly) {
+          chart.data.datasets.forEach((d, idx) => {
+            const keep = (state.showActual && d.label==="Actual") || d.label===m.Model;
+            chart.setDatasetVisibility(idx, keep);
+          });
+        } else {
+          chart.data.datasets.forEach((d, idx) => chart.setDatasetVisibility(idx, true));
+        }
+        chart.update();
+      });
+    });
+  }
+
+  function renderTables(json){
+    const splitData = getSplitData(json);
+    const metricsAll = stableSortMetrics(splitData.metrics || []);
+    const ml = metricsAll.filter(m => normType(m.Type)==="ml");
+    const baselines = metricsAll.filter(m => normType(m.Type)==="baseline");
+
+    fillTable("tbl-ml", ml, false);
+    fillTable("tbl-baselines", baselines, false);
+
+    const filtered = stableSortMetrics(filterModels(metricsAll));
+    const tbody = document.querySelector("#tbl-all tbody");
+    tbody.innerHTML = "";
+
+    if (!filtered.length) {
+      const tr = document.createElement("tr");
+      const td = document.createElement("td");
+      td.colSpan = 6;
+      td.style.textAlign = "center";
+      td.style.color = "#9ca3af";
+      td.textContent = "No rows for current selection.";
+      tr.appendChild(td);
+      tbody.appendChild(tr);
+    } else {
+      filtered.forEach((m, i) => {
+        const tr = document.createElement("tr");
+        const type = normType(m.Type);
+        const cells = [
+          i+1,
+          m.Model,
+          type,
+          Number(m.MAE).toFixed(3),
+          Number(m.RMSE).toFixed(3),
+          Number(m.sMAPE).toFixed(3)
+        ];
+
+        cells.forEach((val, j) => {
+          const td = document.createElement("td");
+          if (j === 2) {
+            td.innerHTML = `<span class="tag ${type}">${type}</span>`;
+            td.style.textAlign = "left";
+          } else {
+            td.textContent = val;
+          }
+          if (j===1) td.style.fontWeight="600";
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+    }
+
+    const box = document.getElementById("errors-box");
+    const errs = (json.errors || []).slice();
+    if (errs.length) {
+      box.style.display = "block";
+      box.innerHTML = `<strong>Warnings / Notes (${errs.length})</strong><ul>${errs.map(e => `<li>${e}</li>`).join("")}</ul>`;
+    } else {
+      box.style.display = "none";
+      box.innerHTML = "";
+    }
+  }
+
+  function exportCSV(json){
+    const splitData = getSplitData(json);
+    const metrics = stableSortMetrics(filterModels(splitData.metrics || []));
+    const header = ["Rank","Model","Type","MAE","RMSE","sMAPE"];
+    const rows = metrics.map((m, i) => [
+      i+1, m.Model, normType(m.Type), m.MAE, m.RMSE, m.sMAPE
+    ]);
+
+    const lines = [header.join(",")].concat(rows.map(r => r.map(x => `"${String(x)}"`).join(",")));
+    const blob = new Blob([lines.join("\n")], {type:"text/csv;charset=utf-8"});
+    const a = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    a.href = url;
+    a.download = `metrics_${state.mode}_${state.split}_${state.view}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  async function refresh(){
+    setToolbar();
+    const json = await loadData(state.mode);
+    renderChart(json);
+    renderTables(json);
+  }
+
+  document.getElementById("btn-daily").addEventListener("click", async ()=>{state.mode="daily"; await refresh();});
+  document.getElementById("btn-hourly").addEventListener("click", async ()=>{state.mode="hourly"; await refresh();});
+
+  document.getElementById("btn-test").addEventListener("click", async ()=>{state.split="test"; await refresh();});
+  document.getElementById("btn-train").addEventListener("click", async ()=>{state.split="train"; await refresh();});
+
+  document.getElementById("btn-view-all").addEventListener("click", async ()=>{state.view="all"; await refresh();});
+  document.getElementById("btn-view-ml").addEventListener("click", async ()=>{state.view="ml"; await refresh();});
+  document.getElementById("btn-view-baselines").addEventListener("click", async ()=>{state.view="baseline"; await refresh();});
+
+  document.getElementById("btn-actual").addEventListener("click", async ()=>{
+    state.showActual = !state.showActual;
+    await refresh();
+  });
+
+  document.getElementById("btn-reload").addEventListener("click", async ()=>{
+    state.cache = {};
+    await refresh();
+  });
+
+  document.getElementById("btn-export").addEventListener("click", async ()=>{
+    const json = await loadData(state.mode);
+    exportCSV(json);
+  });
+
+  refresh().catch(err => {
+    alert("Dashboard error: " + err.message);
+    console.error(err);
+  });
+</script>
+</body>
+</html>

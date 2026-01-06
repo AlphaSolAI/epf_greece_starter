@@ -1,82 +1,76 @@
-import pandas as pd
-import numpy as np
-from pathlib import Path
-from sklearn.model_selection import TimeSeriesSplit, RandomizedSearchCV
-from sklearn.neural_network import MLPRegressor
-from sklearn.preprocessing import StandardScaler
-from sklearn.pipeline import Pipeline
-import joblib
+import argparse
 import sys
-import io
 import warnings
+from pathlib import Path
 
-# Ρυθμίσεις
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-warnings.filterwarnings('ignore')
+import joblib
+import numpy as np
+import pandas as pd
+from sklearn.neural_network import MLPRegressor
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
 
-DATA_PATH = Path(__file__).resolve().parents[1] / "data" / "processed" / "daily.parquet"
-MODEL_PATH = Path(__file__).resolve().parents[1] / "models" / "mlp_day.pkl"
+try:
+    sys.stdout.reconfigure(encoding="utf-8")
+except Exception:
+    pass
 
-def main():
-    if not DATA_PATH.exists():
-        print("❌ Δεν βρέθηκε το daily.parquet")
-        return
+warnings.filterwarnings("ignore")
 
-    # 1. Φόρτωση
-    df = pd.read_parquet(DATA_PATH)
+BASE_DIR = Path(__file__).resolve().parents[1]
+DATA_DIR = BASE_DIR / "data" / "processed"
+MODELS_DIR = BASE_DIR / "models"
+
+
+def train(mode: str) -> None:
+    data_path = DATA_DIR / f"{mode}.parquet"
+    df = pd.read_parquet(data_path)
     X = df.drop(columns=["y"])
-    y = df["y"]
-    
-    print(f"🧠 Dataset MLP (Neural Net): {len(df)} ημέρες.")
+    y = df["y"].values
 
-    # 2. Pipeline (Scaling + Neural Network)
-    # Τα νευρωνικά "σπάνε" αν δεν κάνεις scaling (StandardScaler)
-    pipeline = Pipeline([
-        ('scaler', StandardScaler()),
-        ('mlp', MLPRegressor(max_iter=1000, early_stopping=True, random_state=42))
-    ])
+    print(f"🧠 MLP Training ({mode}) on {len(df)} samples and {X.shape[1]} features...")
 
-    # 3. Παράμετροι για Optimization
-    param_dist = {
-        # (50,) = 1 κρυφό επίπεδο
-        # (100, 50) = 2 κρυφά επίπεδα (Deep Learning)
-        'mlp__hidden_layer_sizes': [(50,), (100,), (100, 50), (50, 50)], 
-        'mlp__activation': ['relu', 'tanh'],
-        'mlp__alpha': [0.0001, 0.001, 0.01],        # Regularization
-        'mlp__learning_rate_init': [0.001, 0.01]    # Πόσο γρήγορα μαθαίνει
-    }
+    if mode == "daily":
+        hidden = (64, 64)
+        max_iter = 400
+    else:  # hourly
+        hidden = (128, 64)
+        max_iter = 200
 
-    tscv = TimeSeriesSplit(n_splits=3)
-
-    print(f"🔍 Ξεκινάει το Optimization του MLP Neural Network...")
-    print("   (Δοκιμάζει αρχιτεκτονικές... υπομονή)")
-    
-    search = RandomizedSearchCV(
-        estimator=pipeline,
-        param_distributions=param_dist,
-        n_iter=10,
-        scoring='neg_mean_absolute_error',
-        cv=tscv,
-        verbose=1,
-        n_jobs=-1,
-        random_state=42
+    mlp = MLPRegressor(
+        hidden_layer_sizes=hidden,
+        activation="relu",
+        solver="adam",
+        max_iter=max_iter,
+        random_state=42,
+        learning_rate_init=0.001,
+        early_stopping=True,
+        n_iter_no_change=20,
+        verbose=False,
     )
 
-    # Εκπαίδευση
-    search.fit(X, y)
+    model = Pipeline(
+        steps=[
+            ("scaler", StandardScaler()),
+            ("mlp", mlp),
+        ]
+    )
 
-    print("\n✅ Βέλτιστες παράμετροι MLP:")
-    print(search.best_params_)
-    print(f"   Best CV Score (MAE): {-search.best_score_:.3f}")
-    
-    # 4. Τελική Εκπαίδευση (στο Train set)
-    best_model = search.best_estimator_
-    test_size = 60
-    best_model.fit(X.iloc[:-test_size], y.iloc[:-test_size])
-    
-    MODEL_PATH.parent.mkdir(exist_ok=True)
-    joblib.dump(best_model, MODEL_PATH)
-    print(f"💾 Το μοντέλο MLP αποθηκεύτηκε στο {MODEL_PATH}")
+    model.fit(X, y)
+
+    MODELS_DIR.mkdir(exist_ok=True)
+    model_path = MODELS_DIR / f"mlp_{mode}.pkl"
+    joblib.dump(model, model_path)
+    print(f"✅ Saved: {model_path}")
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("mode", choices=["daily", "hourly"])
+    args = parser.parse_args()
+    train(args.mode)
+
 
 if __name__ == "__main__":
     main()
+

@@ -1,72 +1,69 @@
-import pandas as pd
-import numpy as np
-from pathlib import Path
-from sklearn.model_selection import TimeSeriesSplit, RandomizedSearchCV
-from sklearn.ensemble import RandomForestRegressor
-import joblib
+import argparse
 import sys
-import io
 import warnings
+from pathlib import Path
 
-# Ρυθμίσεις
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-warnings.filterwarnings('ignore')
+import joblib
+import numpy as np
+import pandas as pd
+from sklearn.ensemble import RandomForestRegressor
 
-DATA_PATH = Path(__file__).resolve().parents[1] / "data" / "processed" / "daily.parquet"
-MODEL_PATH = Path(__file__).resolve().parents[1] / "models" / "rf_day.pkl"
+try:
+    sys.stdout.reconfigure(encoding="utf-8")
+except Exception:
+    pass
+
+warnings.filterwarnings("ignore")
+
+BASE_DIR = Path(__file__).resolve().parents[1]
+DATA_DIR = BASE_DIR / "data" / "processed"
+MODELS_DIR = BASE_DIR / "models"
+
+
+def train(mode: str) -> None:
+    data_path = DATA_DIR / f"{mode}.parquet"
+    df = pd.read_parquet(data_path)
+    X = df.drop(columns=["y"])
+    y = df["y"].values
+
+    print(f"🌲 TRAINING Random Forest ({mode.upper()})...")
+    print(f"   -> {len(df)} samples, {X.shape[1]} features")
+
+    if mode == "daily":
+        model = RandomForestRegressor(
+            n_estimators=1200,
+            max_depth=18,
+            min_samples_split=4,
+            min_samples_leaf=2,
+            max_features="sqrt",
+            random_state=42,
+            n_jobs=-1,
+        )
+    else:  # hourly
+        model = RandomForestRegressor(
+            n_estimators=900,
+            max_depth=16,
+            min_samples_split=4,
+            min_samples_leaf=2,
+            max_features="sqrt",
+            random_state=42,
+            n_jobs=-1,
+        )
+
+    model.fit(X, y)
+
+    MODELS_DIR.mkdir(exist_ok=True)
+    model_path = MODELS_DIR / f"rf_{mode}.pkl"
+    joblib.dump(model, model_path)
+    print(f"✅ Saved Random Forest to: {model_path}")
+
 
 def main():
-    if not DATA_PATH.exists():
-        print("❌ Δεν βρέθηκε το daily.parquet")
-        return
+    parser = argparse.ArgumentParser()
+    parser.add_argument("mode", choices=["daily", "hourly"])
+    args = parser.parse_args()
+    train(args.mode)
 
-    # 1. Φόρτωση
-    df = pd.read_parquet(DATA_PATH)
-    X = df.drop(columns=["y"])
-    y = df["y"]
-    
-    # 2. Ορισμός του Grid για αναζήτηση (Πιο επιθετικό)
-    param_dist = {
-        'n_estimators': [200, 500, 800],
-        'max_depth': [None, 10, 20, 30],        # None σημαίνει να μεγαλώσει όσο θέλει
-        'min_samples_split': [2, 5, 10],        # Μικρότερο = πιο πολύπλοκο δέντρο
-        'min_samples_leaf': [1, 2, 4],          # Μικρότερο = πιο ευαίσθητο
-        'max_features': ['sqrt', 'log2', None]  # None = βλέπει όλα τα features
-    }
-
-    rf = RandomForestRegressor(random_state=42, n_jobs=-1)
-    tscv = TimeSeriesSplit(n_splits=3)
-
-    print(f"🔍 Ξεκινάει το Optimization του Random Forest...")
-    print("   (Αυτό είναι βαρύ μοντέλο, θα πάρει ώρα...)")
-
-    search = RandomizedSearchCV(
-        estimator=rf,
-        param_distributions=param_dist,
-        n_iter=15,              # 15 Δοκιμές
-        scoring='neg_mean_absolute_error',
-        cv=tscv,
-        verbose=1,
-        n_jobs=-1,
-        random_state=42
-    )
-
-    # Εκπαίδευση (Search)
-    search.fit(X, y)
-
-    print("\n✅ Βρέθηκαν οι καλύτερες παράμετροι RF:")
-    print(search.best_params_)
-    
-    # 3. Τελική Εκπαίδευση και Αποθήκευση
-    best_model = search.best_estimator_
-    
-    # Εκπαίδευση σε όλο το train set (μείον τις 60 μέρες test)
-    test_size = 60
-    best_model.fit(X.iloc[:-test_size], y.iloc[:-test_size])
-    
-    MODEL_PATH.parent.mkdir(exist_ok=True)
-    joblib.dump(best_model, MODEL_PATH)
-    print(f"💾 Το βέλτιστο RF αποθηκεύτηκε στο {MODEL_PATH}")
 
 if __name__ == "__main__":
     main()

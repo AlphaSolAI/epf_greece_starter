@@ -1,82 +1,61 @@
-import pandas as pd
-import numpy as np
-from pathlib import Path
-from sklearn.model_selection import TimeSeriesSplit, RandomizedSearchCV
-from sklearn.svm import SVR
-from sklearn.preprocessing import StandardScaler
-from sklearn.pipeline import Pipeline
-import joblib
+import argparse
 import sys
-import io
 import warnings
+from pathlib import Path
 
-# Ρυθμίσεις
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-warnings.filterwarnings('ignore')
+import joblib
+import numpy as np
+import pandas as pd
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.svm import SVR
 
-DATA_PATH = Path(__file__).resolve().parents[1] / "data" / "processed" / "daily.parquet"
-MODEL_PATH = Path(__file__).resolve().parents[1] / "models" / "svr_day.pkl"
+try:
+    sys.stdout.reconfigure(encoding="utf-8")
+except Exception:
+    pass
 
-def main():
-    if not DATA_PATH.exists():
-        print("❌ Δεν βρέθηκε το daily.parquet")
-        return
+warnings.filterwarnings("ignore")
 
-    # 1. Φόρτωση
-    df = pd.read_parquet(DATA_PATH)
+BASE_DIR = Path(__file__).resolve().parents[1]
+DATA_DIR = BASE_DIR / "data" / "processed"
+MODELS_DIR = BASE_DIR / "models"
+
+
+def train(mode: str) -> None:
+    data_path = DATA_DIR / f"{mode}.parquet"
+    df = pd.read_parquet(data_path)
     X = df.drop(columns=["y"])
-    y = df["y"]
-    
-    print(f"Dataset SVR: {len(df)} ημέρες. Features: {X.shape[1]}")
+    y = df["y"].values
 
-    # 2. Pipeline (Scaling + Model)
-    # Το SVR είναι ευαίσθητο στις κλίμακες, θέλει οπωσδήποτε Scaling
-    pipeline = Pipeline([
-        ('scaler', StandardScaler()),
-        ('svr', SVR())
-    ])
+    print(f"📉 SVR Training ({mode}) on {len(df)} samples and {X.shape[1]} features...")
 
-    # 3. Hyperparameter Grid
-    # C: Πόσο αυστηρό είναι το μοντέλο (Μεγάλο C = κίνδυνος overfitting, Μικρό C = underfitting)
-    # epsilon: Το πλάτος του "σωλήνα" ανοχής λάθους
-    # gamma: Πόσο μακριά φτάνει η επιρροή κάθε δείγματος
-    param_dist = {
-        'svr__kernel': ['rbf'], # Το rbf είναι το στάνταρ για χρονοσειρές
-        'svr__C': [10, 50, 100, 500, 1000], 
-        'svr__epsilon': [0.1, 1, 2, 5],
-        'svr__gamma': ['scale', 'auto', 0.01, 0.1]
-    }
+    if mode == "daily":
+        params = dict(C=100, gamma=0.01, epsilon=2, kernel="rbf")
+    else:  # hourly
+        params = dict(C=50, gamma=0.01, epsilon=1, kernel="rbf")
 
-    tscv = TimeSeriesSplit(n_splits=3)
-
-    print(f"🔍 Ξεκινάει το Optimization του SVR...")
-    print("   (Δοκιμάζουμε 15 συνδυασμούς - θα πάρει λίγο χρόνο...)")
-    
-    search = RandomizedSearchCV(
-        estimator=pipeline,
-        param_distributions=param_dist,
-        n_iter=15,
-        scoring='neg_mean_absolute_error',
-        cv=tscv,
-        verbose=1,
-        n_jobs=-1,
-        random_state=42
+    model = Pipeline(
+        steps=[
+            ("scaler", StandardScaler()),
+            ("svr", SVR(**params)),
+        ]
     )
 
-    search.fit(X, y)
+    model.fit(X, y)
 
-    print("\n✅ Βέλτιστες παράμετροι SVR:")
-    print(search.best_params_)
-    print(f"   Best CV Score (MAE): {-search.best_score_:.3f}")
-    
-    # 4. Τελική Εκπαίδευση
-    best_model = search.best_estimator_
-    test_size = 60
-    best_model.fit(X.iloc[:-test_size], y.iloc[:-test_size])
-    
-    MODEL_PATH.parent.mkdir(exist_ok=True)
-    joblib.dump(best_model, MODEL_PATH)
-    print(f"💾 Το μοντέλο SVR αποθηκεύτηκε στο {MODEL_PATH}")
+    MODELS_DIR.mkdir(exist_ok=True)
+    model_path = MODELS_DIR / f"svr_{mode}.pkl"
+    joblib.dump(model, model_path)
+    print(f"✅ Saved: {model_path}")
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("mode", choices=["daily", "hourly"])
+    args = parser.parse_args()
+    train(args.mode)
+
 
 if __name__ == "__main__":
     main()
