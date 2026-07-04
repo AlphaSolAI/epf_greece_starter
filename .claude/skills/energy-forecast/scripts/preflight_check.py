@@ -11,10 +11,14 @@ preflight_check.py — Pre-flight έλεγχος πριν από ΚΑΘΕ batch 
 Με --baseline τυπώνει και την εντολή αναπαραγωγής του baseline —
 ΔΕΝ την τρέχει (training ~70s, τρέξ' την χωριστά/background).
 Baseline ΜΕΤΑ το TZFIX 2026-07-04: default static Q1 = 19.17±0.05 (πριν: 16.10 σε
-misaligned δεδομένα — βλ. ABLATION_PLAN §5.9· το 19.17 κουβαλά ακόμα το §5.10 leak).
+misaligned δεδομένα — βλ. ABLATION_PLAN §5.9).
+
+Με --poison τρέχει (ΟΝΤΩΣ, ~10-20s ανά strategy — μικρό fit, όχι μόνο εκτύπωση
+εντολής) το cross-actuals poisoning self-test (src/check_crosslag_fairness.py,
+§4.10.2 / VALIDITY_CHECKLIST Β1) σε recursive ΚΑΙ direct· FAIL = leak στο AEL.
 
 Χρήση:
-  conda run -n epf --no-capture-output python -X utf8 .claude/skills/energy-forecast/scripts/preflight_check.py
+  conda run -n epf --no-capture-output python -X utf8 .claude/skills/energy-forecast/scripts/preflight_check.py [--baseline] [--poison]
 Exit code: 0 = όλα PASS, 1 = κάποιο FAIL.
 """
 from __future__ import annotations
@@ -86,6 +90,24 @@ if "--baseline" in sys.argv:
     print('    --retrain static --train_end "2025-11-30 23:00" \\')
     print('    --test_start "2025-12-01 00:00" --test_end "2026-02-28 23:00" \\')
     print('    --features default --out_json runs/preflight_out/baseline_check.json')
+
+if "--poison" in sys.argv:
+    print("-" * 60)
+    print("Cross-actuals poisoning self-test (AEL §4.8/§4.10.2) — τρέχει ΟΝΤΩΣ, ~10-20s/strategy:")
+    for strat in ("recursive", "direct"):
+        cmd = [sys.executable, "-X", "utf8", "-m", "src.check_crosslag_fairness",
+               "--task", "price", "--algo", "lgbm", "--strategy", strat,
+               "--market", "dam", "--gate", "strict"]
+        print(f"  $ {' '.join(cmd)}")
+        try:
+            res = subprocess.run(cmd, cwd=str(BASE), capture_output=True, text=True, timeout=300)
+            print(res.stdout[-2000:])
+            if res.returncode != 0:
+                print(res.stderr[-2000:])
+            check(f"crosslag poisoning ({strat})", res.returncode == 0,
+                  "δες έξοδο παραπάνω" if res.returncode != 0 else "")
+        except Exception as e:
+            check(f"crosslag poisoning ({strat})", False, str(e))
 
 print(f"ΑΠΟΤΕΛΕΣΜΑ: {'PASS' if not FAILS else 'FAIL: ' + ', '.join(FAILS)}")
 sys.exit(0 if not FAILS else 1)

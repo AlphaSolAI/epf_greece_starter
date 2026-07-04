@@ -39,7 +39,9 @@ import pandas as pd
 
 from .split_utils import load_processed, make_xy
 from .recursive_openloop import OpenLoopConfig, recursive_predict_openloop
-from .feature_availability import GateSpec, describe_gate, parse_feature_spec, select_features
+from .feature_availability import (
+    GateSpec, describe_gate, freeze_crosslags_for_gate, parse_feature_spec, select_features,
+)
 from .master_forecast import (
     MARKET_PRESETS, add_dense_lags, add_engineered_features, build_and_fit, make_blocks,
 )
@@ -254,6 +256,9 @@ def run_quantile_lgbm(
         key = _train_key(cutoff)
         if models is None or key != last_key:
             dtr = df.loc[:cutoff]
+            # AEL (§4.8): ίδιο training-row freeze με το master engine (recursive
+            # σχήμα: cutoff ανά ημέρα-της-γραμμής) — train/serve συνέπεια.
+            dtr = freeze_crosslags_for_gate(dtr, feature_cols, gs, df_full=df, mode="freeze")
             Xtr, ytr = make_xy(dtr)
             Xtr = Xtr[feature_cols]
             q10 = build_and_fit("lgbm", Xtr, ytr, seed=seed, n_estimators=n_estimators,
@@ -271,6 +276,8 @@ def run_quantile_lgbm(
         preds50, aux = recursive_predict_openloop(
             model=q50, df_full=df, test_index=roll_idx, feature_cols=feature_cols,
             config=OpenLoopConfig(y_floor=None), aux_models={"p10": q10, "p90": q90},
+            gate=gs, crosslag_mode="freeze",
+            crosslag_cutoff=gs.crosslag_cutoff_for_anchor(b0),
         )
         for t, v50, v10, v90 in zip(roll_idx, preds50, aux["p10"], aux["p90"]):
             if t in scored_idx:

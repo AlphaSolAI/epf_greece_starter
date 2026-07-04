@@ -12,9 +12,10 @@
 
 > ⚠️ **ΑΝΑΣΤΟΛΗ HEADLINE (2026-07-04, μετά §5.9/§5.10)**: το 15.17 και ΟΛΑ τα νούμερα του §5
 > μετρήθηκαν (α) σε timezone-misaligned δεδομένα (διορθώθηκε — §5.9) και (β) με το crosslag
-> engine leak ανοιχτό (§5.10 — ΔΕΝ έχει διορθωθεί ακόμα). Παραμένουν εσωτερικά συγκρίσιμα
-> ως προς τη μεθοδολογία, αλλά ΚΑΝΕΝΑ δεν είναι το τρέχον «αληθινό» νούμερο. Νέο headline
-> θα οριστεί μετά το engine fix + re-ablation στα ευθυγραμμισμένα δεδομένα.
+> engine leak ανοιχτό (§5.10 — ✅ **διορθώθηκε πλέον, AEL freeze-at-cutoff**, βλ. πρώτα
+> leak-free B1 νούμερα εκεί). Παραμένουν εσωτερικά συγκρίσιμα ως προς τη μεθοδολογία, αλλά
+> ΚΑΝΕΝΑ δεν είναι το τρέχον «αληθινό» headline — αυτό ορίζεται μόνο μετά το πλήρες Β3
+> re-ablation (LGBM+XGB × Q1+καλοκαίρι × recursive+direct) στα καθαρά (TZFIX+AEL) δεδομένα.
 
 **🏆 Παλιό headline (προ-tzfix, ΣΕ ΑΝΑΣΤΟΛΗ): LGBM recursive weekly, `--features default` = 15.17 €/MWh**
 (Q1 2026 = 2025-12-01→2026-02-28). Robustness: seeds 42/43/44 → 15.171/15.429/15.218
@@ -243,7 +244,7 @@ genlags/resfc/meteo (τις κορυφαίες ομάδες!) και θολό re
 αγνοήσιμος θόρυβος). **Η επιλογή feature set ΠΡΕΠΕΙ να ξαναγίνει από την αρχή στα
 ευθυγραμμισμένα δεδομένα** — ΑΦΟΥ πρώτα κλείσει και το §5.10.
 
-### 5.10 🚨 ΑΝΟΙΧΤΟ ΚΡΙΣΙΜΟ — Engine leakage στα cross actual lags (βρέθηκε 2026-07-04)
+### 5.10 ✅ ΛΥΘΗΚΕ — Engine leakage στα cross actual lags (βρέθηκε & διορθώθηκε 2026-07-04, AEL)
 
 Το `recursive_openloop.py` αντικαθιστά από το running series ΜΟΝΟ τα **y-lags** (regex
 `y_lag*`). Όλα τα άλλα actual-derived lags — `gen_solar_lag1/2`, `gen_wind_lag1/2`,
@@ -254,10 +255,37 @@ genlags/resfc/meteo (τις κορυφαίες ομάδες!) και θολό re
 genlags/loadlags (και το παλιό headline 15.17) είναι αισιόδοξο** — μέρος του «genlags = η πιο
 πολύτιμη ομάδα (+1.45)» είναι πιθανόν leakage, ίδιας φύσης με το xborder incident.
 
-**Απαιτούμενο fix (πριν από ΚΑΘΕ νέο ablation)**: availability-aware χειρισμός των non-y
-actual lags σε train ΚΑΙ eval — freeze-at-cutoff (τελευταία νόμιμη τιμή, deployable) ή NaN
-στα παραβατικά (h,k)· επέκταση του poisoning self-test: δηλητηρίασε gen/load actuals εντός
-ορίζοντα → το MAE ΔΕΝ πρέπει να αλλάξει.
+**Fix — AEL (υλοποιήθηκε 2026-07-04, βλ. `SYSTEM_DESIGN §4.8`)**: freeze-at-cutoff (default,
+deployable) ή NaN (`--crosslag_mode nan`, sensitivity, μόνο lgbm/xgb) σε recursive rollout +
+direct row@cutoff + training rows + conformal quantile path, με anchor-based cutoff ανά block.
+Poisoning self-test `src/check_crosslag_fairness.py`: PASS (A leak=0.000000) σε recursive-dam /
+direct-dam / recursive-forward· αυτόματο μέσω `preflight_check.py --poison`.
+
+**Πρώτα leak-free νούμερα (B1, 2026-07-04) — LGBM recursive static Q1, `runs/b1_leakfree/`:**
+
+| Spec | post-TZFIX προ-AEL (§5.9) | **leak-free (AEL freeze)** | Δ (κόστος leak) |
+|---|---|---|---|
+| `default` | 19.17 | **20.79** | +1.62 |
+| `default,-meteo,-resfc` | 16.54 | **19.90** | +3.36 |
+| `lags,calendar,genlags` | 17.16 | **18.94** | +1.78 |
+| `default` + `--crosslag_mode nan` | — | 22.18 | (sensitivity· χειρότερο από freeze +1.39) |
+
+Αναπαραγωγή: `python -m src.master_forecast --algo lgbm --task price --market dam
+--strategy recursive --gate strict --retrain static --train_end "2025-11-30 23:00"
+--test_start "2025-12-01 00:00" --test_end "2026-02-28 23:00" --features <spec>
+[--crosslag_mode nan] --out_json runs/b1_leakfree/<name>.json`.
+
+**Πρώτη ανάγνωση (static-only, 1 window — οριστικοποίηση στο Β3 re-ablation):**
+- Το crosslag leak κόστιζε +1.6 έως +3.4 MAE ανάλογα με το spec — μεγαλύτερο εκεί που τα
+  genlags/loadlags σήκωναν περισσότερο βάρος (χωρίς meteo/resfc). Ίδια τάξη με το xborder incident.
+- **Νέα leak-free κατάταξη: ο λιτός πυρήνας `lags,calendar,genlags` (18.94) κερδίζει** και το
+  default (20.79) και το default,-meteo,-resfc (19.90) — το «λιτό > kitchen-sink» στο
+  recursive-χειμώνα επιβιώνει και μετά το AEL.
+- **freeze > nan** (20.79 vs 22.18): η «τελευταία γνωστή τιμή» κρατά χρήσιμο σήμα· το NaN
+  πετά και το νόμιμο μέρος της στήλης (και ρίχνει 152→138 usable features). Το freeze
+  παραμένει το deployable default.
+- ⚠️ Τα παλιά static baselines (16.10 προ-TZFIX, 19.17 προ-AEL) είναι πλέον ΜΟΝΟ ιστορικές
+  αναφορές — κάθε νέα σύγκριση ξεκινά από τα leak-free του πίνακα (Α3.7).
 
 Διευκρινίσεις από το πλήρες code review 2026-07-04 (βλ. `SYSTEM_DESIGN §4.8-4.10`,
 `VALIDITY_CHECKLIST.md`): (α) το leak αφορά ΚΑΙ το **direct** (row@cutoff 23:00 D-1 περιέχει

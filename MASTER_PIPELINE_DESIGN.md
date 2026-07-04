@@ -5,16 +5,21 @@
 >
 > **Status update 2026-07-04**: το θεωρητικό πλαίσιο εδώ (§1-4) παραμένει ισχύον αυτούσιο.
 > Πρακτικές εξελίξεις μετά τη συγγραφή: (α) η ομάδα `crosslags` (§2) έσπασε σε `genlags`/
-> `loadlags`/`other` λεπτόκοκκα (παλιό όνομα λειτουργεί ως umbrella, καμία αλλαγή στη λογική
-> gate) — βλ. `src/feature_availability.py`· (β) το LEAR (§6) ενσωματώθηκε πλήρως στο
+> `loadlags`/`other` λεπτόκοκκα (παλιό όνομα λειτουργεί ως umbrella) — βλ.
+> `src/feature_availability.py`. ⚠️ **ΔΙΟΡΘΩΣΗ (ίδια ημέρα, βράδυ)**: η αρχική διατύπωση εδώ
+> («καμία αλλαγή στη λογική gate») αποδείχθηκε **ψευδής** — η λογική gate του §2
+> (`h−k ≤ t0_cutoff`) υλοποιούνταν de facto ΜΟΝΟ για τα y-lags, όχι και για τα genlags/
+> loadlags· αυτό ΗΤΑΝ engine leakage, διορθώθηκε ως AEL (Availability Enforcement Layer,
+> `SYSTEM_DESIGN §4.8`, `ABLATION_PLAN §5.10`). (β) το LEAR (§6) ενσωματώθηκε πλήρως στο
 > masterscript ως `--algo lear` (leakage-free, GateSpec-aware), όχι πια ξεχωριστό oracle script·
 > (γ) **νέο μόνιμο pre-flight πρωτόκολλο** για κάθε νέα πηγή (πότε δημοσιεύεται vs gate +
 > cross-correlation lag-scan + hour-profile) μετά το xborder same-day leakage incident —
 > case study που επιβεβαίωσε στην πράξη όλη τη φιλοσοφία αυτού του doc: οι BG/IT-SUD same-day
 > τιμές βγαίνουν από το ΙΔΙΟ SDAC auction με το target (δημοσίευση ~13:00 D-1 > gate 12:00) και
 > έδιναν ψεύτικο −0.72 «όφελος». Βλ. `ABLATION_PLAN.md §1, §5.7`.
-> Πλήρη εμπειρικά ευρήματα (ποια ομάδα αξίζει, ποιο μοντέλο/στρατηγική κερδίζει):
-> `ABLATION_PLAN.md §5` — headline: LGBM recursive weekly `default` = 15.17 €/MWh (Q1 2026).
+> ⚠️ Το headline «LGBM recursive weekly `default` = 15.17 €/MWh» **ΣΕ ΑΝΑΣΤΟΛΗ** (μετρήθηκε
+> πριν το timezone fix ΚΑΙ πριν το AEL) — βλ. `ABLATION_PLAN.md §0, §5.9-§5.10` για τρέχουσα
+> κατάσταση και τα πρώτα leak-free B1 νούμερα. Νέο headline εκκρεμεί (μετά το Β3 re-ablation).
 
 ---
 

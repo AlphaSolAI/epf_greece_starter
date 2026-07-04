@@ -1,10 +1,11 @@
 # SYSTEM DESIGN — GR Energy Forecast Agent (προϊόν) — v1.1 (2026-07-04)
 
 > **v1.1 review update**: μετά τα ευρήματα της 2026-07-04 (timezone misalignment 4 ρολογιών —
-> διορθώθηκε· crosslag engine leakage — ανοιχτό) προστέθηκαν τα §4.8 (Availability Enforcement
-> Layer), §4.9 (Time Canonicalization Contract), §4.10 (Validation Harness). Αυτά τα τρία
-> είναι πλέον ΤΟ θεμέλιο του συστήματος: κανένα αποτέλεσμα δεν δημοσιεύεται/πωλείται αν δεν
-> περνά τα §4.10 invariants. Βλ. `ABLATION_PLAN.md §5.9-§5.10` για το post-mortem.
+> ✅ διορθώθηκε· crosslag engine leakage — ✅ διορθώθηκε, AEL) προστέθηκαν τα §4.8 (Availability
+> Enforcement Layer — υλοποιημένο), §4.9 (Time Canonicalization Contract), §4.10 (Validation
+> Harness). Αυτά τα τρία είναι πλέον ΤΟ θεμέλιο του συστήματος: κανένα αποτέλεσμα δεν
+> δημοσιεύεται/πωλείται αν δεν περνά τα §4.10 invariants. Βλ. `ABLATION_PLAN.md §5.9-§5.10`
+> για το post-mortem + τα πρώτα leak-free B1 νούμερα.
 
 > **Στόχος**: αναβάθμιση του υπάρχοντος συστήματος σε ανταγωνιστικό, deployable προϊόν πρόβλεψης
 > τιμής (EPF) & φορτίου (STLF) για την ελληνική αγορά — DAM / Intraday / Forward (≤1 εβδομάδα) —
@@ -31,7 +32,7 @@
 | FR6 | **Ablations** ανά ομάδα feature (meteo/forecast/dense/fuel/…) | ✅ `--features` spec |
 | FR7 | **Retrain scheduling**: static / monthly / weekly + retrain-on-drift | ✅ τα 3 πρώτα · ⬜ drift-trigger |
 | FR8 | **Probabilistic έξοδος**: p10/p50/p90 ανά ώρα (risk bands για bidding) | ◐ **υλοποιημένο** (`src/conformal.py`: split-conformal + quantile-LGBM, causal rolling calibration) — ΔΕΝ έχει τρέξει έγκυρα ακόμα: μπλοκάρεται από FR13 |
-| FR13 | **Availability Enforcement Layer (AEL)**: ΚΑΘΕ feature family σέβεται το δικό της information cutoff σε train ΚΑΙ eval (όχι μόνο τα y-lags) | ⬜ **ΝΕΟ — ΚΡΙΣΙΜΟ (§4.8)**: το recursive rollout αντικαθιστά μόνο y-lags· gen/load/residual lags διαρρέουν actuals |
+| FR13 | **Availability Enforcement Layer (AEL)**: ΚΑΘΕ feature family σέβεται το δικό της information cutoff σε train ΚΑΙ eval (όχι μόνο τα y-lags) | ✅ **υλοποιήθηκε 2026-07-04 (§4.8)** — freeze-at-cutoff σε recursive/direct/training/conformal, poisoning tests PASS (§4.10.2) |
 | FR14 | **Time canonicalization**: κάθε πηγή δηλώνει ρολόι, μετατροπή ΜΟΝΟ στο data.py, εμπειρικοί guards | ✅ **ΝΕΟ (§4.9)** — υλοποιήθηκε 2026-07-04 (TZFIX + preflight guard) |
 | FR9 | **Ensemble** πάνω από τα ατομικά μοντέλα | ⬜ δεν υπάρχει — φθηνότερο κέρδος ακρίβειας |
 | FR10 | **Καθημερινή αυτόματη έκδοση** πρόβλεψης (batch job) + fallback ώστε να μη χάνεται ποτέ gate | ⬜ δεν υπάρχει |
@@ -233,32 +234,41 @@ GET /v1/forecast/dam-price?date=2026-03-15
 - **Drift rule**: rolling 7d MAE μοντέλου > 1.5× του δικού του 90d baseline → σημαία retrain (L2) + εξαίρεση από ensemble μέχρι να αναρρώσει.
 - **Champion/challenger**: νέο retrain γίνεται champion ΜΟΝΟ αν κερδίζει τον τρέχοντα σε 2 εβδομάδες shadow scoring.
 
-### 4.8 Availability Enforcement Layer (AEL) — ⬜ ΚΡΙΣΙΜΟ ΝΕΟ (v1.1)
+### 4.8 Availability Enforcement Layer (AEL) — ✅ ΥΛΟΠΟΙΗΘΗΚΕ (2026-07-04)
 
-**Πρόβλημα που λύνει (βρέθηκε 2026-07-04)**: το information-availability contract υπήρχε στα
+**Πρόβλημα που έλυσε (βρέθηκε 2026-07-04)**: το information-availability contract υπήρχε στα
 docs (MASTER §2) αλλά υλοποιούνταν ΜΟΝΟ για y-lags/y-rolls. Τα gen/load/residual actual lags
-διαβάζονται αυτούσια από το prebuilt dataframe → στο eval η ώρα 14:00 της D «βλέπει» actual
-παραγωγή 13:00 της D (recursive), και το direct@cutoff 23:00 D-1 «βλέπει» actuals 12:00-22:00
+διαβάζονταν αυτούσια από το prebuilt dataframe → στο eval η ώρα 14:00 της D «έβλεπε» actual
+παραγωγή 13:00 της D (recursive), και το direct@cutoff 23:00 D-1 «έβλεπε» actuals 12:00-22:00
 D-1 — όλα αδημοσίευτα στο gate 12:00 D-1.
 
 **Σχεδίαση**: πίνακας cutoff ΑΝΑ FEATURE FAMILY (όχι μόνο ανά task), στο `feature_availability.py`:
 
 | Family | Cutoff στο DAM strict (gate 12:00 D-1) | Enforcement |
 |---|---|---|
-| y (price) lags/rolls | 23:00 D-1 | ✅ ήδη (running substitution) |
-| y (load) lags/rolls | 11:00 D-1 | ✅ ήδη (gap=12) |
-| gen_*/residual_load/load actual lags | **11:00 D-1** | ⬜ freeze-at-cutoff (default) ή NaN |
+| y (price) lags/rolls | 23:00 D-1 | ✅ running substitution |
+| y (load) lags/rolls | 11:00 D-1 | ✅ gap=12 |
+| gen_*/residual_load/load actual lags | **11:00 D-1** | ✅ freeze-at-cutoff (default) ή NaN (`--crosslag_mode`) |
 | resfc/loadfc (D-1-published fc) | όλος ο ορίζοντας | ✅ by construction |
 | meteo | όλος ο ορίζοντας (fc proxy) | ✅ by construction |
 | fuel (D-1 settlement) | lag≥1 ημέρα | ✅ by construction |
 | xborder lagged | lag≥24h | ✅ by construction (same-day δομικά εκτός parquet) |
 
-**Μηχανισμός**: στο row-build (recursive: κάθε t· direct: row@cutoff· ΚΑΙ στο training row
-construction — ίδιο σχήμα, αλλιώς train/serve mismatch): για στήλη οικογένειας F με lag k,
-αν `t−k > cutoff_F(anchor)` → αντικατάσταση με **freeze-at-cutoff** (τιμή στο cutoff_F —
-deployable: «τελευταία γνωστή τιμή») ή NaN (trees, sensitivity variant). Το `tf` μένει ρητά
-oracle (εξαίρεση με warning). SS: παραμένει y-only (τα frozen cross-lags δεν έχουν rollout
-noise). **Κανένα νέο πείραμα δεν μετράει πριν μπει το AEL + περάσει το poisoning test (§4.10).**
+**Μηχανισμός (όπως υλοποιήθηκε)**: για στήλη οικογένειας F με lag k, αν `t−k > cutoff_F` →
+αντικατάσταση με **freeze-at-cutoff** (τιμή του base series στο cutoff_F — deployable:
+«τελευταία γνωστή τιμή») ή NaN (μόνο lgbm/xgb, sensitivity variant). Το cutoff_F είναι
+**anchor-based ανά block** (`GateSpec.crosslag_cutoff_for_anchor`): ΕΝΑ cutoff για όλο το
+rollout του block — κρίσιμο στο forward (168h): όλες οι ώρες D..D+6 μοιράζονται το 11:00 D-1.
+Σημεία επιβολής:
+1. **Recursive rollout** (`recursive_predict_openloop`, παράμετροι `gate`+`crosslag_cutoff`).
+2. **Direct row@cutoff** (`run_forecast`, freeze πριν το predict).
+3. **Training rows** (`_fit_at`): recursive/tf/lstm = σχήμα «ημέρας-της-γραμμής»
+   (κάθε γραμμή t παγώνει σαν να σερβίρεται στο block της ημέρας της)· direct =
+   σχήμα origin (cutoff = t−gap, ταυτίζεται με το serve origin 23:00→11:00).
+4. **Conformal quantile path** (`conformal.py`): ίδιο freeze σε training + rollout.
+Δηλωμένες εξαιρέσεις: `tf` eval = oracle (warning)· SS παραμένει y-only· ⚠️ LSTM eval
+encoder ΔΕΝ φιλτράρεται ακόμα (PENDING — non-tradeable λόγω calibration bug ούτως ή άλλως).
+Επαλήθευση: §4.10.2 poisoning PASS (recursive-dam, direct-dam, recursive-forward, 2026-07-04).
 
 ### 4.9 Time Canonicalization Contract — ✅ (v1.1, υλοποιημένο 2026-07-04)
 
@@ -277,9 +287,12 @@ noise). **Κανένα νέο πείραμα δεν μετράει πριν μπ
 
 Invariants που πρέπει να ισχύουν ΠΡΙΝ δημοσιευτεί οποιοδήποτε νούμερο:
 1. **Poisoning y**: αντικατάσταση των actual y εντός κάθε scored block με τρελές τιμές →
-   προβλέψεις ΑΜΕΤΑΒΛΗΤΕΣ (υπάρχει ήδη: `check_openloop_fairness.py`).
-2. **Poisoning cross actuals (ΝΕΟ)**: αντικατάσταση gen/load/residual actuals ΜΕΤΑ το
-   cutoff_F κάθε anchor → προβλέψεις ΑΜΕΤΑΒΛΗΤΕΣ. Τρέχει σε recursive ΚΑΙ direct.
+   προβλέψεις ΑΜΕΤΑΒΛΗΤΕΣ (υπάρχει ήδη: `check_openloop_fairness.py` — απαιτεί saved pkl).
+2. **Poisoning cross actuals**: ✅ `src/check_crosslag_fairness.py` (2026-07-04) — 3 tests:
+   (A) poison sources > cutoff_F → προβλέψεις ΑΜΕΤΑΒΛΗΤΕΣ· (B) control: poison νόμιμα
+   κελιά → προβλέψεις ΠΡΕΠΕΙ να αλλάζουν (νομιμοποιεί το A)· (C) training-freeze exact
+   assertion. PASS σε recursive-dam/direct-dam/recursive-forward. Αυτοματοποίηση:
+   `preflight_check.py --poison` (τρέχει recursive+direct).
 3. **TZ guards** (§4.9.3) σε κάθε preflight.
 4. **Reproducibility anchor**: γνωστό config αναπαράγει το καταγεγραμμένο MAE ±0.05
    (preflight --baseline).

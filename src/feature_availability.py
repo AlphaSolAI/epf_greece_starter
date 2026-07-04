@@ -22,6 +22,7 @@ import re
 from dataclasses import dataclass
 from typing import Dict, List, Optional
 
+import numpy as np
 import pandas as pd
 
 # ----------------------------------------------------------------------------
@@ -254,7 +255,210 @@ class GateSpec:
         """
         return block_start - pd.Timedelta(hours=self.gap_hours() + 1)
 
+    def crosslag_gap_hours(self) -> int:
+        """
+        Gap (ώρες) για τα gen_*/residual_load/load ACTUAL lags (SYSTEM_DESIGN §4.8,
+        family 'genlags'/'loadlags') — ο ΙΔΙΟΣ φυσικός reporting-delay ισχύει
+        ΑΝΕΞΑΡΤΗΤΩΣ task (price ή load): η πραγματική παραγωγή/φορτίο δημοσιεύεται
+        με την ίδια καθυστέρηση όποιο κι αν είναι το target. Ξαναχρησιμοποιεί το
+        load-strict gap (ίδιος μηχανισμός, task πάντα 'load' εδώ).
+        """
+        if self.delay_override is not None:
+            return int(self.delay_override)
+        return GateSpec(task="load", gate=self.gate, market=self.market).gap_hours()
+
+    def crosslag_cutoff_index(self, index: pd.DatetimeIndex) -> pd.DatetimeIndex:
+        """
+        Vectorized cutoff διαθεσιμότητας ΓΙΑ gen/residual_load/load actual lags,
+        ένα ανά χρονοσφραγίδα του index (§4.8) — ΓΙΑ TRAINING ROWS (recursive/tf/
+        lstm): κάθε γραμμή t αντιμετωπίζεται σαν να σερβίρεται μέσα στο block της
+        δικής της ημέρας («ίδιο σχήμα» με το serve, §4.8). Για dam/forward
+        block_start = midnight της ημέρας του t· για idm/custom block_start = t.
+        ΣΤΟ EVAL το σωστό cutoff είναι ΤΟΥ BLOCK ANCHOR (crosslag_cutoff_for_anchor)
+        — σε multi-day blocks (forward) το per-day cutoff θα διέρρεε.
+        """
+        gap = self.crosslag_gap_hours()
+        if self.market in ("dam", "forward"):
+            block_start = index.normalize()
+        else:
+            block_start = index
+        return block_start - pd.Timedelta(hours=gap + 1)
+
+    def crosslag_cutoff_for_anchor(self, block_start: pd.Timestamp) -> pd.Timestamp:
+        """
+        Cutoff διαθεσιμότητας crosslag actuals για ΟΛΟΚΛΗΡΟ το block που ξεκινά
+        στο block_start (§4.8, anchor-based μηχανισμός) — αυτό χρησιμοποιεί το
+        eval (recursive rollout ΚΑΙ direct row@cutoff). Π.χ. DAM price block
+        D 00:00 → 11:00 D-1. Σε forward (168h) ισχύει ΈΝΑ cutoff για όλες τις
+        168 ώρες: τίποτα μετά το 11:00 D-1 δεν είναι γνωστό στο issue time.
+        """
+        return block_start - pd.Timedelta(hours=self.crosslag_gap_hours() + 1)
+
 
 def describe_gate(gs: GateSpec) -> str:
     return (f"market={gs.market} task={gs.task} gate={gs.gate} "
-            f"delay_override={gs.delay_override} → gap={gs.gap_hours()}h")
+            f"delay_override={gs.delay_override} → gap={gs.gap_hours()}h "
+            f"(crosslag_gap={gs.crosslag_gap_hours()}h)")
+
+
+# ----------------------------------------------------------------------------
+# 3) AVAILABILITY ENFORCEMENT LAYER (AEL) — freeze-at-cutoff για crosslag actuals
+#    SYSTEM_DESIGN §4.8. Καλύπτει gen_solar/gen_wind/residual_load/load lags —
+#    τα ΜΟΝΑ families που σήμερα διαβάζονται αυτούσια από actuals χωρίς cutoff
+#    enforcement (y lags/rolls ήδη καλύπτονται από recursive running-substitution·
+#    resfc/loadfc/meteo/fuel/xborder είναι ασφαλή by construction).
+# ----------------------------------------------------------------------------
+
+# base series -> regex της στήλης lag του (καταγράφει το lag σε ώρες)
+CROSSLAG_FAMILIES: Dict[str, "re.Pattern"] = {
+    "residual_load": re.compile(r"^residual_load_lag(\d+)$"),
+    "gen_solar": re.compile(r"^gen_solar_lag(\d+)$"),
+    "gen_wind": re.compile(r"^gen_wind_lag(\d+)$"),
+    "load": re.compile(r"^load_lag(\d+)$"),
+}
+
+# μικρότερο διαθέσιμο lag ανά base series (χρησιμοποιείται για να ανακατασκευαστεί
+# η ΠΡΑΓΜΑΤΙΚΗ τιμή lag0 μέσω shift(-min_lag) — βλ. build_frozen_lookup).
+_BASE_SERIES_MIN_LAG = {"residual_load": 1, "gen_solar": 1, "gen_wind": 1, "load": 1}
+
+
+def detect_crosslag_cols(feature_cols: List[str]) -> Dict[str, Dict[str, int]]:
+    """base_series -> {col_name: lag_hours} για τις 4 crosslag οικογένειες."""
+    out: Dict[str, Dict[str, int]] = {}
+    for base, pat in CROSSLAG_FAMILIES.items():
+        m = {}
+        for c in feature_cols:
+            mm = pat.match(c)
+            if mm:
+                m[c] = int(mm.group(1))
+        if m:
+            out[base] = m
+    return out
+
+
+def build_frozen_lookup(df_full: pd.DataFrame,
+                        crosslag_cols: Dict[str, Dict[str, int]]) -> Dict[str, pd.Series]:
+    """
+    base_series -> pd.Series ανακατασκευασμένης ΠΡΑΓΜΑΤΙΚΗΣ τιμής (χωρίς lag),
+    indexed όπως το df_full. Π.χ. gen_solar_lag1[t] = gen_solar[t-1] ⇒
+    gen_solar[t] = gen_solar_lag1.shift(-1)[t]. Χρησιμοποιείται για να «παγώσουμε»
+    ΟΠΟΙΟΔΗΠΟΤΕ lag αυτής της οικογένειας στην τιμή που ίσχυε στο cutoff_F.
+    """
+    lookups: Dict[str, pd.Series] = {}
+    for base in crosslag_cols:
+        min_lag = _BASE_SERIES_MIN_LAG.get(base, min(crosslag_cols[base].values()))
+        col = f"{base}_lag{min_lag}"
+        if col in df_full.columns:
+            lookups[base] = df_full[col].astype(float).shift(-min_lag)
+    return lookups
+
+
+def apply_crosslag_freeze(
+    frame: pd.DataFrame,
+    crosslag_cols: Dict[str, Dict[str, int]],
+    frozen_lookup: Dict[str, pd.Series],
+    cutoffs: pd.DatetimeIndex,
+    mode: str = "freeze",
+) -> pd.DataFrame:
+    """
+    Για κάθε γραμμή t στο frame.index (ίδιου μήκους/σειράς με `cutoffs`), για κάθε
+    crosslag στήλη (base b, lag k): αν (t-k) > cutoffs[t] → η τιμή ΔΕΝ ήταν ακόμα
+    δημοσιευμένη στο cutoff ⇒ αντικατάσταση:
+      mode='freeze' (default, deployable) → τιμή του base series ΣΤΟ cutoff (LOCF)
+      mode='nan'    (sensitivity variant, μόνο για δέντρα) → NaN
+    Mutates in place· επιστρέφει το frame (convenience). `frame` πρέπει να είναι ήδη
+    copy αν ο καλών θέλει να κρατήσει το πρωτότυπο.
+    """
+    if len(frame) != len(cutoffs):
+        raise ValueError("frame και cutoffs πρέπει να έχουν το ίδιο μήκος/σειρά.")
+    idx = frame.index
+    cutoffs_arr = np.asarray(cutoffs.values)
+    for base, colmap in crosslag_cols.items():
+        lut = frozen_lookup.get(base)
+        for col, lag in colmap.items():
+            if col not in frame.columns:
+                continue
+            src_time = (idx - pd.Timedelta(hours=int(lag))).values
+            unsafe = src_time > cutoffs_arr
+            if not unsafe.any():
+                continue
+            if mode == "nan" or lut is None:
+                frame.loc[unsafe, col] = np.nan
+            else:
+                frozen_vals = lut.reindex(cutoffs[unsafe]).to_numpy()
+                frame.loc[unsafe, col] = frozen_vals
+    return frame
+
+
+def apply_crosslag_freeze_row(
+    row: pd.Series,
+    t: pd.Timestamp,
+    crosslag_cols: Dict[str, Dict[str, int]],
+    frozen_lookup: Dict[str, pd.Series],
+    cutoff: pd.Timestamp,
+    mode: str = "freeze",
+) -> pd.Series:
+    """
+    Ίδια λογική με apply_crosslag_freeze αλλά για ΜΙΑ γραμμή (pd.Series indexed by
+    feature name) στο timestamp t — χρησιμοποιείται στο recursive per-step rollout
+    όπου το row build είναι ήδη σε for-loop (βλ. recursive_openloop.py). Mutates
+    in place· επιστρέφει το row (convenience).
+    """
+    for base, colmap in crosslag_cols.items():
+        lut = frozen_lookup.get(base)
+        for col, lag in colmap.items():
+            if col not in row.index:
+                continue
+            src_time = t - pd.Timedelta(hours=int(lag))
+            if src_time <= cutoff:
+                continue
+            if mode == "nan" or lut is None:
+                row[col] = np.nan
+            else:
+                v = lut.reindex([cutoff]).iloc[0] if cutoff in lut.index else np.nan
+                row[col] = float(v) if pd.notna(v) and np.isfinite(v) else np.nan
+    return row
+
+
+def freeze_crosslags_for_gate(
+    frame: pd.DataFrame,
+    feature_cols: List[str],
+    gate: "GateSpec",
+    df_full: Optional[pd.DataFrame] = None,
+    mode: str = "freeze",
+    fillna_other: Optional[float] = None,
+    cutoffs: Optional[pd.DatetimeIndex] = None,
+) -> pd.DataFrame:
+    """
+    Convenience wrapper: ανιχνεύει τις crosslag στήλες μέσα στο `feature_cols`,
+    υπολογίζει τα per-row cutoffs από το `gate`, χτίζει το frozen lookup από
+    `df_full` (ή από το ίδιο το `frame` αν δεν δοθεί df_full) και εφαρμόζει
+    apply_crosslag_freeze. Επιστρέφει ΝΕΟ (copy) frame — δεν πειράζει το πρωτότυπο.
+    Καλείται από τα σημεία row-build: recursive/direct/training (§4.8).
+
+    cutoffs: explicit per-row cutoffs (π.χ. σταθερό anchor cutoff για eval block,
+    ή t−gap για direct training origins). Αν None → gate.crosslag_cutoff_index
+    (training σχήμα: ημέρα-του-t).
+    fillna_other: αν δοθεί, γεμίζει τα NaN των ΜΗ-crosslag στηλών με αυτή την τιμή
+    (π.χ. 0.0, όπως έκανε ήδη ο caller πριν). Στο mode='nan' οι crosslag στήλες
+    ΔΕΝ γεμίζουν ποτέ — τα δέντρα χρειάζονται πραγματικό NaN (sensitivity variant).
+    """
+    crosslag_cols = detect_crosslag_cols(feature_cols)
+    if not crosslag_cols or len(frame) == 0:
+        return frame.fillna(fillna_other) if fillna_other is not None else frame
+    src = df_full if df_full is not None else frame
+    frozen_lookup = build_frozen_lookup(src, crosslag_cols)
+    if cutoffs is None:
+        cutoffs = gate.crosslag_cutoff_index(frame.index)
+    out = frame.copy()
+    out = apply_crosslag_freeze(out, crosslag_cols, frozen_lookup, cutoffs, mode=mode)
+    if fillna_other is not None:
+        if mode == "nan":
+            protect = set()
+            for colmap in crosslag_cols.values():
+                protect.update(colmap.keys())
+            fill_cols = [c for c in out.columns if c not in protect]
+            out[fill_cols] = out[fill_cols].fillna(fillna_other)
+        else:
+            out = out.fillna(fillna_other)
+    return out

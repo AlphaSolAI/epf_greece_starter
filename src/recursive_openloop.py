@@ -6,6 +6,12 @@ from typing import Callable, Dict, Iterable, List, Optional, Tuple, Union
 import numpy as np
 import pandas as pd
 
+from .feature_availability import (
+    apply_crosslag_freeze_row,
+    build_frozen_lookup,
+    detect_crosslag_cols,
+)
+
 
 @dataclass
 class OpenLoopConfig:
@@ -145,6 +151,9 @@ def recursive_predict_openloop(
     feature_cols: List[str],
     config: Optional[OpenLoopConfig] = None,
     aux_models: Optional[Dict[str, object]] = None,
+    gate: Optional[object] = None,
+    crosslag_mode: str = "freeze",
+    crosslag_cutoff: Optional[pd.Timestamp] = None,
 ):
     """
     STRICT open-loop recursive prediction:
@@ -153,6 +162,16 @@ def recursive_predict_openloop(
         (a) any y-lag columns found in feature_cols using a running series y_run
         (b) any y-roll columns y_rollW / y_roll_W as MEAN of y_run[t-1 ... t-W]
       so there is NO leakage from actual test y inside the horizon.
+    - if `gate` (feature_availability.GateSpec) is given: freezes/NaNs any
+      gen_solar/gen_wind/residual_load/load lag ("crosslag") columns that
+      reference a timestamp AFTER that family's availability cutoff for this
+      anchor — SYSTEM_DESIGN §4.8 (AEL). Χωρίς gate, συμπεριφορά αμετάβλητη
+      (backward-compatible: παλιά callers/poisoning tests συνεχίζουν να δουλεύουν).
+    - crosslag_cutoff: το ΣΤΑΘΕΡΟ cutoff του block anchor (gate.
+      crosslag_cutoff_for_anchor(block_start)) — αυτό είναι το σωστό στο eval:
+      σε multi-day blocks (forward 168h) ΟΛΕΣ οι ώρες μοιράζονται το ίδιο cutoff
+      (τίποτα μετά το issue time δεν είναι γνωστό). Αν None, fallback στο per-row
+      day-of-t σχήμα (crosslag_cutoff_index) — σωστό μόνο για single-day blocks.
 
     aux_models: προαιρετικό dict {name: model} — προβλέπουν στην ΙΔΙΑ γραμμή
     (ίδιο row) με το κύριο model, χωρίς να οδηγούν τη recursive ανατροφοδότηση
@@ -165,6 +184,25 @@ def recursive_predict_openloop(
 
     # running y series: start from actual history, then overwrite test timestamps with predictions
     y_run = df_full["y"].astype(float).copy()
+
+    # AEL (§4.8): ανίχνευση crosslag στηλών (gen_*/residual_load/load lags) + frozen
+    # lookup, ΜΙΑ φορά πριν το rollout. Χωρίς gate, crosslag_cols μένει κενό ⇒ no-op
+    # (backward-compatible με παλιά callers/poisoning tests).
+    crosslag_cols: Dict[str, Dict[str, int]] = {}
+    frozen_lookup: Dict[str, pd.Series] = {}
+    crosslag_cutoffs: Optional[pd.DatetimeIndex] = None
+    crosslag_protect_cols: set = set()
+    if gate is not None:
+        crosslag_cols = detect_crosslag_cols(feature_cols)
+        if crosslag_cols:
+            frozen_lookup = build_frozen_lookup(df_full, crosslag_cols)
+            if crosslag_cutoff is not None:
+                # anchor-based (eval): ένα cutoff για όλο το rollout του block
+                crosslag_cutoffs = pd.DatetimeIndex([crosslag_cutoff] * len(test_index))
+            else:
+                crosslag_cutoffs = gate.crosslag_cutoff_index(test_index)
+            for colmap in crosslag_cols.values():
+                crosslag_protect_cols.update(colmap.keys())
 
     import re
 
@@ -207,6 +245,15 @@ def recursive_predict_openloop(
         else:
             row = df_full.loc[t, feature_cols].copy()
 
+        # AEL (§4.8): freeze/NaN crosslag cols (gen/load actuals) not yet
+        # available at this anchor's cutoff — BEFORE y-lag overwrite (disjoint
+        # column sets, order does not matter).
+        if crosslag_cols:
+            cutoff_t = crosslag_cutoffs[i]
+            row = apply_crosslag_freeze_row(
+                row, t, crosslag_cols, frozen_lookup, cutoff_t, mode=crosslag_mode,
+            )
+
         # overwrite lag features from running y
         for col, lag in lag_map.items():
             t_lag = t - pd.Timedelta(hours=int(lag))
@@ -225,9 +272,16 @@ def recursive_predict_openloop(
                 mv = float(np.nanmean(vals.to_numpy(dtype=float))) if len(vals) > 0 else np.nan
                 row[col] = mv if np.isfinite(mv) else np.nan
 
-        # fill NaNs (keep exogenous NaNs as 0 to avoid model crashes)
+        # fill NaNs (keep exogenous NaNs as 0 to avoid model crashes) — EXCEPT
+        # crosslag cols under crosslag_mode='nan' (sensitivity variant): trees
+        # must see a REAL NaN to exercise native missing-value handling, so we
+        # don't launder it into 0.0 here (§4.8 NaN-variant).
         row = row.astype(float)
-        row = row.where(np.isfinite(row), 0.0)
+        if crosslag_mode == "nan" and crosslag_protect_cols:
+            fillable = ~row.index.isin(crosslag_protect_cols)
+            row[fillable] = row[fillable].where(np.isfinite(row[fillable]), 0.0)
+        else:
+            row = row.where(np.isfinite(row), 0.0)
 
         # predict
         if torch_predict is not None:

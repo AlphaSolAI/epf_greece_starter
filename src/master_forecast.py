@@ -44,6 +44,8 @@ from .feature_availability import (
     parse_feature_spec,
     select_features,
     classify_columns,
+    detect_crosslag_cols,
+    freeze_crosslags_for_gate,
 )
 
 try:
@@ -166,22 +168,37 @@ def build_and_fit(algo: str, X: pd.DataFrame, y: np.ndarray, *, seed: int = 42,
 # ----------------------------------------------------------------------------
 # Direct multi-horizon (1 sub-model ανά offset) — leakage-free (origin=cutoff)
 # ----------------------------------------------------------------------------
-def _make_direct_xy(df_fit: pd.DataFrame, feature_cols: List[str], max_offset: int):
-    """X = features@t ; Y = [y(t+1..t+max_offset)]."""
+def _make_direct_xy(df_fit: pd.DataFrame, feature_cols: List[str], max_offset: int,
+                    crosslag_mode: str = "freeze", crosslag_protect_cols: Optional[set] = None):
+    """
+    X = features@t ; Y = [y(t+1..t+max_offset)].
+    Ο caller έχει ήδη περάσει `df_fit` από freeze_crosslags_for_gate (§4.8), οπότε
+    οι crosslag στήλες που ήταν εκτός cutoff είναι ήδη frozen/NaN. Εδώ μόνο
+    προσέχουμε να ΜΗΝ γεμίσουμε με 0.0 τα crosslag NaN στο NaN-sensitivity mode
+    (τα δέντρα χρειάζονται πραγματικό NaN για native missing-value handling).
+    """
     X = df_fit[feature_cols].select_dtypes(include=[np.number]).copy()
     y = df_fit["y"].astype(float)
     Ys = [y.shift(-o).rename(f"y_t+{o}") for o in range(1, max_offset + 1)]
     Y = pd.concat(Ys, axis=1)
     joined = X.join(Y, how="inner").dropna(subset=list(Y.columns))
-    Xa = joined[X.columns].fillna(0.0)
+    Xa = joined[X.columns].copy()
+    if crosslag_mode == "nan" and crosslag_protect_cols:
+        protect = [c for c in crosslag_protect_cols if c in Xa.columns]
+        fill_cols = [c for c in Xa.columns if c not in protect]
+        Xa[fill_cols] = Xa[fill_cols].fillna(0.0)
+    else:
+        Xa = Xa.fillna(0.0)
     Ya = joined[list(Y.columns)].to_numpy(dtype=float)
     return Xa, Ya
 
 
 def fit_direct(algo: str, df_fit: pd.DataFrame, feature_cols: List[str],
-               max_offset: int, *, seed: int = 42):
+               max_offset: int, *, seed: int = 42,
+               crosslag_mode: str = "freeze", crosslag_protect_cols: Optional[set] = None):
     from sklearn.multioutput import MultiOutputRegressor
-    Xa, Ya = _make_direct_xy(df_fit, feature_cols, max_offset)
+    Xa, Ya = _make_direct_xy(df_fit, feature_cols, max_offset,
+                             crosslag_mode=crosslag_mode, crosslag_protect_cols=crosslag_protect_cols)
     algo = algo.lower()
     if algo == "lgbm":
         import lightgbm as lgb
@@ -240,6 +257,34 @@ def _metrics(y_true: np.ndarray, y_pred: np.ndarray) -> dict:
     return dict(MAE=round(mae, 4), RMSE=round(rmse, 4), sMAPE=round(smape, 4), n=int(len(yt)))
 
 
+def _make_xy_crosslag_aware(dtr: pd.DataFrame, crosslag_mode: str, crosslag_protect_cols: set):
+    """
+    Σαν split_utils.make_xy, αλλά στο crosslag_mode='nan' ΔΕΝ κάνει ffill ούτε
+    απορρίπτει γραμμές λόγω NaN στις crosslag στήλες (§4.8 NaN-sensitivity
+    variant) — τα δέντρα βλέπουν πραγματικό NaN εκεί και το χειρίζονται native.
+    Χωρίς NaN mode (ή χωρίς crosslag στήλες) ταυτίζεται 100% με το make_xy.
+    """
+    if crosslag_mode != "nan" or not crosslag_protect_cols:
+        return make_xy(dtr)
+
+    y = pd.to_numeric(dtr["y"], errors="coerce")
+    X = dtr.drop(columns=["y"], errors="ignore").select_dtypes(include=[np.number]).copy()
+    X = X.replace([np.inf, -np.inf], np.nan)
+
+    protect = [c for c in crosslag_protect_cols if c in X.columns]
+    fillable = [c for c in X.columns if c not in protect]
+    if fillable:
+        X[fillable] = X[fillable].ffill()
+
+    good = np.isfinite(y.to_numpy())
+    if fillable:
+        good = good & np.all(np.isfinite(X[fillable].to_numpy()), axis=1)
+
+    X = X.loc[good]
+    y = y.loc[good].to_numpy(dtype=float)
+    return X, y
+
+
 # ----------------------------------------------------------------------------
 # Core rollout
 # ----------------------------------------------------------------------------
@@ -264,14 +309,27 @@ def run_forecast(
     ss_decay: str = "linear",
     ss_rounds: int = 3,
     n_estimators: Optional[int] = None,
+    crosslag_mode: str = "freeze",
 ) -> Tuple[pd.DatetimeIndex, np.ndarray, np.ndarray]:
     """
     Επιστρέφει (scored_index, y_true, y_pred).
     Ο retrain scheduler ξαναχτίζει το μοντέλο πριν από blocks όταν χρειάζεται,
     ΠΑΝΤΑ με train_end ≤ cutoff (καμία διαρροή στο μέλλον).
+
+    crosslag_mode ('freeze'|'nan'): AEL (§4.8) — πώς αντιμετωπίζονται τα
+    gen_solar/gen_wind/residual_load/load lags που πέφτουν ΜΕΤΑ το cutoff_F της
+    δικής τους οικογένειας (πριν ΔΕΝ ίσχυε κανένα enforcement εκτός των y-lags).
+    'freeze' (default, deployable) = τελευταία γνωστή τιμή· 'nan' = sensitivity
+    variant μόνο για δέντρα (native missing-value handling).
     """
     blocks = make_blocks(test_start, test_end, horizon, stride)
     y_full = df["y"].astype(float)
+
+    # AEL (§4.8): σύνολο crosslag στηλών (gen/load actuals) μέσα στα επιλεγμένα
+    # feature_cols — χρησιμοποιείται ΚΑΙ στο training row build ΚΑΙ στο direct eval.
+    crosslag_protect_cols: set = set()
+    for colmap in detect_crosslag_cols(feature_cols).values():
+        crosslag_protect_cols.update(colmap.keys())
 
     # per-scored-hour: κρατάμε την ΠΙΟ πρόσφατη πρόβλεψη (freshest anchor)
     pred_map: dict = {}
@@ -312,6 +370,22 @@ def run_forecast(
         dtr = df.loc[:te]
         if train_start is not None:
             dtr = dtr.loc[train_start:]
+        # AEL (§4.8): ΚΑΘΕ training row παγώνει τα crosslag lags της με το ΙΔΙΟ
+        # σχήμα που θα ισχύσει στο serve (train/serve συνέπεια, VALIDITY Β1):
+        #  - recursive/tf/lstm: η γραμμή t σερβίρεται μέσα στο block της ημέρας
+        #    της → cutoff = day(t)-anchor (default του freeze_crosslags_for_gate).
+        #  - direct: η γραμμή t είναι ORIGIN (row@cutoff) → στο serve το origin
+        #    23:00 D-1 έχει cutoff 11:00 D-1 = t − crosslag_gap → ίδιος τύπος
+        #    για κάθε training origin.
+        # tf ΔΕΝ εξαιρείται: ο oracle-χαρακτήρας του αφορά μόνο το eval-time
+        # teacher forcing· το μοντέλο του εκπαιδεύεται ΚΙ αυτό leak-free.
+        if strategy == "direct":
+            _cl_cut = dtr.index - pd.Timedelta(hours=gate.crosslag_gap_hours())
+            dtr = freeze_crosslags_for_gate(dtr, feature_cols, gate, df_full=df,
+                                            mode=crosslag_mode, cutoffs=_cl_cut)
+        else:
+            dtr = freeze_crosslags_for_gate(dtr, feature_cols, gate, df_full=df,
+                                            mode=crosslag_mode)
         if algo == "lstm":
             from .lstm_models import Seq2SeqLSTM
             m = Seq2SeqLSTM(future_cols=_fut_cols, L=168, H=int(_last_off),
@@ -322,9 +396,11 @@ def run_forecast(
             return m, int(_last_off)
         if strategy == "direct":
             max_off = int(_last_off)
-            return fit_direct(algo, dtr, feature_cols, max_off, seed=seed), max_off
+            return fit_direct(algo, dtr, feature_cols, max_off, seed=seed,
+                              crosslag_mode=crosslag_mode,
+                              crosslag_protect_cols=crosslag_protect_cols), max_off
         # recursive / tf: single-output
-        Xtr, ytr = make_xy(dtr)
+        Xtr, ytr = _make_xy_crosslag_aware(dtr, crosslag_mode, crosslag_protect_cols)
         Xtr = Xtr[feature_cols]
         if ss and strategy == "recursive":
             from .scheduled_sampling import fit_with_scheduled_sampling
@@ -339,6 +415,9 @@ def run_forecast(
     t_start = time.time()
     for bi, (b0, b1) in enumerate(blocks):
         cutoff = gate.cutoff_for_block(b0)
+        # AEL (§4.8): ΕΝΑ crosslag cutoff για όλο το block (anchor-based) —
+        # σε multi-day blocks (forward) τίποτα μετά το issue time δεν είναι γνωστό.
+        cl_cutoff = gate.crosslag_cutoff_for_anchor(b0)
         # scored hours αυτού του block
         scored_idx = pd.date_range(b0, b1, freq="H")
         # πλήρες rollout: από cutoff+1 έως b1 (καλύπτει κενό + block)
@@ -374,6 +453,7 @@ def run_forecast(
                 preds = recursive_predict_openloop(
                     model=model, df_full=df, test_index=roll_idx,
                     feature_cols=feature_cols, config=OpenLoopConfig(y_floor=None),
+                    gate=gate, crosslag_mode=crosslag_mode, crosslag_cutoff=cl_cutoff,
                 )
                 for t, v in zip(roll_idx, preds):
                     if t in set(scored_idx):
@@ -382,7 +462,14 @@ def run_forecast(
             # origin = cutoff· row@cutoff → διάνυσμα offsets 1..model_offset_max
             if cutoff not in df.index:
                 continue
-            row = df.loc[[cutoff], feature_cols].select_dtypes(include=[np.number]).fillna(0.0)
+            row = df.loc[[cutoff], feature_cols].select_dtypes(include=[np.number])
+            # AEL (§4.8): το row@cutoff «βλέπει» crosslag actuals ΜΕΤΑ το δικό
+            # τους cutoff_F (π.χ. price DAM: cutoff_y=23:00 D-1 αλλά τα gen/load
+            # actuals κόβονται στις 11:00 D-1) — freeze/NaN πριν το predict,
+            # με το anchor cutoff του block (ίδιο με το training origin σχήμα).
+            row = freeze_crosslags_for_gate(row, feature_cols, gate, df_full=df,
+                                            mode=crosslag_mode, fillna_other=0.0,
+                                            cutoffs=pd.DatetimeIndex([cl_cutoff]))
             vec = np.asarray(model.predict(row), dtype=float).reshape(-1)
             for t in scored_idx:
                 off = int((t - cutoff) / pd.Timedelta(hours=1))
@@ -428,11 +515,18 @@ def main():
     p.add_argument("--test_start", type=str, required=True)
     p.add_argument("--test_end", type=str, required=True)
     p.add_argument("--features", type=str, default="default")
+    p.add_argument("--crosslag_mode", default="freeze", choices=["freeze", "nan"],
+                   help="AEL §4.8: μεταχείριση gen/load actual lags εκτός cutoff_F — "
+                        "'freeze' (default, deployable) ή 'nan' (sensitivity, μόνο lgbm/xgb)")
     p.add_argument("--out_json", type=str, default=None)
     p.add_argument("--quiet", action="store_true")
     args = p.parse_args()
 
     verbose = not args.quiet
+
+    if args.crosslag_mode == "nan" and args.algo not in ("lgbm", "xgb"):
+        raise SystemExit(f"--crosslag_mode nan υποστηρίζεται μόνο με lgbm/xgb (native NaN "
+                          f"handling) — όχι με algo={args.algo}.")
 
     # market → horizon/stride
     if args.market in MARKET_PRESETS:
@@ -476,6 +570,8 @@ def main():
         if args.retrain != "static" and tr1 is not None:
             print(f"  ℹ️  retrain={args.retrain}: το --train_end αγνοείται — "
                   "expanding window έως κάθε retrain cutoff (φρέσκα δεδομένα).")
+        print(f"  AEL crosslag_mode={args.crosslag_mode} "
+              f"(crosslag_gap={gate.crosslag_gap_hours()}h)")
 
     # seq2seq/recursive για LSTM → και τα δύο υλοποιούνται μέσω Seq2SeqLSTM
     if args.strategy == "seq2seq" and args.algo != "lstm":
@@ -487,7 +583,7 @@ def main():
         feature_cols=feature_cols, train_start=tr0, train_end=tr1,
         test_start=ts0, test_end=ts1, verbose=verbose, seed=args.seed,
         ss=args.ss, ss_decay=args.ss_decay, ss_rounds=args.ss_rounds,
-        n_estimators=args.n_estimators,
+        n_estimators=args.n_estimators, crosslag_mode=args.crosslag_mode,
     )
 
     met = _metrics(y_true, y_pred)
@@ -500,12 +596,14 @@ def main():
             "strategy": args.strategy, "task": args.task, "market": args.market,
             "gate": args.gate, "delay_gap": gate.gap_hours(), "horizon": horizon,
             "stride": stride, "retrain": args.retrain, "features": groups,
+            "crosslag_mode": args.crosslag_mode, "crosslag_gap": gate.crosslag_gap_hours(),
             "unit": unit,
             "dates": [t.isoformat() for t in scored_idx],
             "actual": [None if not np.isfinite(v) else round(float(v), 4) for v in y_true],
             "series": {label: [None if not np.isfinite(v) else round(float(v), 4) for v in y_pred]},
             "metrics": [dict(Model=label, Type="ml", **{k: met[k] for k in ("MAE", "RMSE", "sMAPE")})],
         }
+        Path(args.out_json).parent.mkdir(parents=True, exist_ok=True)
         Path(args.out_json).write_text(json.dumps(out, ensure_ascii=False), encoding="utf-8")
         print(f"💾 saved: {args.out_json}")
 

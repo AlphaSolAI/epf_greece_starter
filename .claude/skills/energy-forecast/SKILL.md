@@ -46,9 +46,16 @@ description: Leakage-free προβλέψεις τιμής/φορτίου GR (DAM
    rebuild έγινε, guard στο preflight. Νέο baseline: default static Q1 = **19.17** (το 16.10
    ήταν στα στραβά δεδομένα· control confirmed). Στα ευθυγραμμισμένα δεδομένα το resfc ΒΛΑΠΤΕΙ
    το recursive-χειμώνα (~+2.4) → **feature selection ξαναγίνεται από την αρχή**.
-   (β) 🚨 **ΑΝΟΙΧΤΟ**: `recursive_openloop.py` κάνει running-substitution ΜΟΝΟ στα y-lags —
-   τα gen/load/residual lags εντός ορίζοντα διαβάζονται από ACTUALS = leakage (`§5.10`).
-   ΜΗΝ τρέξεις νέα ablations/headline claims πριν διορθωθεί + poisoning self-test.
+   (β) ✅ **ΛΥΘΗΚΕ (2026-07-04) — AEL (SYSTEM_DESIGN §4.8)**: το crosslag leak
+   (gen/load/residual actual lags χωρίς cutoff enforcement) διορθώθηκε με
+   **freeze-at-cutoff** σε recursive rollout + direct row@cutoff + training rows +
+   conformal quantile path. Anchor-based cutoff ανά block (forward 168h: ΕΝΑ cutoff
+   για όλη την εβδομάδα). Νέο CLI flag: `--crosslag_mode {freeze,nan}` (default
+   freeze· nan = sensitivity, μόνο lgbm/xgb). Poisoning self-test:
+   `python -m src.check_crosslag_fairness` — PASS σε recursive-dam/direct-dam/
+   recursive-forward (A leak=0.000000). Αυτόματα: `preflight_check.py --poison`.
+   ⚠️ Q1 νούμερα ΠΡΙΝ το AEL (και το 19.17 baseline) κουβαλούν το leak — τα πρώτα
+   leak-free Q1 specs εκκρεμούν (VALIDITY_CHECKLIST Β1 τελευταίο item).
    Το παλιό headline (προ-fix): LGBM recursive **weekly**, `--features default` → **15.17 €/MWh**
    (seed std≈0.11, Μάρτιος ✓) — ΣΕ ΑΝΑΣΤΟΛΗ, μόνο ως μεθοδολογική αναφορά.
    ⛔ **Τα «14.43/15.02 με xborder» ΠΑΡΑΜΕΝΟΥΝ ΑΚΥΡΑ — ήταν leakage**: οι same-day τιμές
@@ -107,10 +114,16 @@ leakage)· γι' αυτό έγιναν μόνιμα εργαλεία εδώ. Τ�
 ```bash
 # 1. ΠΡΙΝ από κάθε batch πειραμάτων — έλεγχος περιβάλλοντος/parquet (exit 1 σε FAIL):
 conda run -n epf --no-capture-output python -X utf8 .claude/skills/energy-forecast/scripts/preflight_check.py
-# με --baseline τυπώνει και την εντολή αναπαραγωγής του 16.10±0.05 (δεν την τρέχει)
+# --baseline: τυπώνει την εντολή αναπαραγωγής baseline (δεν την τρέχει)
+# --poison:   τρέχει ΟΝΤΩΣ το cross-actuals poisoning (AEL §4.10.2) σε recursive+direct (~10-20s/strategy)
 
 # 2. ΠΡΙΝ μπει νέο feature σε τεστ — leakage lag-scan + hour-profile (βήματα β+γ του §1):
 conda run -n epf --no-capture-output python -X utf8 .claude/skills/energy-forecast/scripts/lagscan.py --col <στήλη>
+
+# 3. Poisoning self-test AEL χειροκίνητα (π.χ. μετά από αλλαγή στο engine/AEL):
+conda run -n epf --no-capture-output python -X utf8 -m src.check_crosslag_fairness \
+  --task price --algo lgbm --strategy {recursive|direct} --market {dam|forward} --gate strict
+# 3 tests: A unsafe-poison≈0 (leak-free) · B safe-control>0 (νομιμοποίηση) · C training-freeze exact
 ```
 
 **Pre-flight checklist νέου feature (με αυτή τη σειρά, ΠΡΙΝ γραφτεί κώδικας feature):**
@@ -151,8 +164,11 @@ python -m src.master_forecast \
   --train_end "YYYY-MM-DD HH:00" \
   --test_start "YYYY-MM-DD HH:00" --test_end "YYYY-MM-DD HH:00" \
   --features default|all|"all,-meteo"|"lags,calendar" \
-  [--out_json path] [--quiet]
+  [--crosslag_mode freeze|nan] [--out_json path] [--quiet]
 ```
+
+`--crosslag_mode` (AEL §4.8): freeze=default/deployable (τελευταία γνωστή τιμή στο cutoff)·
+nan=sensitivity variant μόνο για lgbm/xgb. Καταγράφεται στο out_json (crosslag_mode/crosslag_gap).
 
 Presets: dam=(H24,s24) · idm=(H6,s3) · forward=(H168,s24).
 Περιορισμοί: `seq2seq` μόνο με `--algo lstm` · `direct` όχι για mlp/lstm.

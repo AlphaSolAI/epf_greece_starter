@@ -8,13 +8,20 @@
 ## Α. ΠΡΕΠΕΙ ΝΑ ΙΣΧΥΟΥΝ (scientific invariants — έλεγχος πριν από κάθε claim)
 
 ### Α1. Information availability (anti-leakage)
-- [ ] **A1.1** Κάθε feature family σέβεται το cutoff της στον πίνακα SYSTEM_DESIGN §4.8
-      σε **eval ΚΑΙ train** (όχι μόνο y-lags). ⛔ ΣΗΜΕΡΑ ΠΑΡΑΒΙΑΖΕΤΑΙ (gen/load/residual
-      lags) — μπλοκάρει κάθε νέο αποτέλεσμα μέχρι το Β1.
+- [x] **A1.1** Κάθε feature family σέβεται το cutoff της στον πίνακα SYSTEM_DESIGN §4.8
+      σε **eval ΚΑΙ train** — ✅ AEL υλοποιήθηκε 2026-07-04 (freeze-at-cutoff,
+      anchor-based ανά block· recursive rollout + direct row@cutoff + training rows +
+      conformal quantile path). Εξαιρέσεις (δηλωμένες): `tf` eval = oracle by design·
+      LSTM eval encoder ΔΕΝ φιλτράρεται ακόμα (⚠️ PENDING — LSTM ούτως ή άλλως
+      non-tradeable, calibration bug).
 - [x] **A1.2** Same-day/same-auction πηγές (xborder same-day) δομικά ΕΚΤΟΣ parquet.
 - [x] **A1.3** `tf` χρησιμοποιείται ΜΟΝΟ ως δηλωμένο oracle, ποτέ ως tradeable νούμερο.
-- [ ] **A1.4** Poisoning tests περνούν: y-poisoning ΚΑΙ cross-actuals-poisoning (νέο),
-      σε recursive ΚΑΙ direct, πριν από κάθε batch (θα αυτοματοποιηθεί στο preflight).
+- [x] **A1.4** Poisoning tests περνούν: cross-actuals-poisoning ✅ 2026-07-04 σε
+      recursive-dam / direct-dam / recursive-forward (A=0.000000 leak-free, control
+      B>8, training-freeze C=0 mismatches — `src/check_crosslag_fairness.py`).
+      Αυτοματοποιημένο: `preflight_check.py --poison`. Το y-poisoning
+      (`check_openloop_fairness.py`) απαιτεί saved pkl (δεν υπάρχουν πλέον) —
+      καλύπτεται έμμεσα: η y-substitution λογική είναι αμετάβλητη.
 - [x] **A1.5** Νέα πηγή → πρώτα το 3-βήμα pre-flight πρωτόκολλο (πότε δημοσιεύεται /
       lag-scan / hour-profile) — ABLATION_PLAN §1.
 
@@ -55,10 +62,18 @@
 ## Β. ΠΡΕΠΕΙ ΝΑ ΓΙΝΟΥΝ (με σειρά — τίποτα δεν προσπερνά το προηγούμενο gate)
 
 ### Β1. 🚨 AEL — Availability Enforcement Layer (μπλοκάρει τα πάντα)
-- [ ] Υλοποίηση freeze-at-cutoff για gen_*/residual_load/load lags σε recursive row-build,
-      direct row@cutoff, ΚΑΙ training rows (train/serve συνέπεια). SYSTEM_DESIGN §4.8.
-- [ ] Poisoning self-test για cross actuals (§4.10.2) + ένταξη στο preflight.
-- [ ] NaN-variant ως sensitivity (trees) — 1 run σύγκρισης.
+- [x] Υλοποίηση freeze-at-cutoff για gen_*/residual_load/load lags σε recursive row-build,
+      direct row@cutoff, ΚΑΙ training rows (train/serve συνέπεια) — ✅ 2026-07-04.
+      Anchor-based cutoff ανά block (`GateSpec.crosslag_cutoff_for_anchor`)· training:
+      recursive=day-of-row σχήμα, direct=origin σχήμα (t−gap)· και στο conformal
+      quantile path. CLI: `--crosslag_mode {freeze,nan}` (default freeze, nan μόνο
+      lgbm/xgb). SYSTEM_DESIGN §4.8.
+- [x] Poisoning self-test για cross actuals (§4.10.2) + ένταξη στο preflight —
+      ✅ `src/check_crosslag_fairness.py` (3 tests: unsafe-poison≈0, safe-control>0,
+      training-freeze exact) + `preflight_check.py --poison`. PASS σε recursive-dam,
+      direct-dam, recursive-forward (2026-07-04).
+- [ ] NaN-variant ως sensitivity (trees) — 1 run σύγκρισης Q1 (το path τρέχει ✓,
+      1-day smoke MAE 17.39· εκκρεμεί το πλήρες Q1 ζεύγος freeze vs nan).
 - [ ] Πρώτα leak-free νούμερα: static Q1 σε default / default,-meteo,-resfc /
       lags,calendar,genlags → ABLATION §5.10.
 
@@ -98,5 +113,7 @@
 |---|---|---|
 | 2026-07-04 | TZ alignment (solar_shift_check, όλα τα έτη) | ✅ peak_k=0, corr 0.98 |
 | 2026-07-04 | Control run TZFIX (backup swap) | ✅ 16.096 αναπαράχθηκε |
-| 2026-07-04 | Cross-actuals poisoning | ⛔ ΔΕΝ ΥΠΑΡΧΕΙ ΑΚΟΜΑ (Β1) |
+| 2026-07-04 | Cross-actuals poisoning (rec-dam, dir-dam, rec-forward) | ✅ A=0.000000 / B=8.0-25.3 / C=0 mismatches (check_crosslag_fairness) |
 | 2026-07-04 | Git repair (refs rebuild, tip abcadb3) | ✅ git log/status ΟΚ |
+| 2026-07-04 | AEL NaN-variant smoke (1 ημέρα, lgbm) | ✅ τρέχει end-to-end, MAE 17.39 |
+| 2026-07-04 | Conformal quantile path με AEL | ✅ smoke 1 ημέρα, τρέχει end-to-end |

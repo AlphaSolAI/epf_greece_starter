@@ -7,22 +7,28 @@
 > `ABLATION_PLAN.md` (έγκυρα ευρήματα + pending + επόμενα βήματα) ·
 > `MASTER_PIPELINE_DESIGN.md` (anti-leakage θεωρία) · `SYSTEM_DESIGN_TRADING_AGENT.md` (προϊόν).
 
-## 1. Πού είμαστε (μία ματιά — ΑΝΑΤΡΟΠΗ 2026-07-04 απόγευμα)
+## 1. Πού είμαστε (μία ματιά — ενημερώθηκε μετά το AEL, 2026-07-04 βράδυ)
 
-**⚠️ ΟΛΑ τα νούμερα του §5 του ABLATION_PLAN είναι ΣΕ ΑΝΑΣΤΟΛΗ** μετά από 2 ευρήματα:
+**⚠️ ΟΛΑ τα νούμερα του παλιού §5 του ABLATION_PLAN παραμένουν ΣΕ ΑΝΑΣΤΟΛΗ** — 2 θεμέλια
+βρέθηκαν σπασμένα ΚΑΙ ΤΑ ΔΥΟ διορθώθηκαν πλέον:
 
-1. **TZFIX (✅ διορθώθηκε + rebuild + guard)**: το parquet ανακάτευε 4 ρολόγια — index=CET/CEST,
+1. **TZFIX ✅ (διορθώθηκε + rebuild + guard)**: το parquet ανακάτευε 4 ρολόγια — index=CET/CEST,
    gen +1h αργά (Athens), resfc 1-2h νωρίς (UTC), meteo 1h νωρίς καλοκαίρι (UTC+1 σταθερό).
-   Απόδειξη/επαλήθευση: corr(solar_fc, gen_solar) 0.65→**0.98** στο k=0, όλα τα peaks σωστά.
-   Νέο baseline default static Q1 = **19.17** (control στο backup: 16.10 ✓ αναπαράγεται).
-   Στα σωστά δεδομένα το **resfc βλάπτει το recursive-χειμώνα (~+2.4)** → το παλιό feature
-   selection ήταν προσαρμοσμένο στα στραβά δεδομένα, ξαναγίνεται. `ABLATION_PLAN §5.9`.
-2. **🚨 Engine leak (ΑΝΟΙΧΤΟ — πρώτη προτεραιότητα)**: `recursive_openloop.py` αντικαθιστά
-   μόνο y-lags· τα gen/load/residual lags εντός ορίζοντα έρχονται από ACTUALS (άγνωστα στο
-   gate) = leakage σε ΚΑΘΕ config με genlags/loadlags, και στο παλιό headline. `§5.10`.
+   Απόδειξη: corr(solar_fc, gen_solar) 0.65→**0.98** στο k=0. `ABLATION_PLAN §5.9`.
+2. **Engine crosslag leak ✅ ΔΙΟΡΘΩΘΗΚΕ (AEL, freeze-at-cutoff)**: `recursive_openloop.py`
+   αντικαθιστούσε μόνο y-lags· τα gen/load/residual lags διέρρεαν actuals. Fix υλοποιήθηκε σε
+   recursive rollout + direct row@cutoff + training rows + conformal path (`--crosslag_mode
+   {freeze,nan}`, default freeze). Poisoning self-test `src/check_crosslag_fairness.py` PASS
+   σε recursive-dam/direct-dam/recursive-forward. `ABLATION_PLAN §5.10`, `SYSTEM_DESIGN §4.8`.
 
-**Επόμενο στάδιο: engine leak fix → re-ablation στα καθαρά δεδομένα → νέο headline →
-conformal.** Πλήρες πλάνο: `ABLATION_PLAN §8.2`.
+**Πρώτα leak-free B1 νούμερα (static Q1, LGBM recursive, `runs/b1_leakfree/`)** — δείχνουν πόσο
+αισιόδοξο ήταν το πριν: `default` 19.17→**20.79** (+1.62) · `default,-meteo,-resfc` 16.54→**19.90**
+(+3.36) · `lags,calendar,genlags` 17.16→**18.94** (+1.78, νέος πρώτος στο static-only) ·
+`--crosslag_mode nan` 22.18 (χειρότερο από freeze). Πρώτη ένδειξη μόνο — 1 window/1 algo/static.
+
+**Επόμενο στάδιο (ΤΩΡΑ): commit/push των AEL αλλαγών → πλήρες Β3 re-ablation στα καθαρά
+(TZFIX+AEL) δεδομένα → νέο headline (cadence+seeds+Μάρτιος) → conformal.**
+Πλήρες πλάνο/checklist: `ABLATION_PLAN §8.2`, `VALIDITY_CHECKLIST.md §Β`.
 
 ## 2. Κλειδωμένα συμπεράσματα (πλήρης λίστα: `ABLATION_PLAN.md §5`)
 
@@ -71,26 +77,28 @@ multi-line python ΜΟΝΟ σε αρχείο (ποτέ `-c`) · OneDrive πρέ�
 
 ## 5. Επόμενο βήμα + ΕΤΟΙΜΟ PROMPT
 
-**Κύριο (ΑΛΛΑΞΕ 2026-07-04 απόγευμα): engine leak fix ΠΡΙΝ από οτιδήποτε άλλο** — κανένα νέο
-ablation/headline δεν έχει νόημα όσο τα gen/load/residual lags διαρρέουν actuals στο eval.
-Έτοιμο prompt για νέο session:
+**Κύριο: commit/push πρώτα, μετά πλήρες Β3 re-ablation στα καθαρά (TZFIX+AEL) δεδομένα.**
+Το AEL/crosslag leak fix ΕΓΙΝΕ ήδη (§1, `ABLATION_PLAN §5.10`) — υπάρχουν uncommitted αλλαγές
+(SKILL.md, preflight_check.py, ABLATION_PLAN.md, SYSTEM_DESIGN, VALIDITY_CHECKLIST, conformal.py,
+feature_availability.py, master_forecast.py, recursive_openloop.py, + νέα runs/b1_leakfree/,
+runs/ael_verify/, src/check_crosslag_fairness.py). Έτοιμο prompt για νέο session:
 
 ```
-Διάβασε last.md και ABLATION_PLAN.md §5.9-§5.10. Διόρθωσε το crosslag leakage στο engine:
-στο recursive_openloop.py (και στο direct path του master_forecast) τα actual-derived non-y
-lags (gen_solar_lag*, gen_wind_lag*, residual_load_lag*, load_lag*) πρέπει σε eval να
-σέβονται το cutoff διαθεσιμότητας actuals (γνωστά έως ~11:00 D-1 στο strict): για κάθε
-(target t, lag k) με t−k > cutoff χρησιμοποίησε freeze-at-cutoff (τελευταία νόμιμη τιμή)
-— ΚΑΙ στο training εφάρμοσε το ίδιο σχήμα για να μην υπάρχει train/serve mismatch. Πρόσθεσε
-poisoning self-test: δηλητηρίασε actuals εντός ορίζοντα → MAE αμετάβλητο. Μετά τρέξε
-static Q1: default / default,-meteo,-resfc / lags,calendar,genlags στα καθαρά δεδομένα
-και γράψε τα πρώτα leak-free νούμερα στο ABLATION_PLAN §5.10. Αν είμαι online δώσε μου
-τις εντολές· αλλιώς background.
+Διάβασε last.md §1/§5, ABLATION_PLAN.md §5.10 και VALIDITY_CHECKLIST.md §Β3. Πρώτα: git add -A
++ commit (μήνυμα: "AEL crosslag-leakage fix (freeze-at-cutoff) + B1 leak-free smoke + TZFIX
+docs") + push στο origin/FEB272026. Μετά: πλήρες leak-free re-ablation στα καθαρά (TZFIX+AEL)
+δεδομένα — LGBM+XGB × (Q1 2026, καλοκαίρι 2025) × (recursive, direct), static, strict/DAM/price.
+Ξαναπάντησε από μηδενική βάση: resfc βλάπτει ακόμα το recursive-χειμώνα; meteo παραμένει
+strategy-effect; πόση αξία έχει το genlags χωρίς leak; dense βοηθάει ακόμα; ο λιτός πυρήνας
+lags,calendar,genlags κερδίζει πραγματικά το default (18.94 vs 20.79 static, 1 window μόνο ως
+τώρα); Κριτήρια αποδοχής όπως πάντα (§2 ABLATION_PLAN: |ΔMAE|>0.15 ΚΑΙ ≥2 συνθήκες). Γράψε
+νέο §5.11 στο ABLATION_PLAN με τα ευρήματα. Αν είμαι online δώσε μου τις εντολές· αλλιώς background.
 ```
 
-**Μετά (με σειρά)**: re-ablation (LGBM+XGB × Q1+καλοκαίρι × recursive+direct) → νέο headline
-(cadence+seeds+Μάρτιος) → conformal (κανόνες: SKILL.md §Conformal — model-agnostic, ≥2 μοντέλα
-× 2 windows, pinball+coverage+sharpness, vs quantile-LGBM).
+**Μετά (με σειρά)**: retrain cadence + seeds + Μάρτιος 2026 στον νικητή του Β3 → **νέο headline**
+(αντικαθιστά το 15.17 παντού) → conformal (κανόνες: SKILL.md §Conformal — model-agnostic, ≥2
+μοντέλα × 2 windows, pinball+coverage+sharpness, vs quantile-LGBM· ο κώδικας `src/conformal.py`
+ΥΠΑΡΧΕΙ ήδη, θέλει μόνο extended point-forecast run).
 
 **Μείζον ερευνητικό ανοιχτό**: **task=load πλήρες ablation** — κανένα feature engineering για
 load πέρα από E2/meteo· ό,τι ξέρουμε για ομάδες ισχύει μόνο για price (`ABLATION_PLAN.md §8.2`).
