@@ -102,13 +102,16 @@ SS×weekly · henex_premarket.
 
 ## 6. Ανοιχτά ζητήματα υποδομής (όχι μοντέλα)
 
-1. ~~Git repo σπασμένο~~ ✅ **ΕΠΙΣΚΕΥΑΣΤΗΚΕ 2026-07-04**: έλειπε ΟΛΟΚΛΗΡΟ το `.git/refs/`
-   (+logs/, πιθανό θύμα OneDrive) — ξαναχτίστηκαν τα dirs, αφαιρέθηκε stale index.lock,
-   το tip του FEB272026 ανακτήθηκε από τα objects (abcadb3, 2026-02-27 «Add data files via
-   LFS», ταίριαξε με COMMIT_EDITMSG). `git log/status` δουλεύουν. ⚠️ ΕΚΚΡΕΜΕΙ (απόφαση
-   χρήστη): commit 4+ μηνών δουλειάς + ΠΡΩΤΟ push (το origin είναι ΑΔΕΙΟ — κανένα backup)·
-   `git worktree prune` (10 ορφανά)· main ref αποκαταστάσιμο στο d97a827 αν χρειαστεί.
-   Σημ.: `.claude/` & scratch αρχεία ΔΕΝ πρέπει να μπουν στο commit χωρίς σκέψη (.gitignore).
+1. ~~Git repo σπασμένο~~ ✅ **ΕΠΙΣΚΕΥΑΣΤΗΚΕ + ΠΡΩΤΟ PUSH 2026-07-04**: (α) έλειπε όλο το
+   `.git/refs/` (+logs/, θύμα OneDrive) — ξαναχτίστηκε, tip ανακτήθηκε από objects (abcadb3)·
+   (β) ο χρήστης έκανε commit όλης της δουλειάς· (γ) το push απέτυχε: το ΠΑΛΙΟ ιστορικό είχε
+   `models/sarima_hourly_cache.pkl` 4.3GB (>2GiB GitHub LFS limit) + missing blobs → μη-pushable·
+   (δ) λύση: παλιό ιστορικό κρατήθηκε ΤΟΠΙΚΑ ως branch `FEB272026_localhistory`, το `FEB272026`
+   ξαναγεννήθηκε orphan με όλο το τρέχον δέντρο (commit a810137) και **πουσαρίστηκε: origin/FEB272026
+   ✅ (LFS 108MB)** — πρώτο remote backup της διπλωματικής.
+   Υπόλοιπα (μικρά): `git worktree prune` (10 ορφανά)· ΜΗΝ γίνει ποτέ push το
+   `FEB272026_localhistory` (θα ξανασκάσει στο 4.3GB)· εξέτασε `.gitignore` για μελλοντικά
+   μεγάλα caches (πχ *.pkl >100MB)· main ref αποκαταστάσιμο στο d97a827 αν χρειαστεί.
 2. **Δεν υπάρχει environment.yml** — το env `epf` έχει πάρει πακέτα (entsoe-py, matplotlib)
    χωρίς καταγραφή. `conda env export -n epf > environment.yml` όποτε βρεθεί ευκαιρία.
 3. **Ξεχωριστό `.venv/`** στο root παράλληλα με το conda — πηγή σύγχυσης, δεν αγγίχτηκε.

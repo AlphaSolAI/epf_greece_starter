@@ -47,8 +47,9 @@
 ### Α5. Αναπαραγωγιμότητα & ιχνηλασιμότητα
 - [ ] **A5.1** Κάθε νούμερο σε doc δείχνει σε JSON/CSV στο runs/ ή results/ + εντολή αναπαραγωγής.
 - [x] **A5.2** MD αρχεία = μόνο τρέχουσα αλήθεια, παλιά νούμερα σε ΑΝΑΣΤΟΛΗ με banner (έγινε).
-- [ ] **A5.3** Git: δουλειά commit-άρεται τακτικά + push σε remote (⚠️ 4+ μήνες uncommitted,
-      remote ΑΔΕΙΟ — το .git ήδη έπαθε ζημιά μία φορά από OneDrive).
+- [x] **A5.3** Git: δουλειά commit-άρεται τακτικά + push σε remote — ✅ πρώτο push 2026-07-04
+      (origin/FEB272026, commit a810137). Εφεξής: commit+push μετά από κάθε session με αλλαγές.
+      ⚠️ Το branch `FEB272026_localhistory` (παλιό ιστορικό) ΔΕΝ pushάρεται ποτέ (4.3GB object).
 - [ ] **A5.4** environment.yml υπάρχει και ενημερώνεται (conda env export).
 
 ## Β. ΠΡΕΠΕΙ ΝΑ ΓΙΝΟΥΝ (με σειρά — τίποτα δεν προσπερνά το προηγούμενο gate)
@@ -63,7 +64,9 @@
 
 ### Β2. Git & υποδομή (παράλληλα με Β1, μικρό)
 - [x] Επισκευή .git (refs/ ξαναχτίστηκαν, FEB272026 → abcadb3, stale lock αφαιρέθηκε) — 2026-07-04.
-- [ ] Commit όλης της τρέχουσας δουλειάς + push στο origin (ΑΠΟΦΑΣΗ ΧΡΗΣΤΗ — προτείνεται ΑΜΕΣΑ).
+- [x] Commit + push στο origin — ✅ 2026-07-04: clean orphan branch FEB272026 (a810137) →
+      origin (LFS 108MB)· παλιό ιστορικό τοπικά ως FEB272026_localhistory (μη-pushable: 4.3GB
+      sarima cache + missing blobs).
 - [ ] `git worktree prune` (10 ορφανά worktrees) + αποκατάσταση main ref (d97a827) αν χρειάζεται.
 - [ ] `conda env export -n epf > environment.yml`.
 - [ ] fetch_weather_2026.py: ευθυγράμμιση timezone με το αποθηκευμένο frame (Α2.3).
