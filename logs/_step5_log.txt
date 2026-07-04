@@ -1,0 +1,157 @@
+=== E1: n_estimators x meteo (price, dam) ===
+--- E1 n_estimators=400 features=default ---
+==============================================================================
+MASTER FORECAST | algo=lgbm task=price strategy=recursive
+  market=dam task=price gate=strict delay_override=None → gap=0h | horizon=24 stride=24 retrain=static
+  groups=['calendar', 'lags', 'roll', 'resfc', 'loadfc', 'meteo', 'fuel', 'genlags', 'loadlags', 'other']  (#features=152)
+  test=[2025-12-01 00:00:00 .. 2026-02-28 23:00:00]  train_end=2025-11-30 23:00:00
+==============================================================================
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.017103 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22946
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 152
+[LightGBM] [Info] Start training from score 105.091640
+   [fit] key=static cutoff=2025-11-30 23:00:00  (block 1/90)
+   [done] 90 blocks σε 24.0s
+
+📊 RESULT | MAE=15.7441 €/MWh | RMSE=23.1365 | sMAPE=24.8087% | n=2160
+💾 saved: e1_e2_out/e1_n400_default.json
+--- E1 n_estimators=400 features=default,-meteo ---
+==============================================================================
+MASTER FORECAST | algo=lgbm task=price strategy=recursive
+  market=dam task=price gate=strict delay_override=None → gap=0h | horizon=24 stride=24 retrain=static
+  groups=['calendar', 'lags', 'roll', 'resfc', 'loadfc', 'fuel', 'genlags', 'loadlags', 'other']  (#features=68)
+  test=[2025-12-01 00:00:00 .. 2026-02-28 23:00:00]  train_end=2025-11-30 23:00:00
+==============================================================================
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.008796 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 14882
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 68
+[LightGBM] [Info] Start training from score 105.091640
+   [fit] key=static cutoff=2025-11-30 23:00:00  (block 1/90)
+   [done] 90 blocks σε 19.2s
+
+📊 RESULT | MAE=15.7596 €/MWh | RMSE=23.0918 | sMAPE=25.2143% | n=2160
+💾 saved: e1_e2_out/e1_n400_default_-meteo.json
+--- E1 n_estimators=800 features=default ---
+==============================================================================
+MASTER FORECAST | algo=lgbm task=price strategy=recursive
+  market=dam task=price gate=strict delay_override=None → gap=0h | horizon=24 stride=24 retrain=static
+  groups=['calendar', 'lags', 'roll', 'resfc', 'loadfc', 'meteo', 'fuel', 'genlags', 'loadlags', 'other']  (#features=152)
+  test=[2025-12-01 00:00:00 .. 2026-02-28 23:00:00]  train_end=2025-11-30 23:00:00
+==============================================================================
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.017881 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22946
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 152
+[LightGBM] [Info] Start training from score 105.091640
+   [fit] key=static cutoff=2025-11-30 23:00:00  (block 1/90)
+   [done] 90 blocks σε 27.4s
+
+📊 RESULT | MAE=16.0963 €/MWh | RMSE=23.4151 | sMAPE=24.903% | n=2160
+💾 saved: e1_e2_out/e1_n800_default.json
+--- E1 n_estimators=800 features=default,-meteo ---
+==============================================================================
+MASTER FORECAST | algo=lgbm task=price strategy=recursive
+  market=dam task=price gate=strict delay_override=None → gap=0h | horizon=24 stride=24 retrain=static
+  groups=['calendar', 'lags', 'roll', 'resfc', 'loadfc', 'fuel', 'genlags', 'loadlags', 'other']  (#features=68)
+  test=[2025-12-01 00:00:00 .. 2026-02-28 23:00:00]  train_end=2025-11-30 23:00:00
+==============================================================================
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.011172 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 14882
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 68
+[LightGBM] [Info] Start training from score 105.091640
+   [fit] key=static cutoff=2025-11-30 23:00:00  (block 1/90)
+   [done] 90 blocks σε 21.0s
+
+📊 RESULT | MAE=15.8362 €/MWh | RMSE=23.0043 | sMAPE=25.1319% | n=2160
+💾 saved: e1_e2_out/e1_n800_default_-meteo.json
+--- E1 n_estimators=1600 features=default ---
+==============================================================================
+MASTER FORECAST | algo=lgbm task=price strategy=recursive
+  market=dam task=price gate=strict delay_override=None → gap=0h | horizon=24 stride=24 retrain=static
+  groups=['calendar', 'lags', 'roll', 'resfc', 'loadfc', 'meteo', 'fuel', 'genlags', 'loadlags', 'other']  (#features=152)
+  test=[2025-12-01 00:00:00 .. 2026-02-28 23:00:00]  train_end=2025-11-30 23:00:00
+==============================================================================
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.019093 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22946
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 152
+[LightGBM] [Info] Start training from score 105.091640
+   [fit] key=static cutoff=2025-11-30 23:00:00  (block 1/90)
+   [done] 90 blocks σε 32.5s
+
+📊 RESULT | MAE=16.3488 €/MWh | RMSE=23.5451 | sMAPE=24.9713% | n=2160
+💾 saved: e1_e2_out/e1_n1600_default.json
+--- E1 n_estimators=1600 features=default,-meteo ---
+==============================================================================
+MASTER FORECAST | algo=lgbm task=price strategy=recursive
+  market=dam task=price gate=strict delay_override=None → gap=0h | horizon=24 stride=24 retrain=static
+  groups=['calendar', 'lags', 'roll', 'resfc', 'loadfc', 'fuel', 'genlags', 'loadlags', 'other']  (#features=68)
+  test=[2025-12-01 00:00:00 .. 2026-02-28 23:00:00]  train_end=2025-11-30 23:00:00
+==============================================================================
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.009319 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 14882
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 68
+[LightGBM] [Info] Start training from score 105.091640
+   [fit] key=static cutoff=2025-11-30 23:00:00  (block 1/90)
+   [done] 90 blocks σε 24.8s
+
+📊 RESULT | MAE=15.91 €/MWh | RMSE=23.1043 | sMAPE=24.9908% | n=2160
+💾 saved: e1_e2_out/e1_n1600_default_-meteo.json
+=== E2: meteo on load task (static Q1) ===
+--- E2 features=default ---
+==============================================================================
+MASTER FORECAST | algo=lgbm task=load strategy=recursive
+  market=dam task=load gate=strict delay_override=None → gap=12h | horizon=24 stride=24 retrain=static
+  groups=['calendar', 'lags', 'roll', 'resfc', 'loadfc', 'meteo', 'fuel', 'genlags', 'loadlags', 'other']  (#features=133)
+  test=[2025-12-01 00:00:00 .. 2026-02-28 23:00:00]  train_end=2025-11-30 23:00:00
+==============================================================================
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.016096 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 18101
+[LightGBM] [Info] Number of data points in the train set: 95429, number of used features: 133
+[LightGBM] [Info] Start training from score 5736.975641
+   [fit] key=static cutoff=2025-11-30 11:00:00  (block 1/90)
+   [done] 90 blocks σε 37.8s
+
+📊 RESULT | MAE=125.6826 MW | RMSE=163.1706 | sMAPE=2.1528% | n=2160
+💾 saved: e1_e2_out/e2_load_default.json
+--- E2 features=default,-meteo ---
+==============================================================================
+MASTER FORECAST | algo=lgbm task=load strategy=recursive
+  market=dam task=load gate=strict delay_override=None → gap=12h | horizon=24 stride=24 retrain=static
+  groups=['calendar', 'lags', 'roll', 'resfc', 'loadfc', 'fuel', 'genlags', 'loadlags', 'other']  (#features=49)
+  test=[2025-12-01 00:00:00 .. 2026-02-28 23:00:00]  train_end=2025-11-30 23:00:00
+==============================================================================
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.008832 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 10037
+[LightGBM] [Info] Number of data points in the train set: 95429, number of used features: 49
+[LightGBM] [Info] Start training from score 5736.975641
+   [fit] key=static cutoff=2025-11-30 11:00:00  (block 1/90)
+   [done] 90 blocks σε 29.9s
+
+📊 RESULT | MAE=158.6658 MW | RMSE=203.8664 | sMAPE=2.6687% | n=2160
+💾 saved: e1_e2_out/e2_load_default_-meteo.json
+--- E2 features=lags,calendar,meteo ---
+==============================================================================
+MASTER FORECAST | algo=lgbm task=load strategy=recursive
+  market=dam task=load gate=strict delay_override=None → gap=12h | horizon=24 stride=24 retrain=static
+  groups=['calendar', 'lags', 'meteo']  (#features=99)
+  test=[2025-12-01 00:00:00 .. 2026-02-28 23:00:00]  train_end=2025-11-30 23:00:00
+==============================================================================
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.010338 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 10190
+[LightGBM] [Info] Number of data points in the train set: 95429, number of used features: 99
+[LightGBM] [Info] Start training from score 5736.975641
+   [fit] key=static cutoff=2025-11-30 11:00:00  (block 1/90)
+   [done] 90 blocks σε 32.7s
+
+📊 RESULT | MAE=160.1791 MW | RMSE=211.2597 | sMAPE=2.7531% | n=2160
+💾 saved: e1_e2_out/e2_load_lags_calendar_meteo.json
+ALL_DONE
+EXITCODE:0

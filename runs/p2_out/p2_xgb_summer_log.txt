@@ -1,0 +1,52 @@
+🧪 ABLATION | xgb price dam recursive retrain=static gate=strict (gap=0h)
+   test: 2025-06-01 00:00 → 2025-08-31 23:00 | 10 specs
+
+[1/10] --features "default" → calendar+lags+roll+resfc+loadfc+meteo+fuel+genlags+loadlags+other | 152 features
+    MAE=15.0259 €/MWh | RMSE=21.2877 | sMAPE=38.079% | 105.2s
+
+[2/10] --features "default,-resfc" → calendar+lags+roll+loadfc+meteo+fuel+genlags+loadlags+other | 146 features
+    MAE=16.2442 €/MWh | RMSE=22.9767 | sMAPE=39.0675% | 97.4s
+
+[3/10] --features "default,-loadfc" → calendar+lags+roll+resfc+meteo+fuel+genlags+loadlags+other | 151 features
+    MAE=14.7261 €/MWh | RMSE=21.0501 | sMAPE=37.699% | 98.4s
+
+[4/10] --features "default,-genlags" → calendar+lags+roll+resfc+loadfc+meteo+fuel+loadlags+other | 134 features
+    MAE=16.2264 €/MWh | RMSE=22.4162 | sMAPE=39.2619% | 85.3s
+
+[5/10] --features "default,-loadlags" → calendar+lags+roll+resfc+loadfc+meteo+fuel+genlags+other | 144 features
+    MAE=15.4473 €/MWh | RMSE=21.6362 | sMAPE=38.3746% | 95.2s
+
+[6/10] --features "lags,calendar" → calendar+lags | 15 features
+    MAE=17.1991 €/MWh | RMSE=25.0041 | sMAPE=40.6892% | 31.4s
+
+[7/10] --features "lags,calendar,resfc" → calendar+lags+resfc | 21 features
+    MAE=15.1294 €/MWh | RMSE=22.3702 | sMAPE=38.0193% | 33.4s
+
+[8/10] --features "lags,calendar,genlags" → calendar+lags+genlags | 33 features
+    MAE=16.2941 €/MWh | RMSE=23.5827 | sMAPE=39.0271% | 42.4s
+
+[9/10] --features "lags,calendar,resfc,loadfc" → calendar+lags+resfc+loadfc | 22 features
+    MAE=14.7037 €/MWh | RMSE=21.4718 | sMAPE=37.717% | 34.4s
+
+[10/10] --features "lags,calendar,resfc,genlags" → calendar+lags+resfc+genlags | 39 features
+    MAE=15.1467 €/MWh | RMSE=21.8836 | sMAPE=38.0134% | 46.1s
+
+================================================================================
+spec                    #feat        MAE      ΔMAE      Δ%       RMSE   sMAPE%
+--------------------------------------------------------------------------------
+default                   152     15.026    +0.000   +0.0%     21.288    38.08
+default,-resfc            146     16.244    +1.218   +8.1%     22.977    39.07
+default,-loadfc           151     14.726    -0.300   -2.0%     21.050    37.70
+default,-genlags          134     16.226    +1.201   +8.0%     22.416    39.26
+default,-loadlags         144     15.447    +0.421   +2.8%     21.636    38.37
+lags,calendar              15     17.199    +2.173  +14.5%     25.004    40.69
+lags,calendar,resfc        21     15.129    +0.104   +0.7%     22.370    38.02
+lags,calendar,genlags      33     16.294    +1.268   +8.4%     23.583    39.03
+lags,calendar,resfc,loadfc     22     14.704    -0.322   -2.1%     21.472    37.72
+lags,calendar,resfc,genlags     39     15.147    +0.121   +0.8%     21.884    38.01
+================================================================================
+ΔMAE>0 → χειρότερο από το baseline (1ο spec). Αν π.χ. το 'all,-meteo' έχει ΔMAE≈0, η ομάδα meteo δεν προσφέρει σε αυτό το setup.
+
+✅ Ablation: 10 specs σε 11.2 min
+   CSV: C:\Users\aggel\OneDrive\Υπολογιστής\ALPHA\ECE\ΔΙΠΛΩΜΑΤΙΚΗ\epf_greece_starter\p2_out\results_ablation_xgb_summer.csv
+   JSONs: C:\Users\aggel\OneDrive\Υπολογιστής\ALPHA\ECE\ΔΙΠΛΩΜΑΤΙΚΗ\epf_greece_starter\p2_out\ablation_xgb_summer

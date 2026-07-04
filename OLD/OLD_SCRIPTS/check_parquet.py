@@ -1,0 +1,13 @@
+import pandas as pd
+lfc = pd.read_parquet(r'C:\Users\aggel\OneDrive\Υπολογιστής\ALPHA\ECE\ΔΙΠΛΩΜΑΤΙΚΗ\epf_greece_starter\data\processed\load_forecast_hourly.parquet')
+print('=== load_forecast_hourly.parquet ===')
+print('Shape:', lfc.shape)
+print('Columns:', list(lfc.columns))
+print('Index range:', lfc.index.min(), 'to', lfc.index.max())
+print('First 5 rows:')
+print(lfc.head())
+print()
+hourly = pd.read_parquet(r'C:\Users\aggel\OneDrive\Υπολογιστής\ALPHA\ECE\ΔΙΠΛΩΜΑΤΙΚΗ\epf_greece_starter\data\processed\hourly.parquet')
+print('=== hourly.parquet ===')
+print('Shape:', hourly.shape)
+print('Index range:', hourly.index.min(), 'to', hourly.index.max())

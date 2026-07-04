@@ -1,0 +1,2 @@
+config,algo,task,market,strategy,retrain,gate,horizon,stride,unit,MAE,RMSE,sMAPE,n,seconds
+xgb_load_dam_tf_monthly,xgb,load,dam,tf,monthly,strict,24,24,MW,72.7363,95.0766,1.2403,2160,123.4

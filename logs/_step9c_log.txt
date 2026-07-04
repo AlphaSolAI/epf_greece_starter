@@ -1,0 +1,12 @@
+==============================================================================
+MASTER FORECAST | algo=lstm task=price strategy=seq2seq
+  market=dam task=price gate=strict delay_override=None → gap=0h | horizon=24 stride=24 retrain=static
+  groups=['calendar', 'lags', 'roll', 'resfc', 'loadfc', 'meteo', 'fuel', 'genlags', 'loadlags', 'other']  (#features=152)
+  test=[2025-12-01 00:00:00 .. 2026-02-28 23:00:00]  train_end=2025-11-30 23:00:00
+==============================================================================
+   [fit] key=static cutoff=2025-11-30 23:00:00  (block 1/90)
+   [done] 90 blocks σε 445.6s
+
+📊 RESULT | MAE=44.1577 €/MWh | RMSE=52.0758 | sMAPE=43.9906% | n=2160
+💾 saved: step9_out/lstm_q1_static.json
+EXITCODE:0

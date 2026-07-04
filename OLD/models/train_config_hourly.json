@@ -1,0 +1,12 @@
+{
+  "mode": "hourly",
+  "test_days": 365,
+  "test_size_samples": 8760,
+  "n_total": 22896,
+  "split_idx": 14136,
+  "n_train": 14136,
+  "n_test": 8760,
+  "train_end": "2025-08-14T11:45:00",
+  "test_start": "2025-08-14T12:00:00",
+  "test_end": "2025-12-31T23:45:00"
+}

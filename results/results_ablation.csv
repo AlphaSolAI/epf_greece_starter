@@ -1,0 +1,6 @@
+spec,groups,n_features,MAE,RMSE,sMAPE,n,seconds
+all,calendar+lags+dense+roll+forecast+meteo+fuel+crosslags,170,13.4639,20.0888,13.0718,744,35.7
+"all,-forecast",calendar+lags+dense+roll+meteo+fuel+crosslags,163,13.0219,20.079,12.3087,744,34.9
+"all,-meteo",calendar+lags+dense+roll+forecast+fuel+crosslags,86,13.2362,20.0541,12.933,744,36.7
+"all,-forecast,-meteo",calendar+lags+dense+roll+fuel+crosslags,79,13.6301,20.5687,13.1218,744,29.1
+"lags,calendar,roll,fuel,crosslags",calendar+lags+roll+fuel+crosslags,61,14.6384,21.5249,14.5699,744,9.7

@@ -1,0 +1,5 @@
+config,algo,task,market,strategy,retrain,gate,horizon,stride,unit,MAE,RMSE,sMAPE,n,seconds
+mlp_price_dam_recursive_static,mlp,price,dam,recursive,static,strict,24,24,€/MWh,27.8706,36.1346,32.8277,2160,128.3
+mlp_price_dam_tf_static,mlp,price,dam,tf,static,strict,24,24,€/MWh,13.7859,18.8843,23.1758,2160,163.2
+mlp_load_dam_recursive_static,mlp,load,dam,recursive,static,strict,24,24,MW,116.5428,152.7447,1.9799,2160,355.6
+mlp_load_dam_tf_static,mlp,load,dam,tf,static,strict,24,24,MW,89.8807,117.5748,1.5337,2160,205.7

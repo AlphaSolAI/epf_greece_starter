@@ -1,0 +1,28 @@
+\babel@toc {english}{}\relax 
+\babel@toc {english}{}\relax 
+\babel@toc {greek}{}\relax 
+\babel@toc {english}{}\relax 
+\babel@toc {greek}{}\relax 
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {1.1}{\ignorespaces Χρονοσειρά τιμής DAM (€/MWh) για την Ελλάδα — Δεκέμβριος 2025 έως Φεβρουάριος 2026. Οι σκιαγραφημένες περιοχές δείχνουν τον Ιανουάριο και Φεβρουάριο 2026, στους οποίους παρατηρείται αυξημένη μεταβλητότητα και πτώση του επιπέδου τιμής.}}{3}{figure.caption.4}%
+\contentsline {figure}{\numberline {1.2}{\ignorespaces Χρονοσειρά φορτίου (MW) για την Ελλάδα — Δεκέμβριος 2025 έως Φεβρουάριος 2026. Το χειμερινό φορτίο εμφανίζει σαφή ημερήσια εποχικότητα και σταδιακή μείωση καθώς πλησιάζει η άνοιξη.}}{3}{figure.caption.5}%
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {5.1}{\ignorespaces Χρονοσειρές προβλέψεων τιμής DAM για επιλεγμένα μοντέλα, Q1 2026. Οι αποχρώσεις αντιπροσωπεύουν διαφορετικές στρατηγικές (TF: μοβ, CL: γαλάζιο, OL: πράσινο, MIMO: πορτοκαλί).}}{24}{figure.caption.25}%
+\contentsline {figure}{\numberline {5.2}{\ignorespaces Χρονοσειρές προβλέψεων φορτίου για επιλεγμένα μοντέλα, Q1 2026.}}{24}{figure.caption.26}%
+\contentsline {figure}{\numberline {5.3}{\ignorespaces Box plots κατανομής σφαλμάτων (absolute error) ανά μοντέλο για τιμή, Q1 2026. Ο διάμεσος, IQR και outliers αποκαλύπτουν διαφορές στη συνέπεια των μοντέλων.}}{24}{figure.caption.27}%
+\contentsline {figure}{\numberline {5.4}{\ignorespaces Ωριαίο προφίλ σφάλματος (MAE ανά ώρα ημέρας) για τιμή, Q1 2026. Τα μοντέλα δυσκολεύονται ιδιαίτερα τις ώρες αιχμής (19:00--22:00).}}{25}{figure.caption.28}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {6.1}{\ignorespaces Top-15 χαρακτηριστικά για τα μοντέλα τιμής ανά αλγόριθμο και στρατηγική. Η αδρή στήλη αντιστοιχεί στη σημαντικότητα gain/MDI (κανονικοποιημένη στο 100\%).}}{27}{figure.caption.29}%
+\contentsline {figure}{\numberline {6.2}{\ignorespaces Top-15 χαρακτηριστικά για τα μοντέλα φορτίου ανά αλγόριθμο και στρατηγική.}}{28}{figure.caption.30}%
+\contentsline {figure}{\numberline {6.3}{\ignorespaces Μεταβολή σημαντικότητας τοπ-5 χαρακτηριστικών μεταξύ TF, OL και MIMO για τα μοντέλα τιμής (LGBM). Παρατηρείται σταδιακή μεταφορά βαρύτητας από $y_{t-1}$ σε $y_{t-24}$, gas\_price και αιολική παραγωγή καθώς εναλλάσσεται η στρατηγική.}}{29}{figure.caption.31}%
+\contentsline {figure}{\numberline {6.4}{\ignorespaces Κατανομή σημαντικότητας ανά κατηγορία χαρακτηριστικών (price lags, calendar features, exogenous/market features, rolling statistics) για 8 παραλλαγές μοντέλων τιμής.}}{29}{figure.caption.32}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {7.1}{\ignorespaces Χάρτης θερμότητας DM ελέγχου για τιμή DAM (Q1 2026). Κάθε κελί $(i,j)$ χρωματίζεται σκούρο μπλε αν το μοντέλο $i$ είναι στατιστικά σημαντικά καλύτερο από το $j$ ($p<0{,}05$), ανοιχτό μπλε για $p<0{,}10$, λευκό για μη σημαντική διαφορά.}}{33}{figure.caption.34}%
+\contentsline {figure}{\numberline {7.2}{\ignorespaces Αριθμός στατιστικά σημαντικών «νικών» ($p<0{,}05$) ανά μοντέλο και στρατηγική για την τιμή DAM.}}{33}{figure.caption.35}%
+\contentsline {figure}{\numberline {7.3}{\ignorespaces Χάρτης θερμότητας DM ελέγχου για ηλεκτρικό φορτίο (Q1 2026).}}{34}{figure.caption.36}%
+\contentsline {figure}{\numberline {7.4}{\ignorespaces Αριθμός στατιστικά σημαντικών «νικών» ανά μοντέλο για το φορτίο.}}{35}{figure.caption.37}%
+\addvspace {10\p@ }
+\addvspace {10\p@ }

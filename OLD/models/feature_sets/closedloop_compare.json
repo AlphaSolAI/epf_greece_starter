@@ -1,0 +1,200 @@
+{
+  "metric": "MAE",
+  "runs": [
+    "full",
+    "capped"
+  ],
+  "per_run_best": {
+    "full": {
+      "LGBM": {
+        "model": "LGBM",
+        "strategy": "all",
+        "k": null,
+        "n_features": 81,
+        "n_train": 62849,
+        "n_origins": 359,
+        "MAE": 12.183479,
+        "RMSE": 19.245091,
+        "sMAPE": 25.537307,
+        "run": "full"
+      },
+      "MLP": {
+        "model": "MLP",
+        "strategy": "all",
+        "k": null,
+        "n_features": 81,
+        "n_train": 62849,
+        "n_origins": 359,
+        "MAE": 12.664761,
+        "RMSE": 19.686516,
+        "sMAPE": 27.160279,
+        "run": "full"
+      },
+      "RF": {
+        "model": "RF",
+        "strategy": "all",
+        "k": null,
+        "n_features": 81,
+        "n_train": 62849,
+        "n_origins": 359,
+        "MAE": 12.449588,
+        "RMSE": 20.082415,
+        "sMAPE": 26.175815,
+        "run": "full"
+      },
+      "SVR": {
+        "model": "SVR",
+        "strategy": "hybrid",
+        "k": 10,
+        "n_features": 18,
+        "n_train": 20000,
+        "n_origins": 359,
+        "MAE": 13.983754,
+        "RMSE": 22.484182,
+        "sMAPE": 27.281455,
+        "run": "full"
+      },
+      "XGB": {
+        "model": "XGB",
+        "strategy": "all",
+        "k": null,
+        "n_features": 81,
+        "n_train": 62849,
+        "n_origins": 359,
+        "MAE": 12.307546,
+        "RMSE": 19.20958,
+        "sMAPE": 25.911026,
+        "run": "full"
+      }
+    },
+    "capped": {
+      "LGBM": {
+        "model": "LGBM",
+        "strategy": "all",
+        "k": null,
+        "n_features": 81,
+        "n_train": 30000,
+        "n_origins": 52,
+        "MAE": 12.273402,
+        "RMSE": 19.269435,
+        "sMAPE": 25.735462,
+        "run": "capped"
+      },
+      "MLP": {
+        "model": "MLP",
+        "strategy": "all",
+        "k": null,
+        "n_features": 81,
+        "n_train": 30000,
+        "n_origins": 52,
+        "MAE": 13.240787,
+        "RMSE": 20.627845,
+        "sMAPE": 27.980164,
+        "run": "capped"
+      },
+      "RF": {
+        "model": "RF",
+        "strategy": "all",
+        "k": null,
+        "n_features": 81,
+        "n_train": 30000,
+        "n_origins": 52,
+        "MAE": 12.779183,
+        "RMSE": 20.420146,
+        "sMAPE": 26.364086,
+        "run": "capped"
+      },
+      "SVR": {
+        "model": "SVR",
+        "strategy": "all",
+        "k": null,
+        "n_features": 81,
+        "n_train": 20000,
+        "n_origins": 52,
+        "MAE": 14.098753,
+        "RMSE": 22.087514,
+        "sMAPE": 27.788913,
+        "run": "capped"
+      },
+      "XGB": {
+        "model": "XGB",
+        "strategy": "all",
+        "k": null,
+        "n_features": 81,
+        "n_train": 30000,
+        "n_origins": 52,
+        "MAE": 12.378538,
+        "RMSE": 19.504763,
+        "sMAPE": 25.821972,
+        "run": "capped"
+      }
+    }
+  },
+  "combined_best": {
+    "LGBM": {
+      "config": "all (81)",
+      "strategy": "all",
+      "k": null,
+      "n_features": 81,
+      "avg_metric": 12.228440500000001,
+      "max_metric": 12.273402,
+      "per_run": {
+        "full": 12.183479,
+        "capped": 12.273402
+      },
+      "present_in_runs": 2
+    },
+    "MLP": {
+      "config": "all (81)",
+      "strategy": "all",
+      "k": null,
+      "n_features": 81,
+      "avg_metric": 12.952774,
+      "max_metric": 13.240787,
+      "per_run": {
+        "full": 12.664761,
+        "capped": 13.240787
+      },
+      "present_in_runs": 2
+    },
+    "RF": {
+      "config": "all (81)",
+      "strategy": "all",
+      "k": null,
+      "n_features": 81,
+      "avg_metric": 12.614385500000001,
+      "max_metric": 12.779183,
+      "per_run": {
+        "full": 12.449588,
+        "capped": 12.779183
+      },
+      "present_in_runs": 2
+    },
+    "SVR": {
+      "config": "all (81)",
+      "strategy": "all",
+      "k": null,
+      "n_features": 81,
+      "avg_metric": 14.091735,
+      "max_metric": 14.098753,
+      "per_run": {
+        "full": 14.084717,
+        "capped": 14.098753
+      },
+      "present_in_runs": 2
+    },
+    "XGB": {
+      "config": "all (81)",
+      "strategy": "all",
+      "k": null,
+      "n_features": 81,
+      "avg_metric": 12.343042,
+      "max_metric": 12.378538,
+      "per_run": {
+        "full": 12.307546,
+        "capped": 12.378538
+      },
+      "present_in_runs": 2
+    }
+  }
+}

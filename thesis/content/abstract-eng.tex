@@ -1,0 +1,20 @@
+\begin{center}  \Large{\textbf{ABSTRACT}}  \end{center}
+\begin{center}  \Large{\textbf{Electricity Price and Load Forecasting\
+in the Greek Day-Ahead Market with Machine Learning Methods}}  \end{center}
+\vspace{3pt}
+\vspace{10pt}
+\noindent
+This diploma thesis examines short-term forecasting of Day-Ahead Market prices and electricity load in the Greek power
+ system using machine learning methods. The objective is the systematic evaluation of different forecasting strategies for a 24-hour horizon and the investigation of their behavior during periods of increased volatility and distributional change.
+
+For this purpose, a unified dataset is constructed from publicly available sources, primarily the ENTSO-E Transparency 
+Platform, enriched with time lags, calendar variables and exogenous factors. Four forecasting strategies are compared,
+Teacher-Forcing, Recursive, Multi-Input Multi-Output and Direct, under two training frameworks, static training and monthly walk-forward retraining. The evaluation is carried out for five algorithms, LightGBM, XGBoost, Random Forest, SVR and MLP, using the MAE, RMSE and sMAPE metrics. In addition, the Diebold-Mariano statistical test with Harvey-Leybourne-Newbold correction is applied, while feature-importance analysis and an interactive visualization tool are used for the interpretation and presentation of the results.
+
+The results show that monthly walk-forward retraining is a critical performance factor over extended evaluation periods.
+ In Q1 2026, the best retrained LightGBM reference model achieves an MAE of 10.46 €/MWh for price forecasting and 69.4 MW 
+ for load forecasting, reducing the error by approximately 28\% and 29\%, respectively, compared with static training. LightGBM and XGBoost exhibit the most stable overall behavior, whereas SVR shows reduced robustness during periods of distributional change. Teacher-Forcing serves as an ideal reference model, without being directly applicable in practice, while the Recursive strategy with walk-forward retraining emerges as the most suitable option for operational use. The feature-importance analysis shows that the forecasting strategy decisively affects the type of information exploited by the models.
+
+Overall, the thesis concludes that reliable short-term forecasting in the Greek electricity market does not depend solely on the choice of algorithm, but on the combination of an appropriate forecasting strategy, systematic retraining and interpretable evaluation without information leakage.
+\vspace{0.3cm}
+\\ \textit{Keywords}: \textbf{electricity price forecasting, load forecasting, Greek Day-Ahead Market, machine learning, forecasting strategies, walk-forward retraining, LightGBM}

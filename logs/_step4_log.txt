@@ -1,0 +1,31 @@
+🧪 ABLATION | lgbm price dam recursive retrain=static gate=strict (gap=0h)
+   test: 2025-12-01 00:00 → 2026-02-28 23:00 | 2 specs
+
+[1/2] --features "default" → calendar+lags+roll+resfc+loadfc+meteo+fuel+genlags+loadlags+other | 152 features
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.021058 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22946
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 152
+[LightGBM] [Info] Start training from score 105.091640
+    MAE=16.0963 €/MWh | RMSE=23.4151 | sMAPE=24.903% | 58.9s
+
+[2/2] --features "default,xborder" → calendar+lags+roll+resfc+loadfc+xborder+meteo+fuel+genlags+loadlags+other | 154 features
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.058665 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 23456
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 154
+[LightGBM] [Info] Start training from score 105.091640
+    MAE=15.376 €/MWh | RMSE=22.2816 | sMAPE=24.16% | 57.6s
+
+================================================================================
+spec                    #feat        MAE      ΔMAE      Δ%       RMSE   sMAPE%
+--------------------------------------------------------------------------------
+default                   152     16.096    +0.000   +0.0%     23.415    24.90
+default,xborder           154     15.376    -0.720   -4.5%     22.282    24.16
+================================================================================
+ΔMAE>0 → χειρότερο από το baseline (1ο spec). Αν π.χ. το 'all,-meteo' έχει ΔMAE≈0, η ομάδα meteo δεν προσφέρει σε αυτό το setup.
+
+✅ Ablation: 2 specs σε 1.9 min
+   CSV: C:\Users\aggel\OneDrive\Υπολογιστής\ALPHA\ECE\ΔΙΠΛΩΜΑΤΙΚΗ\epf_greece_starter\results_ablation_xborder.csv
+   JSONs: C:\Users\aggel\OneDrive\Υπολογιστής\ALPHA\ECE\ΔΙΠΛΩΜΑΤΙΚΗ\epf_greece_starter\ablation_xborder
+EXITCODE:0

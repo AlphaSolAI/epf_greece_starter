@@ -1,0 +1,31 @@
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {2.1}{\ignorespaces \xpg@aux {}{greek}\ignorespaces Αντιπροσωπευτικές εργασίες EPF/ELF και τοποθέτηση της παρούσας εργασίας.}}{19}{table.2.1}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {3.1}{\ignorespaces \xpg@aux {}{greek}\ignorespaces Πηγές ακατέργαστων δεδομένων.}}{20}{table.caption.12}%
+\contentsline {table}{\numberline {3.2}{\ignorespaces \xpg@aux {}{greek}\ignorespaces Σύνολα υστερήσεων ανά σήμα.}}{24}{table.caption.13}%
+\contentsline {table}{\numberline {3.3}{\ignorespaces \xpg@aux {}{greek}\ignorespaces Επεξεργασμένα αρχεία Parquet μετά τη φάση 5 του αγωγού.}}{25}{table.caption.14}%
+\contentsline {table}{\numberline {3.4}{\ignorespaces \xpg@aux {}{greek}\ignorespaces Ομάδες χαρακτηριστικών, αριθμός μεταβλητών ανά εργασία.}}{26}{table.caption.15}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {4.1}{\ignorespaces \xpg@aux {}{greek}\ignorespaces Συγκριτική παρουσίαση των τεσσάρων στρατηγικών πρόβλεψης $H=24$~ωρών.}}{39}{table.caption.28}%
+\contentsline {table}{\numberline {4.2}{\ignorespaces \xpg@aux {}{greek}\ignorespaces Εύρη αναζήτησης υπερπαραμέτρων (Optuna) και βέλτιστες τιμές για το καλύτερο μοντέλο κάθε αλγόριθμου (εργασία τιμής, TF/Rec στρατηγική).}}{42}{table.caption.30}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {5.1}{\ignorespaces \xpg@aux {}{greek}\ignorespaces Πίνακας αναφοράς χειριστηρίων του dashboard.}}{47}{table.caption.33}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {6.1}{\ignorespaces \xpg@aux {}{greek}\ignorespaces Επίδοση μοντέλων αναφοράς (benchmarks) για την τιμή DAM και το ηλεκτρικό φορτίο, μηνιαία αξιολόγηση.}}{51}{table.caption.37}%
+\contentsline {table}{\numberline {6.2}{\ignorespaces \xpg@aux {}{greek}\ignorespaces TF, πρόβλεψη τιμής, Δεκέμβριος 2025 (744h).}}{52}{table.caption.38}%
+\contentsline {table}{\numberline {6.3}{\ignorespaces \xpg@aux {}{greek}\ignorespaces TF, πρόβλεψη φορτίου, Δεκέμβριος 2025 (744h).}}{52}{table.caption.39}%
+\contentsline {table}{\numberline {6.4}{\ignorespaces \xpg@aux {}{greek}\ignorespaces Rec $H=24$, πρόβλεψη τιμής, Δεκέμβριος 2025 (31 ημερήσια τμήματα).}}{53}{table.caption.40}%
+\contentsline {table}{\numberline {6.5}{\ignorespaces \xpg@aux {}{greek}\ignorespaces Rec $H=24$, πρόβλεψη φορτίου, Δεκέμβριος 2025 (31 ημερήσια τμήματα).}}{53}{table.caption.41}%
+\contentsline {table}{\numberline {6.6}{\ignorespaces \xpg@aux {}{greek}\ignorespaces MIMO $H=24$, πρόβλεψη τιμής, Δεκέμβριος 2025.}}{54}{table.caption.42}%
+\contentsline {table}{\numberline {6.7}{\ignorespaces \xpg@aux {}{greek}\ignorespaces MIMO $H=24$, πρόβλεψη φορτίου, Δεκέμβριος 2025. Το $\dagger $ δηλώνει μοντέλο που εξαιρείται λόγω αστοχίας.}}{54}{table.caption.43}%
+\contentsline {table}{\numberline {6.8}{\ignorespaces \xpg@aux {}{greek}\ignorespaces Direct $H=24$, πρόβλεψη τιμής, Δεκέμβριος 2025.}}{55}{table.caption.44}%
+\contentsline {table}{\numberline {6.9}{\ignorespaces \xpg@aux {}{greek}\ignorespaces Direct $H=24$, πρόβλεψη φορτίου, Δεκέμβριος 2025.}}{55}{table.caption.45}%
+\contentsline {table}{\numberline {6.10}{\ignorespaces \xpg@aux {}{greek}\ignorespaces Στατική εκπαίδευση, Δεκέμβριος 2025: καλύτερο μοντέλο ανά στρατηγική για την τιμή DAM.}}{55}{table.caption.46}%
+\contentsline {table}{\numberline {6.11}{\ignorespaces \xpg@aux {}{greek}\ignorespaces Στατική εκπαίδευση, Δεκέμβριος 2025: καλύτερο μοντέλο ανά στρατηγική για το ηλεκτρικό φορτίο.}}{56}{table.caption.47}%
+\contentsline {table}{\numberline {6.12}{\ignorespaces \xpg@aux {}{greek}\ignorespaces Walk-forward TF, πρόβλεψη τιμής DAM, Q1 2026 (2.160h).}}{58}{table.caption.50}%
+\contentsline {table}{\numberline {6.13}{\ignorespaces \xpg@aux {}{greek}\ignorespaces Walk-forward TF, πρόβλεψη ηλεκτρικού φορτίου, Q1 2026 (2.160h).}}{58}{table.caption.51}%
+\contentsline {table}{\numberline {6.14}{\ignorespaces \xpg@aux {}{greek}\ignorespaces Walk-forward μηνιαία επανεκπαίδευση, Q1 2026 (2.160h): καλύτερο μοντέλο ανά στρατηγική για τιμή DAM και φορτίο.}}{61}{table.caption.54}%
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {8.1}{\ignorespaces \xpg@aux {}{greek}\ignorespaces Σύγκριση στρατηγικών Q1 2026 στον επιχειρησιακό ορίζοντα $H{=}24$ (ημερήσια δημοπρασία DAM).}}{87}{table.caption.83}%

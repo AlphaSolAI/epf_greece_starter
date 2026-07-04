@@ -1,0 +1,211 @@
+\chapter{Μέθοδοι Πρόβλεψης}
+\label{ch:methods}
+
+\section{Γραμμές Βάσης (Baselines)}
+\label{sec:baselines}
+
+Τρεις κλασικές γραμμές βάσης χρησιμοποιούνται για αξιολόγηση:
+
+\begin{description}
+    \item[\textbf{Naive-1:}] $\hat{y}_{t+1} = y_t$. Πρόβλεψη ίση με την τελευταία παρατηρηθείσα τιμή.
+    \item[\textbf{Naive-24:}] $\hat{y}_{t+1} = y_{t-23}$. Πρόβλεψη ίση με την τιμή της ίδιας ώρας
+    χθες. Αποτελεί φυσικό ανταγωνιστή για MIMO H=24 (προβλέπει ολόκληρη ημέρα από χθες).
+    \item[\textbf{Seasonal Profile:}] Η πρόβλεψη βασίζεται στον μέσο όρο ιστορικών τιμών για την
+    ίδια ώρα και ημέρα εβδομάδας.
+\end{description}
+
+Τα Naive-1/24 είναι ιδιαίτερα χρήσιμα γιατί σε ορισμένες περιόδους υψηλής μεταβλητότητας
+(π.χ.\ Q4 2025) ξεπερνούν τα ML μοντέλα σε εβδομαδιαίο ορίζοντα.
+
+
+\section{Αλγόριθμοι Μηχανικής Μάθησης}
+\label{sec:ml_algorithms}
+
+\subsection{LightGBM}
+
+Το LightGBM~\cite{ke2017lgbm} αποτελεί gradient boosting framework με leaf-wise ανάπτυξη δέντρων.
+Στην παρούσα εργασία, ο βασικός configuration που χρησιμοποιείται είναι:
+
+\begin{table}[H]
+\centering
+\caption{Παράμετροι LightGBM (standard CL models).}
+\label{tab:lgbm_params}
+\begin{tabular}{ll}
+\toprule
+\textbf{Παράμετρος} & \textbf{Τιμή} \\
+\midrule
+\texttt{n\_estimators} & 1000 \\
+\texttt{learning\_rate} & 0.05 (default) \\
+\texttt{num\_leaves} & 31 (default) \\
+\texttt{objective} & \texttt{regression} (MAE) \\
+\texttt{early\_stopping\_rounds} & 50 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Τα βελτιστοποιημένα μοντέλα (Optuna) χρησιμοποιούν:
+\texttt{n\_est=900, lr=0.027, num\_leaves=26, min\_child=54, subsample=0.925, colsample=0.641}.
+
+\subsection{XGBoost}
+
+Το XGBoost~\cite{chen2016xgboost} χρησιμοποιεί level-wise ανάπτυξη δέντρων με second-order
+gradient approximation. Τυπικές παράμετροι:
+
+\begin{table}[H]
+\centering
+\caption{Παράμετροι XGBoost (standard CL models).}
+\label{tab:xgb_params}
+\begin{tabular}{ll}
+\toprule
+\textbf{Παράμετρος} & \textbf{Τιμή} \\
+\midrule
+\texttt{n\_estimators} & 1000 \\
+\texttt{learning\_rate} & 0.05 \\
+\texttt{max\_depth} & 6 \\
+\texttt{objective} & \texttt{reg:absoluteerror} \\
+\texttt{early\_stopping\_rounds} & 50 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Random Forest}
+
+Το Random Forest~\cite{breiman2001rf} εκπαιδεύεται με:
+\begin{itemize}
+    \item \texttt{n\_estimators=400} (600 για MIMO two-stage)
+    \item \texttt{max\_features="sqrt"} (περίπου 12 από τα 152 χαρακτηριστικά ανά split, κρίσιμο
+    για ταχύτητα στα Windows χωρίς loky deadlock)
+    \item \texttt{max\_depth=16, min\_samples\_split=4, n\_jobs=1}
+\end{itemize}
+
+\subsection{Support Vector Regression}
+
+Η SVR~\cite{smola2004} χρησιμοποιεί RBF kernel με $C=10$, $\varepsilon=0.1$, προεπεξεργασία
+\texttt{StandardScaler}. Λόγω του $O(n^2)$ κόστους εκπαίδευσης, τα MIMO SVR μοντέλα εκπαιδεύτηκαν
+σε 5.000 τυχαία δείγματα (από τα ~76.000 διαθέσιμα), κάτι που επηρεάζει αρνητικά την επίδοσή τους.
+
+\subsection{Multi-Layer Perceptron (MLP)}
+
+Το MLP υλοποιείται με PyTorch και sklearn wrapper (\texttt{MLPRegressor}):
+\begin{itemize}
+    \item \textbf{CL/OL:} hidden=(512,256), lr=5e-4, max\_iter=300, early stopping
+    \item \textbf{MIMO:} hidden=(256,128), lr=5e-4, max\_iter=400, \texttt{StandardScaler} προεπεξεργασία
+    \item \textbf{MLP-Optuna CL:} hidden=[64] τιμή, hidden=[128,64] φορτίο, tuned dropout/lr/wd
+\end{itemize}
+
+
+\section{Στρατηγικές Πρόβλεψης}
+\label{sec:strategies}
+
+\subsection{Teacher-Forcing (TF / Closed-Loop)}
+
+Το μοντέλο εκπαιδεύεται για πρόβλεψη ενός βήματος:
+\begin{equation}
+    \hat{y}_{t+1} = f\bigl(\mathbf{x}_t,\, y_t,\, y_{t-1},\, y_{t-23},\, y_{t-47},\, y_{t-167}\bigr)
+\end{equation}
+όπου $\mathbf{x}_t$ περιλαμβάνει τα εξωγενή χαρακτηριστικά. Κατά την αξιολόγηση χρησιμοποιούνται
+πραγματικές καθυστερημένες τιμές, επομένως \textit{δεν υπάρχει συσσώρευση σφάλματος}.
+
+\subsection{Recursive (Open-Loop) με Scheduled Sampling}
+
+Στη Recursive στρατηγική, για $h > 1$:
+\begin{equation}
+    \hat{y}_{t+h} = f\bigl(\mathbf{x}_{t+h-1},\, \hat{y}_{t+h-1},\, \hat{y}_{t+h-2},\, \ldots\bigr)
+\end{equation}
+Η αξιολόγηση γίνεται σε daily chunks (24 ώρες) ή weekly chunks (168 ώρες).
+
+Η τεχνική \textbf{Scheduled Sampling}~\cite{bengio2015scheduled} εκπαιδεύει το μοντέλο με
+πιθανότητα $\varepsilon_k$ να χρησιμοποιήσει τη δική του πρόβλεψη αντί της πραγματικής τιμής:
+\begin{equation}
+    \varepsilon_k = \min\!\left(\varepsilon_{\text{final}},\; \varepsilon_{\text{start}} +
+    \frac{k-1}{K-1}\,(\varepsilon_{\text{final}} - \varepsilon_{\text{start}})\right)
+\end{equation}
+με $\varepsilon_{\text{start}}=0.10$, $\varepsilon_{\text{final}}=0.40$ σε $K=3$ iterations. Αυτό
+βελτιώνει την ανθεκτικότητα του μοντέλου σε θόρυβο εισόδου κατά την recursive αξιολόγηση.
+
+\subsection{Multi-Input Multi-Output (MIMO)}
+
+Ένα μοντέλο εκπαιδεύεται να παράγει ταυτόχρονα $H=24$ τιμές:
+\begin{equation}
+    [\hat{y}_{t+1}, \hat{y}_{t+2}, \ldots, \hat{y}_{t+24}] = f\bigl(\mathbf{x}_t,\,
+    y_t,\, y_{t-23},\, y_{t-47},\, y_{t-167}\bigr)
+\end{equation}
+Για τα δέντρα (RF, XGB, LGBM) χρησιμοποιείται \texttt{MultiOutputRegressor}.
+
+\textbf{Two-Stage MIMO για τιμή:} Αρχικά εκπαιδεύεται MIMO μοντέλο φορτίου ($H=24$), στη
+συνέχεια τα 24 forecast φορτίου ενσωματώνονται ως επιπλέον χαρακτηριστικά (176 ή 194 features)
+για την εκπαίδευση MIMO μοντέλου τιμής. Αυτό αντικατοπτρίζει την αιτιώδη σχέση φορτίου--τιμής.
+
+\subsection{Walk-Forward Monthly Retraining}
+
+\begin{equation}
+    \mathcal{D}_m = \{(x_t, y_t) : t \leq \text{end of month}\;(m-1)\}
+\end{equation}
+Κάθε μήνα $m$, το μοντέλο επανεκπαιδεύεται στο σύνολο $\mathcal{D}_m$ και αξιολογείται στον
+μήνα $m$. Η εκπαίδευση χρησιμοποιεί κυλιόμενο παράθυρο ή expanding window (επέκταση από Ιαν.\ 2017).
+
+Για την Teacher-Forcing παραλλαγή (TF-MR), χρησιμοποιούνται πραγματικές lagged τιμές.
+Για τη Recursive παραλλαγή (Rec-SS-DO-MR), συνδυάζεται Scheduled Sampling και Daily Optuna
+(Optuna ανά μήνα, 15 trials, 2 splits).
+
+
+\section{Βελτιστοποίηση Υπερπαραμέτρων (Optuna)}
+\label{sec:optuna}
+
+Χρησιμοποιείται το πλαίσιο Optuna~\cite{optuna2019} για αυτόματη βελτιστοποίηση υπερπαραμέτρων
+με Tree-structured Parzen Estimator (TPE) sampler.
+
+\subsection{OL-Aware Daily Optuna}
+
+Η συνάρτηση αξιολόγησης (objective function) μιμείται την πραγματική recursive αξιολόγηση:
+κάθε fold αξιολογεί σε ωριαία chunks 24 ωρών χρησιμοποιώντας τις προβλέψεις ως lagged εισόδους.
+Αυτό αποτρέπει \textit{CV leakage}: το CV χρησιμοποιεί recursive predictions (όχι teacher-forcing),
+οπότε η βελτίωση CV αντανακλά πράγματι βελτίωση στο test.
+
+Αντίθετα, το standard Optuna με TF-CV (χρήση πραγματικών τιμών) \textit{παρουσιάζει CV leakage}
+για OL μοντέλα: βελτίωση CV δεν μεταφέρεται σε βελτίωση test (παρατηρήθηκε για LGBM Dense OL).
+
+\subsection{MIMO Optuna}
+
+Για MIMO, χρησιμοποιείται MultiOutputRegressor και $k$-fold CV με rolling-origin splits,
+αξιολογώντας τον μέσο MAE για όλα τα 24 βήματα ορίζοντα.
+
+\subsection{CachedOptuna}
+
+Για Monthly Retraining, οι υπερπαράμετροι βελτιστοποιούνται \textit{μία φορά} στο πλήρες
+training set (train\_end=Νοε.\ 2025, 40--60 trials) και αποθηκεύονται ως JSON. Κάθε μηνιαία
+επανεκπαίδευση χρησιμοποιεί τις αποθηκευμένες παραμέτρους χωρίς νέο Optuna. Αυτό επιταχύνει
+σημαντικά τη διαδικασία και αποφεύγει overfitting του Optuna σε μικρά validation sets.
+
+
+\section{Μετρικές Αξιολόγησης}
+\label{sec:metrics}
+
+Χρησιμοποιούνται τρεις μετρικές:
+
+\begin{description}
+    \item[\textbf{MAE (Mean Absolute Error):}]
+    \begin{equation}
+        \text{MAE} = \frac{1}{T} \sum_{t=1}^{T} |y_t - \hat{y}_t|
+    \end{equation}
+    Ερμηνεύεται άμεσα σε μονάδες τιμής (€/MWh) ή φορτίου (MW).
+
+    \item[\textbf{RMSE (Root Mean Squared Error):}]
+    \begin{equation}
+        \text{RMSE} = \sqrt{\frac{1}{T} \sum_{t=1}^{T} (y_t - \hat{y}_t)^2}
+    \end{equation}
+    Τιμωρεί πιο αυστηρά τα μεγάλα σφάλματα (outliers).
+
+    \item[\textbf{sMAPE (symmetric Mean Absolute Percentage Error):}]
+    \begin{equation}
+        \text{sMAPE} = \frac{100\%}{T} \sum_{t=1}^{T}
+        \frac{|y_t - \hat{y}_t|}{\frac{1}{2}(|y_t| + |\hat{y}_t|)}
+    \end{equation}
+    Παρέχει κανονικοποιημένο σφάλμα (ποσοστό), χρήσιμο για σύγκριση μεταξύ περιόδων
+    διαφορετικής μέσης τιμής.
+\end{description}
+
+Ο Weron (2014)~\cite{weron2014electricity} και ο Lago et al.\ (2021)~\cite{lago2021} συνιστούν τη
+χρήση MAE ως κύριας μετρικής για EPF, καθώς είναι ρωμαλέα σε ακραίες τιμές και αποφεύγει τα
+προβλήματα διαίρεσης με το μηδέν που παρουσιάζει το MAPE. Η παρούσα εργασία ακολουθεί αυτή τη
+σύσταση.

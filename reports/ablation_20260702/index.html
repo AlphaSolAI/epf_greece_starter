@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="el"><head><meta charset="utf-8">
+<title>Ablation Study — Σύνοψη 2026-07-02</title>
+<style>
+ body{font-family:'Segoe UI',sans-serif;max-width:1050px;margin:24px auto;padding:0 16px;color:#212121}
+ h1{border-bottom:3px solid #1565c0;padding-bottom:8px} h2{color:#1565c0;margin-top:34px}
+ img{width:100%;border:1px solid #ddd;border-radius:6px;margin:6px 0}
+ .verdict{background:#e8f5e9;border-left:5px solid #2e7d32;padding:12px 16px;border-radius:4px}
+ .warn{background:#fff3e0;border-left:5px solid #f9a825;padding:12px 16px;border-radius:4px}
+ table{border-collapse:collapse;width:100%} td,th{border:1px solid #ccc;padding:6px 10px;text-align:left}
+ th{background:#e3f2fd}
+</style></head><body>
+<h1>⚡ Ablation Study — Οπτική Σύνοψη (2026-07-02, ΔΙΟΡΘΩΘΗΚΕ 2026-07-04)</h1>
+<div class="warn"><b>⚠️ Διόρθωση 2026-07-04:</b> η προηγούμενη έκδοση αυτής της αναφοράς ανέφερε
+headline 14.43/15.02 €/MWh με <code>xborder</code> — αυτά τα νούμερα ήταν <b>leakage</b> (οι
+same-day τιμές γειτόνων BG/IT-SUD βγαίνουν από το ΙΔΙΟ SDAC auction με το ελληνικό target,
+δημοσιεύονται ~13:00 CET D-1, δηλαδή ΜΕΤΑ το gate closure 12:00). Η νόμιμη (lagged) εκδοχή του
+xborder ΒΛΑΠΤΕΙ τον χειμώνα. Όλα τα νούμερα παρακάτω έχουν διορθωθεί. Λεπτομέρειες:
+<code>ABLATION_PLAN.md §XBORDER-ΤΕΛΙΚΗ-ΕΤΥΜΗΓΟΡΙΑ</code> + <code>§OVERNIGHT PROTOCOL</code>.</div>
+<div class="verdict"><b>Ετυμηγορία (ενημερωμένη):</b> Και τα 9 βήματα του αρχικού αυτόνομου
+session εκτελέστηκαν σωστά (10/10 spot-checks). Το ξεχωριστό overnight protocol (P1-P6,
+2026-07-04) έλεγξε ΞΑΝΑ όλα τα ανοιχτά ζητήματα σε καθαρά (χωρίς xborder) configs:
+<b>τελικό, έγκυρο headline: LGBM recursive <u>weekly</u>, <code>default</code> = 15.17 €/MWh</b>
+(Q1 2026, strict gate). Seed robustness: std≈0.11 (seeds 42/43/44). Επιβεβαιώθηκε σε 2ο
+ανεξάρτητο window (Μάρτιος 2026: weekly 17.67 vs monthly 17.97, ίδιο πρόσημο).</div>
+
+<h2>1. Το ταξίδι του σφάλματος — τι μας έδωσε τι</h2>
+<img src="F1_headline_journey.png">
+<p>Το μεγαλύτερο μεμονωμένο κέρδος (−7.7 €/MWh) ήρθε από τη <b>συμπλήρωση των δεδομένων</b>,
+όχι από αλγόριθμους. Δεύτερο: retrain (−0.9), τρίτο: cross-border τιμές (−0.8).</p>
+
+<h2>2. Ποιες ομάδες features αξίζουν</h2>
+<img src="F2_feature_groups.png">
+<table>
+<tr><th>Ομάδα</th><th>Ετυμηγορία</th></tr>
+<tr><td><b>genlags</b> (actual παραγωγή/residual load lags)</td><td>🟢 Η πιο στιβαρά πολύτιμη — παντού, κάθε εποχή/στρατηγική/αλγόριθμο</td></tr>
+<tr><td><b>resfc</b> (day-ahead RES forecast)</td><td>🟢 Πολύτιμο — αλλά ΜΟΝΟ ορατό σε καλοκαιρινό test window (και υπό SS)</td></tr>
+<tr><td><b>xborder</b> (τιμές BG/IT-SUD, lagged/νόμιμο)</td><td>🔴 ΑΠΟΡΡΙΦΘΗΚΕ από default — βλάπτει τον χειμώνα σε 3/3 retrain cadences (το προηγούμενο «θετικό» ήταν leakage)· βοηθάει το καλοκαίρι (1 σημείο, ανοιχτό ερώτημα)</td></tr>
+<tr><td><b>loadfc</b>, <b>loadlags</b></td><td>🟡 Οριακά/ασταθή — το loadfc γίνεται χρήσιμο μόνο υπό SS</td></tr>
+<tr><td><b>meteo</b>, <b>fuel</b></td><td>🔴 Βλάπτουν στην ΤΙΜΗ (recursive) — αλλά meteo = κορυφαίο feature στο ΦΟΡΤΙΟ</td></tr>
+</table>
+
+<h2>3. Εποχικότητα &amp; cross-border</h2>
+<img src="F3_season_and_xborder.png">
+
+<h2>4. Scheduled Sampling — δουλεύει, και αλλάζει το παιχνίδι των features</h2>
+<img src="F4_scheduled_sampling.png">
+
+<h2>5. Μοντέλα &amp; πειράματα E1/E2</h2>
+<img src="F5_models_e1e2.png">
+
+<h2>6. Stacking battery (follow-up, 2026-07-03) — ⚠️ ΑΚΥΡΩΘΗΚΕ, ήταν πάνω σε xborder leakage</h2>
+<div class="warn">Το αρχικό stacking battery (6 runs) έδειχνε xborder×weekly=14.43 ως «νέο
+headline» με στοίβαγμα οφελών — ΟΛΑ αυτά ήταν leakage-inflated (βλ. διόρθωση στην κορυφή). Ο
+πίνακας αφαιρέθηκε για να μην ξαναδιαβαστεί λάθος. Το μόνο μέρος του που παρέμεινε έγκυρο (seeds
+στο <code>default</code> χωρίς xborder) επαναλήφθηκε καθαρά στο §7 (P6) παρακάτω.</div>
+
+<h2>7. 🌙 Overnight Protocol (2026-07-04) — πλήρης επανεξέταση σε καθαρά configs</h2>
+<p>Μετά την ανακάλυψη του xborder leakage, τρέξαμε ένα δομημένο πρωτόκολλο 6 φάσεων (P1-P6) που
+ξαναέλεγξε ΚΑΘΕ ανοιχτό ζήτημα πάνω σε καθαρά (χωρίς xborder) configs, με ρητά κριτήρια αποδοχής
+(|ΔMAE|&gt;0.15 ΚΑΙ ίδιο πρόσημο σε ≥2 ανεξάρτητες συνθήκες). Πλήρεις πίνακες:
+<code>ABLATION_PLAN.md §5</code>.</p>
+<img src="F6_meteo_strategy_effect.png">
+<img src="F7_robustness.png">
+<table>
+<tr><th>Φάση</th><th>Ερώτημα</th><th>Ετυμηγορία</th></tr>
+<tr><td>P1</td><td>xborder-lagged στο default set;</td><td>🔴 ΑΠΟΡΡΙΦΘΗΚΕ — βλάπτει τον χειμώνα (3/3 cadences), βοηθάει το καλοκαίρι (1 σημείο, PENDING ως γενικό συμπέρασμα)</td></tr>
+<tr><td>P2</td><td>Ισχύουν τα ευρήματα σε XGB/LEAR/MLP;</td><td>🟢 resfc/genlags επιβεβαιώθηκαν cross-model (XGB summer, MLP)· 🔴 LEAR αντιδράει ΑΝΤΙΘΕΤΑ (L1 regularization) — μοντελο-εξαρτώμενο, όχι artifact</td></tr>
+<tr><td>P3</td><td>Ensembles με τίμιο (out-of-sample) calibration;</td><td>🔴 weighted-by-1/MAE ΑΠΟΡΡΙΦΘΗΚΕ — κανένα ensemble δεν κερδίζει το καλύτερο μεμονωμένο μοντέλο στο honest split· weekly LGBM+XGB δείχνει PENDING υπόσχεση (Δ=−0.148, ακριβώς στο όριο)</td></tr>
+<tr><td>P5</td><td>Είναι το SS πράγματι redundant με retrain;</td><td>🟢 ΔΙΟΡΘΩΘΗΚΕ — το SS-linear βοηθάει ΚΑΙ στο monthly (−0.243) σε καθαρό config· το παλιό «redundant» ήταν artifact του xborder-contaminated config</td></tr>
+<tr><td>P4</td><td>Direct vs recursive στο πλήρες Q1;</td><td>🔴 Direct παραμένει σαφώς χειρότερο (19.5 vs 16.1)· 🟢 ΝΕΟ: meteo βοηθάει ΠΑΝΤΑ στο direct (4/4 σημεία) — το πιο στιβαρό strategy-effect εύρημα της μελέτης· cross-strategy ensemble ΑΠΟΡΡΙΦΘΗΚΕ</td></tr>
+<tr><td>P6</td><td>Robustness τελικού headline;</td><td>🟢 ΔΕΚΤΟ — std≈0.11 σε 3 seeds, επιβεβαιωμένο σε 2ο window (Μάρτιος 2026)</td></tr>
+</table>
+
+<h2>8. 🟡 PENDING — ό,τι ΔΕΝ είναι ακόμα συμπέρασμα (μην το πουλήσεις ως εύρημα)</h2>
+<table>
+<tr><th>#</th><th>Θέμα</th><th>Κατάσταση / τι λείπει</th></tr>
+<tr><td>1</td><td>Summer xborder-lagged θετικό σήμα (−0.52)</td><td>1 σημείο (static μόνο) — θέλει monthly/weekly καλοκαίρι ή 2ο seed</td></tr>
+<tr><td>2</td><td>Weekly LGBM+XGB ensemble (−0.148)</td><td>Ακριβώς στο noise floor, 1 σημείο — θέλει Μάρτιο ή seeds</td></tr>
+<tr><td>3</td><td>resfc στο direct</td><td>LGBM ουδέτερο vs XGB βλάπτει — algo-dependent, άλυτο</td></tr>
+<tr><td>4</td><td>fuel window-confound στο direct</td><td>Δεκ −0.68 vs Q1 ~0 — αδιευκρίνιστο</td></tr>
+<tr><td>5</td><td>loadlags καλοκαίρι</td><td>LGBM ουδέτερο vs XGB +0.42 — ασυνεπές</td></tr>
+<tr><td>6</td><td>SS × weekly</td><td>Αδοκίμαστο (SS οφέλη ίσως στοιβάζονται και με weekly)</td></tr>
+<tr><td>7</td><td>LSTM calibration bug</td><td>Bias +41, ποτέ αρνητικές τιμές — θέλει debugging, όχι rerun</td></tr>
+<tr><td>8</td><td>solar_fc_dayahead ύποπτο 2h shift</td><td>High-priority data-quality έλεγχος (επηρεάζει resfc) — §1 πρωτόκολλο</td></tr>
+<tr><td>9</td><td>henex_premarket ομάδα</td><td>Ποτέ κανένα τεστ</td></tr>
+</table>
+
+<h2>9. ➡️ Επόμενα βήματα</h2>
+<p><b>Κύριο (στάδιο πλάνου):</b> Data ✅ → Engine ✅ → Feature validity ✅ → Model/strategy ✅ →
+Robustness ✅ → <b>Probabilistic layer (conformal) ← ΕΔΩ</b> → Product (L3-L5). Split-conformal
+p10/p50/p90 πάνω στο κλειδωμένο config, αξιολόγηση pinball + coverage σε Q1 + Μάρτιο· σύγκριση
+με quantile-LGBM. Βλ. <code>ABLATION_PLAN.md §8.2</code> και το έτοιμο prompt στο
+<code>last.md §5</code>.</p>
+<p><b>Vetted feature candidate — xb_lag1_h0</b> (πέρασε τον pre-flight έλεγχο στα χαρτιά):
+το lag1 της ώρας-στόχου 00:00 είναι η 23:00 της D-1, δημοσιευμένη ~13:00 <b>D-2</b> — δηλαδή ΠΡΙΝ
+το gate. Για ώρες 01-23 είναι παράνομο → NaN (τα δέντρα το χειρίζονται). Μικρό αναμενόμενο
+effect (1/24 των γραμμών) — μετριέται και στο υποσύνολο ώρας-0. <code>ABLATION_PLAN.md §8.1</code>.</p>
+
+<div class="warn"><b>Επιφυλάξεις (honesty):</b> Όλα τα PENDING του §8 δεν είναι δηλωμένα
+συμπεράσματα · meteo = reanalysis proxy (αισιόδοξο άνω όριο) · μόνο το headline έχει 3 seeds —
+όλα τα υπόλοιπα ΔMAE είναι single-seed · direct δεν υποστηρίζεται για MLP/LSTM στον κώδικα, το
+SS μόνο για recursive.</div>
+</body></html>

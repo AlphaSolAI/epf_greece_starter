@@ -1,0 +1,29 @@
+{
+  "mode": "hourly",
+  "bounds": {
+    "test_size": 168,
+    "train_start": null,
+    "train_end": null,
+    "test_start": null,
+    "test_end": null
+  },
+  "n_trials": 20,
+  "seed": 42,
+  "val_size": 720,
+  "best_val_mae": 11.644105413688257,
+  "best_iter": 44,
+  "best_params": {
+    "objective": "regression",
+    "metric": "l1",
+    "learning_rate": 0.05,
+    "num_leaves": 127,
+    "min_data_in_leaf": 20,
+    "feature_fraction": 0.8,
+    "bagging_fraction": 0.9,
+    "bagging_freq": 1,
+    "lambda_l2": 5.0,
+    "min_gain_to_split": 0.0,
+    "verbose": -1,
+    "seed": 42
+  }
+}

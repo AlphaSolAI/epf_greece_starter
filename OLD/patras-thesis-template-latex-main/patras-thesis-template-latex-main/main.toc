@@ -1,0 +1,98 @@
+\babel@toc {english}{}\relax 
+\babel@toc {english}{}\relax 
+\babel@toc {greek}{}\relax 
+\babel@toc {english}{}\relax 
+\babel@toc {greek}{}\relax 
+\contentsline {chapter}{\numberline {1}Εισαγωγή}{1}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Ενεργειακή Μετάβαση και Ηλεκτρικές Αγορές}{1}{section.1.1}%
+\contentsline {section}{\numberline {1.2}Η Ελληνική Αγορά Ηλεκτρισμού}{2}{section.1.2}%
+\contentsline {section}{\numberline {1.3}Κίνητρο και Ερευνητικά Ερωτήματα}{4}{section.1.3}%
+\contentsline {section}{\numberline {1.4}Σκοπός και Κύριες Συνεισφορές}{4}{section.1.4}%
+\contentsline {section}{\numberline {1.5}Δομή της Εργασίας}{5}{section.1.5}%
+\contentsline {chapter}{\numberline {2}Βιβλιογραφική Ανασκόπηση}{7}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Εισαγωγή}{7}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Παραδοσιακά Στατιστικά Μοντέλα}{7}{section.2.2}%
+\contentsline {subsection}{\numberline {2.2.1}ARIMA/SARIMA και παραλλαγές}{7}{subsection.2.2.1}%
+\contentsline {subsection}{\numberline {2.2.2}GARCH και Υβριδικά Στατιστικά Μοντέλα}{7}{subsection.2.2.2}%
+\contentsline {section}{\numberline {2.3}Μοντέλα Μηχανικής Μάθησης}{8}{section.2.3}%
+\contentsline {subsection}{\numberline {2.3.1}Δέντρα Αποφάσεων και Μέθοδοι Boosting}{8}{subsection.2.3.1}%
+\contentsline {subsection}{\numberline {2.3.2}Support Vector Regression}{8}{subsection.2.3.2}%
+\contentsline {subsection}{\numberline {2.3.3}Νευρωνικά Δίκτυα --- MLP}{8}{subsection.2.3.3}%
+\contentsline {section}{\numberline {2.4}Βαθιά Μάθηση}{8}{section.2.4}%
+\contentsline {subsection}{\numberline {2.4.1}LSTM και RNN}{8}{subsection.2.4.1}%
+\contentsline {subsection}{\numberline {2.4.2}Transformer-based Μοντέλα}{8}{subsection.2.4.2}%
+\contentsline {section}{\numberline {2.5}Στρατηγικές Πολυ-βήματης Πρόβλεψης}{9}{section.2.5}%
+\contentsline {subsection}{\numberline {2.5.1}Teacher-Forcing (Closed-Loop)}{9}{subsection.2.5.1}%
+\contentsline {subsection}{\numberline {2.5.2}Recursive / Open-Loop}{9}{subsection.2.5.2}%
+\contentsline {subsection}{\numberline {2.5.3}MIMO}{9}{subsection.2.5.3}%
+\contentsline {subsection}{\numberline {2.5.4}Walk-Forward Retraining}{10}{subsection.2.5.4}%
+\contentsline {section}{\numberline {2.6}Βιβλιογραφία για την Ελληνική Αγορά}{10}{section.2.6}%
+\contentsline {section}{\numberline {2.7}Σύγκριση με την Παρούσα Εργασία}{10}{section.2.7}%
+\contentsline {chapter}{\numberline {3}Δεδομένα και Προεπεξεργασία}{11}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Πηγές Δεδομένων}{11}{section.3.1}%
+\contentsline {section}{\numberline {3.2}Χρονοσειρά Τιμών DAM}{11}{section.3.2}%
+\contentsline {section}{\numberline {3.3}Χρονοσειρά Ηλεκτρικού Φορτίου}{12}{section.3.3}%
+\contentsline {section}{\numberline {3.4}Κατασκευή Χαρακτηριστικών (Feature Engineering)}{12}{section.3.4}%
+\contentsline {subsection}{\numberline {3.4.1}Χρονικές Υστερήσεις (Lag Features)}{12}{subsection.3.4.1}%
+\contentsline {subsection}{\numberline {3.4.2}Κυλιόμενα Στατιστικά (Rolling Features)}{13}{subsection.3.4.2}%
+\contentsline {subsection}{\numberline {3.4.3}Ημερολογιακά Χαρακτηριστικά}{13}{subsection.3.4.3}%
+\contentsline {subsection}{\numberline {3.4.4}Εξωγενείς Μεταβλητές}{13}{subsection.3.4.4}%
+\contentsline {section}{\numberline {3.5}Χρονικός Διαχωρισμός}{13}{section.3.5}%
+\contentsline {subsection}{\numberline {3.5.1}Σύνολο Χαρακτηριστικών}{14}{subsection.3.5.1}%
+\contentsline {chapter}{\numberline {4}Μέθοδοι Πρόβλεψης}{15}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Γραμμές Βάσης (Baselines)}{15}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Αλγόριθμοι Μηχανικής Μάθησης}{15}{section.4.2}%
+\contentsline {subsection}{\numberline {4.2.1}LightGBM}{15}{subsection.4.2.1}%
+\contentsline {subsection}{\numberline {4.2.2}XGBoost}{15}{subsection.4.2.2}%
+\contentsline {subsection}{\numberline {4.2.3}Random Forest}{16}{subsection.4.2.3}%
+\contentsline {subsection}{\numberline {4.2.4}Support Vector Regression}{16}{subsection.4.2.4}%
+\contentsline {subsection}{\numberline {4.2.5}Multi-Layer Perceptron (MLP)}{16}{subsection.4.2.5}%
+\contentsline {section}{\numberline {4.3}Στρατηγικές Πρόβλεψης}{16}{section.4.3}%
+\contentsline {subsection}{\numberline {4.3.1}Teacher-Forcing (TF / Closed-Loop)}{16}{subsection.4.3.1}%
+\contentsline {subsection}{\numberline {4.3.2}Recursive (Open-Loop) με Scheduled Sampling}{17}{subsection.4.3.2}%
+\contentsline {subsection}{\numberline {4.3.3}Multi-Input Multi-Output (MIMO)}{17}{subsection.4.3.3}%
+\contentsline {subsection}{\numberline {4.3.4}Walk-Forward Monthly Retraining}{17}{subsection.4.3.4}%
+\contentsline {section}{\numberline {4.4}Βελτιστοποίηση Υπερπαραμέτρων (Optuna)}{17}{section.4.4}%
+\contentsline {subsection}{\numberline {4.4.1}OL-Aware Daily Optuna}{17}{subsection.4.4.1}%
+\contentsline {subsection}{\numberline {4.4.2}MIMO Optuna}{18}{subsection.4.4.2}%
+\contentsline {subsection}{\numberline {4.4.3}CachedOptuna}{18}{subsection.4.4.3}%
+\contentsline {section}{\numberline {4.5}Μετρικές Αξιολόγησης}{18}{section.4.5}%
+\contentsline {chapter}{\numberline {5}Αποτελέσματα Αξιολόγησης}{19}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Κλειστός Βρόχος --- Teacher-Forcing (CL/TF)}{19}{section.5.1}%
+\contentsline {subsection}{\numberline {5.1.1}Αποτελέσματα 1 Μήνα (Δεκέμβριος 2025)}{19}{subsection.5.1.1}%
+\contentsline {subsection}{\numberline {5.1.2}Αποτελέσματα Q1 2026 (Δεκ.\ 2025 -- Φεβ.\ 2026)}{20}{subsection.5.1.2}%
+\contentsline {section}{\numberline {5.2}Ανοικτός Βρόχος --- Recursive (OL)}{20}{section.5.2}%
+\contentsline {subsection}{\numberline {5.2.1}Δεκέμβριος 2025 (Μηνιαία Αξιολόγηση)}{20}{subsection.5.2.1}%
+\contentsline {section}{\numberline {5.3}MIMO (Multi-Input Multi-Output)}{21}{section.5.3}%
+\contentsline {section}{\numberline {5.4}Walk-Forward Monthly Retraining (MR)}{22}{section.5.4}%
+\contentsline {section}{\numberline {5.5}Σύγκριση Στρατηγικών}{23}{section.5.5}%
+\contentsline {chapter}{\numberline {6}Ανάλυση Σημαντικότητας Χαρακτηριστικών}{26}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Μεθοδολογία}{26}{section.6.1}%
+\contentsline {section}{\numberline {6.2}Αποτελέσματα — Τιμή DAM}{27}{section.6.2}%
+\contentsline {section}{\numberline {6.3}Αποτελέσματα — Ηλεκτρικό Φορτίο}{28}{section.6.3}%
+\contentsline {section}{\numberline {6.4}Σύγκριση Κατά Στρατηγική}{29}{section.6.4}%
+\contentsline {section}{\numberline {6.5}Κατηγοριοποίηση Χαρακτηριστικών}{29}{section.6.5}%
+\contentsline {section}{\numberline {6.6}Συμπεράσματα Κεφαλαίου}{30}{section.6.6}%
+\contentsline {chapter}{\numberline {7}Στατιστικοί Έλεγχοι Σύγκρισης Μοντέλων}{31}{chapter.7}%
+\contentsline {section}{\numberline {7.1}Ο Έλεγχος Diebold-Mariano}{31}{section.7.1}%
+\contentsline {section}{\numberline {7.2}Διόρθωση Harvey-Leybourne-Newbold}{31}{section.7.2}%
+\contentsline {section}{\numberline {7.3}Πειραματική Διάταξη}{32}{section.7.3}%
+\contentsline {section}{\numberline {7.4}Αποτελέσματα — Τιμή DAM}{32}{section.7.4}%
+\contentsline {section}{\numberline {7.5}Αποτελέσματα — Ηλεκτρικό Φορτίο}{34}{section.7.5}%
+\contentsline {section}{\numberline {7.6}Συμπεράσματα Κεφαλαίου}{35}{section.7.6}%
+\contentsline {chapter}{\numberline {8}Σύστημα Οπτικοποίησης Αποτελεσμάτων}{36}{chapter.8}%
+\contentsline {section}{\numberline {8.1}Αρχιτεκτονική}{36}{section.8.1}%
+\contentsline {section}{\numberline {8.2}Στοιχεία Διεπαφής Χρήστη}{37}{section.8.2}%
+\contentsline {section}{\numberline {8.3}Χαρτογράφηση Αρχείων JSON}{38}{section.8.3}%
+\contentsline {section}{\numberline {8.4}Οδηγίες Χρήσης}{38}{section.8.4}%
+\contentsline {chapter}{\numberline {9}Συμπεράσματα}{39}{chapter.9}%
+\contentsline {section}{\numberline {9.1}Σύνοψη Κύριων Ευρημάτων}{39}{section.9.1}%
+\contentsline {section}{\numberline {9.2}Ειδικά Ευρήματα}{40}{section.9.2}%
+\contentsline {paragraph}{Dense lags paradox.}{40}{section.9.2}%
+\contentsline {paragraph}{SVR κατάρρευση.}{40}{section.9.2}%
+\contentsline {paragraph}{Ensemble ανθεκτικότητα.}{41}{section.9.2}%
+\contentsline {paragraph}{Scheduled Sampling για φορτίο.}{41}{section.9.2}%
+\contentsline {section}{\numberline {9.3}Περιορισμοί}{41}{section.9.3}%
+\contentsline {section}{\numberline {9.4}Μελλοντική Έρευνα}{41}{section.9.4}%
+\contentsline {section}{\numberline {9.5}Κλείσιμο}{42}{section.9.5}%
+\contentsline {chapter}{Βιβλιογραφία}{43}{chapter*.41}%

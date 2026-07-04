@@ -1,0 +1,156 @@
+\xpg@aux {}{greek}
+\xpg@aux {}{english}
+\xpg@aux {}{greek}
+\contentsline {chapter}{Κατάλογος Ακρωνύμων}{xiv}{section*.4}%
+\contentsline {chapter}{\numberline {1}Εισαγωγή}{1}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Ενεργειακή Μετάβαση και Απελευθέρωση Αγορών Ηλεκτρικής Ενέργειας}{1}{section.1.1}%
+\contentsline {section}{\numberline {1.2}Ο Ευρωπαϊκός Σχεδιασμός: Το Μοντέλο Στόχος}{2}{section.1.2}%
+\contentsline {paragraph}{Προθεσμιακή Αγορά}{2}{section.1.2}%
+\contentsline {paragraph}{Αγορά Επόμενης Ημέρας}{2}{section.1.2}%
+\contentsline {paragraph}{Ενδοημερήσια Αγορά}{2}{section.1.2}%
+\contentsline {paragraph}{Αγορά Εξισορρόπησης}{2}{section.1.2}%
+\contentsline {section}{\numberline {1.3}Η Ελληνική Αγορά Ηλεκτρικής Ενέργειας}{3}{section.1.3}%
+\contentsline {paragraph}{Θεσμικό Πλαίσιο: ΡΑΑΕΥ}{3}{section.1.3}%
+\contentsline {paragraph}{Διαχείριση Συστήματος Μεταφοράς: ΑΔΜΗΕ}{3}{section.1.3}%
+\contentsline {paragraph}{Λειτουργία Αγοράς: ΔΑΠΕΕΠ και HEnEx}{3}{section.1.3}%
+\contentsline {paragraph}{Η Αγορά Επόμενης Ημέρας στην Ελλάδα}{3}{section.1.3}%
+\contentsline {paragraph}{Χαρακτηριστικά της Ελληνικής Αγοράς}{4}{figure.caption.6}%
+\contentsline {section}{\numberline {1.4}Πρόβλεψη Τιμών Ηλεκτρικής Ενέργειας}{5}{section.1.4}%
+\contentsline {paragraph}{Η Σημασία της Πρόβλεψης Τιμής}{5}{section.1.4}%
+\contentsline {paragraph}{Ιδιαίτερα Χαρακτηριστικά των Τιμών Ηλεκτρισμού}{5}{section.1.4}%
+\contentsline {paragraph}{Παράγοντες που Επηρεάζουν την Τιμή Ηλεκτρισμού}{5}{section.1.4}%
+\contentsline {section}{\numberline {1.5}Πρόβλεψη Ηλεκτρικού Φορτίου}{6}{section.1.5}%
+\contentsline {paragraph}{Η Σημασία της Πρόβλεψης Φορτίου}{6}{section.1.5}%
+\contentsline {paragraph}{Κατηγοριοποίηση κατά Ορίζοντα Πρόβλεψης}{6}{section.1.5}%
+\contentsline {paragraph}{Παράγοντες που Επηρεάζουν το Φορτίο}{6}{section.1.5}%
+\contentsline {section}{\numberline {1.6}Αλληλεπίδραση Τιμής και Φορτίου}{7}{section.1.6}%
+\contentsline {section}{\numberline {1.7}Σκοπός και Ερευνητικά Ερωτήματα}{7}{section.1.7}%
+\contentsline {section}{\numberline {1.8}Δομή της Εργασίας}{8}{section.1.8}%
+\contentsline {chapter}{\numberline {2}Βιβλιογραφική Ανασκόπηση}{10}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Πρόβλεψη Τιμών Ηλεκτρικής Ενέργειας}{10}{section.2.1}%
+\contentsline {subsection}{\numberline {2.1.1}Εξέλιξη πεδίου και βασικές ανασκοπήσεις}{10}{subsection.2.1.1}%
+\contentsline {subsection}{\numberline {2.1.2}Κατηγορίες Μεθόδων Πρόβλεψης}{10}{subsection.2.1.2}%
+\contentsline {subsection}{\numberline {2.1.3}Ο ρόλος εποχικής διόρθωσης}{11}{subsection.2.1.3}%
+\contentsline {section}{\numberline {2.2}Πρόβλεψη Ηλεκτρικού Φορτίου}{11}{section.2.2}%
+\contentsline {subsection}{\numberline {2.2.1}Ιστορική εξέλιξη}{11}{subsection.2.2.1}%
+\contentsline {subsection}{\numberline {2.2.2}Κατηγοριοποίηση κατά Ορίζοντα}{11}{subsection.2.2.2}%
+\contentsline {subsection}{\numberline {2.2.3}Στατιστικά Χαρακτηριστικά}{11}{subsection.2.2.3}%
+\contentsline {section}{\numberline {2.3}Μοντέλα Αναφοράς (Naive Baselines)}{12}{section.2.3}%
+\contentsline {section}{\numberline {2.4}Αλγόριθμοι Μηχανικής Μάθησης}{12}{section.2.4}%
+\contentsline {subsection}{\numberline {2.4.1}Μέθοδοι Gradient Boosting}{12}{subsection.2.4.1}%
+\contentsline {paragraph}{Random Forest.}{12}{subsection.2.4.1}%
+\contentsline {paragraph}{XGBoost.}{12}{figure.caption.7}%
+\contentsline {paragraph}{LightGBM.}{13}{equation.2.4}%
+\contentsline {subsection}{\numberline {2.4.2}Support Vector Regression}{13}{subsection.2.4.2}%
+\contentsline {subsection}{\numberline {2.4.3}Multi-Layer Perceptron (MLP)}{14}{subsection.2.4.3}%
+\contentsline {section}{\numberline {2.5}Στρατηγικές Πολυβηματικής Πρόβλεψης}{15}{section.2.5}%
+\contentsline {paragraph}{Teacher-Forcing (TF).}{15}{section.2.5}%
+\contentsline {paragraph}{Recursive (Rec).}{15}{section.2.5}%
+\contentsline {paragraph}{MIMO.}{16}{equation.2.9}%
+\contentsline {paragraph}{Direct.}{16}{equation.2.10}%
+\contentsline {paragraph}{Δικαιοσύνη σύγκρισης και το «κόστος του ορίζοντα».}{17}{figure.caption.11}%
+\contentsline {section}{\numberline {2.6}Scheduled Sampling}{17}{section.2.6}%
+\contentsline {section}{\numberline {2.7}Walk-Forward Μηνιαία Επανεκπαίδευση}{18}{section.2.7}%
+\contentsline {section}{\numberline {2.8}Σύνθεση και Τοποθέτηση της Παρούσας Εργασίας}{19}{section.2.8}%
+\contentsline {chapter}{\numberline {3}Δεδομένα \& Χαρακτηριστικά}{20}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Πηγές Ακατέργαστων Δεδομένων}{20}{section.3.1}%
+\contentsline {subsection}{\numberline {3.1.1}Τιμές Αγοράς Επόμενης Ημέρας — ENTSO-E DAM}{20}{subsection.3.1.1}%
+\contentsline {subsection}{\numberline {3.1.2}Πραγματικό Ηλεκτρικό Φορτίο — ENTSO-E}{21}{subsection.3.1.2}%
+\contentsline {subsection}{\numberline {3.1.3}Πραγματική Παραγωγή ανά Τύπο Τεχνολογίας — ENTSO-E}{21}{subsection.3.1.3}%
+\contentsline {subsection}{\numberline {3.1.4}Τιμή Φυσικού Αερίου — Dutch TTF Futures (Ημερήσια)}{21}{subsection.3.1.4}%
+\contentsline {subsection}{\numberline {3.1.5}Τιμή Δικαιωμάτων CO\textsubscript {2} — EU ETS Futures (Ημερήσια)}{22}{subsection.3.1.5}%
+\contentsline {subsection}{\numberline {3.1.6}Προβλέψεις Παραγωγής Επόμενης Ημέρας — ENTSO-E Extra}{22}{subsection.3.1.6}%
+\contentsline {subsection}{\numberline {3.1.7}Μετεωρολογικά Δεδομένα — Open-Meteo API}{22}{subsection.3.1.7}%
+\contentsline {subsection}{\numberline {3.1.8}Πρόβλεψη Φορτίου Επόμενης Ημέρας (load\_fc)}{22}{subsection.3.1.8}%
+\contentsline {section}{\numberline {3.2}Κανονικοποίηση Χρονικού Δείκτη}{22}{section.3.2}%
+\contentsline {section}{\numberline {3.3}Διοχέτευση Επεξεργασίας Δεδομένων}{23}{section.3.3}%
+\contentsline {section}{\numberline {3.4}Μηχανική Χαρακτηριστικών}{23}{section.3.4}%
+\contentsline {subsection}{\numberline {3.4.1}Ημερολογιακά Χαρακτηριστικά}{23}{subsection.3.4.1}%
+\contentsline {subsection}{\numberline {3.4.2}Χρονικά Καθυστερημένα Χαρακτηριστικά}{23}{subsection.3.4.2}%
+\contentsline {subsection}{\numberline {3.4.3}Κυλιόμενα Στατιστικά}{24}{subsection.3.4.3}%
+\contentsline {subsection}{\numberline {3.4.4}Δείκτες Απόντων Τιμών}{24}{subsection.3.4.4}%
+\contentsline {subsection}{\numberline {3.4.5}Αντιμετώπιση Διαρροής Δεδομένων}{24}{subsection.3.4.5}%
+\contentsline {subsection}{\numberline {3.4.6}Πυκνές Ενδοημερήσιες Υστερήσεις (Dense Intraday Lags) — Μόνο για MIMO/Direct}{25}{subsection.3.4.6}%
+\contentsline {subsection}{\numberline {3.4.7}Τελικός Πίνακας Χαρακτηριστικών}{25}{subsection.3.4.7}%
+\contentsline {section}{\numberline {3.5}Κατασκευή Πίνακα Εκπαίδευσης}{27}{section.3.5}%
+\contentsline {section}{\numberline {3.6}Χρονικός Διαχωρισμός Εκπαίδευσης / Αξιολόγησης}{27}{section.3.6}%
+\contentsline {section}{\numberline {3.7}Περιγραφική Ανάλυση}{27}{section.3.7}%
+\contentsline {subsection}{\numberline {3.7.1}Χρονοσειρά Τιμής Ηλεκτρικής Ενέργειας}{27}{subsection.3.7.1}%
+\contentsline {subsection}{\numberline {3.7.2}Χρονοσειρά Ηλεκτρικού Φορτίου}{28}{subsection.3.7.2}%
+\contentsline {subsection}{\numberline {3.7.3}Εποχιακή Εξέλιξη ανά Έτος}{29}{subsection.3.7.3}%
+\contentsline {subsection}{\numberline {3.7.4}Ωριαία και Εβδομαδιαία Εποχικότητα}{30}{subsection.3.7.4}%
+\contentsline {subsection}{\numberline {3.7.5}Αυτοσυσχέτιση και Επιλογή Υστερήσεων}{32}{subsection.3.7.5}%
+\contentsline {subsection}{\numberline {3.7.6}Ενδοημερήσια Εξάρτηση Ημέρας D από D$-$1}{33}{subsection.3.7.6}%
+\contentsline {subsection}{\numberline {3.7.7}Επίδραση Φυσικού Αερίου και Ανανεώσιμων Πηγών}{35}{subsection.3.7.7}%
+\contentsline {subsection}{\numberline {3.7.8}Διαχωρισμός Εκπαίδευσης και Αξιολόγησης}{36}{subsection.3.7.8}%
+\contentsline {chapter}{\numberline {4}Μεθοδολογία}{38}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Αλγόριθμοι Μηχανικής Μάθησης}{38}{section.4.1}%
+\contentsline {subsection}{\numberline {4.1.1}LightGBM}{38}{subsection.4.1.1}%
+\contentsline {subsection}{\numberline {4.1.2}XGBoost}{38}{subsection.4.1.2}%
+\contentsline {subsection}{\numberline {4.1.3}Random Forest}{38}{subsection.4.1.3}%
+\contentsline {subsection}{\numberline {4.1.4}Support Vector Regression}{38}{subsection.4.1.4}%
+\contentsline {paragraph}{Μεροληψία υπό μεταβολή καθεστώτος.}{38}{subsection.4.1.4}%
+\contentsline {subsection}{\numberline {4.1.5}Multi-Layer Perceptron}{39}{subsection.4.1.5}%
+\contentsline {section}{\numberline {4.2}Στρατηγικές Πρόβλεψης Ορίζοντα 24 Ωρών}{39}{section.4.2}%
+\contentsline {paragraph}{Κοινός συμβολισμός.}{39}{table.caption.28}%
+\contentsline {subsection}{\numberline {4.2.1}Teacher-Forcing (TF)}{40}{subsection.4.2.1}%
+\contentsline {subsection}{\numberline {4.2.2}Recursive (Rec)}{40}{subsection.4.2.2}%
+\contentsline {subsection}{\numberline {4.2.3}MIMO (Multi-Input Multi-Output)}{40}{subsection.4.2.3}%
+\contentsline {paragraph}{Two-stage MIMO για τιμή.}{41}{equation.4.5}%
+\contentsline {subsection}{\numberline {4.2.4}Direct Multistep}{41}{subsection.4.2.4}%
+\contentsline {section}{\numberline {4.3}Scheduled Sampling}{41}{section.4.3}%
+\contentsline {section}{\numberline {4.4}Βελτιστοποίηση Υπερπαραμέτρων με Optuna}{42}{section.4.4}%
+\contentsline {paragraph}{TF/Rec Βελτιστοποίηση.}{43}{table.caption.30}%
+\contentsline {paragraph}{MIMO/Direct Βελτιστοποίηση.}{43}{table.caption.30}%
+\contentsline {paragraph}{Walk-forward Βελτιστοποίηση.}{43}{table.caption.30}%
+\contentsline {section}{\numberline {4.5}Ensembles}{43}{section.4.5}%
+\contentsline {section}{\numberline {4.6}Μετρικές Αξιολόγησης}{44}{section.4.6}%
+\contentsline {section}{\numberline {4.7}Βασικές Αναφορές (Baselines)}{44}{section.4.7}%
+\contentsline {chapter}{\numberline {5}Εργαλείο Οπτικοποίησης}{45}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Συνολική Όψη της Εφαρμογής}{45}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Τυπική Ροή Χρήσης}{46}{section.5.2}%
+\contentsline {section}{\numberline {5.3}Σύνοψη}{47}{section.5.3}%
+\contentsline {chapter}{\numberline {6}Αποτελέσματα Αξιολόγησης}{50}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Ρύθμιση Πειραμάτων}{50}{section.6.1}%
+\contentsline {section}{\numberline {6.2}Στατική Εκπαίδευση: Δεκέμβριος 2025}{51}{section.6.2}%
+\contentsline {subsection}{\numberline {6.2.1}Teacher-Forcing (TF)}{52}{subsection.6.2.1}%
+\contentsline {subsection}{\numberline {6.2.2}Recursive (Rec)}{53}{subsection.6.2.2}%
+\contentsline {subsection}{\numberline {6.2.3}MIMO και Direct}{54}{subsection.6.2.3}%
+\contentsline {paragraph}{MIMO.}{54}{subsection.6.2.3}%
+\contentsline {paragraph}{Direct.}{54}{table.caption.43}%
+\contentsline {subsection}{\numberline {6.2.4}Συνολική Σύνοψη Στατικής Αξιολόγησης}{55}{subsection.6.2.4}%
+\contentsline {section}{\numberline {6.3}Walk-Forward Μηνιαία Επανεκπαίδευση, Q1 2026}{57}{section.6.3}%
+\contentsline {subsection}{\numberline {6.3.1}Αποτελέσματα Στρατηγικής Teacher-Forcing (TF) Walk-Forward}{58}{subsection.6.3.1}%
+\contentsline {subsection}{\numberline {6.3.2}Ανάλυση Μεταβολής Καθεστώτος}{59}{subsection.6.3.2}%
+\contentsline {subsection}{\numberline {6.3.3}Αντίκτυπος Επανεκπαίδευσης}{60}{subsection.6.3.3}%
+\contentsline {section}{\numberline {6.4}Συγκριτική Αξιολόγηση Στρατηγικών Πρόβλεψης}{63}{section.6.4}%
+\contentsline {subsection}{\numberline {6.4.1}Στατιστική Κατανομή και Μεροληψία Σφαλμάτων}{64}{subsection.6.4.1}%
+\contentsline {subsection}{\numberline {6.4.2}Χρονικές και Κυκλικές Συνθήκες Πρόβλεψης}{65}{subsection.6.4.2}%
+\contentsline {subsection}{\numberline {6.4.3}Ανθεκτικότητα σε Ακραίες Συνθήκες Αιχμής (Spikes)}{68}{subsection.6.4.3}%
+\contentsline {section}{\numberline {6.5}Στατιστική Επικύρωση των Προβλέψεων (Diebold-Mariano)}{72}{section.6.5}%
+\contentsline {section}{\numberline {6.6}Σύγκριση με Σχετικές Εργασίες}{73}{section.6.6}%
+\contentsline {subsection}{\numberline {6.6.1}Μεθοδολογική ευθυγράμμιση με την ελληνική αγορά}{73}{subsection.6.6.1}%
+\contentsline {subsection}{\numberline {6.6.2}Αναδρομική πρόβλεψη και η θεωρία συσσώρευσης σφάλματος}{74}{subsection.6.6.2}%
+\contentsline {subsection}{\numberline {6.6.3}Επανεκπαίδευση και μεταβολή καθεστώτος}{74}{subsection.6.6.3}%
+\contentsline {subsection}{\numberline {6.6.4}Πολυπλοκότητα μοντέλου και αξία των συνδυαστικών μετρικών}{75}{subsection.6.6.4}%
+\contentsline {section}{\numberline {6.7}Σύνοψη Αποτελεσμάτων και Συμπεράσματα}{75}{section.6.7}%
+\contentsline {chapter}{\numberline {7}Ανάλυση Σημαντικότητας Χαρακτηριστικών}{76}{chapter.7}%
+\contentsline {section}{\numberline {7.1}Μεθοδολογικό Πλαίσιο και Μαθηματική Θεμελίωση}{76}{section.7.1}%
+\contentsline {subsection}{\numberline {7.1.1}Πρωτόκολλο Επεξεργασίας και Παραγωγής Αποτελεσμάτων}{77}{subsection.7.1.1}%
+\contentsline {section}{\numberline {7.2}Teacher-Forcing και Recursive}{77}{section.7.2}%
+\contentsline {section}{\numberline {7.3}MIMO και Direct}{79}{section.7.3}%
+\contentsline {section}{\numberline {7.4}Συνολική εικόνα ανά στρατηγική}{82}{section.7.4}%
+\contentsline {section}{\numberline {7.5}Κατηγοριοποίηση χαρακτηριστικών}{83}{section.7.5}%
+\contentsline {section}{\numberline {7.6}Σύνθεση και συμπεράσματα}{85}{section.7.6}%
+\contentsline {chapter}{\numberline {8}Συμπεράσματα}{87}{chapter.8}%
+\contentsline {section}{\numberline {8.1}Σύνοψη Κύριων Ευρημάτων}{87}{section.8.1}%
+\contentsline {paragraph}{Στρατηγική, αλγόριθμος και τρόπος εκπαίδευσης.}{87}{section.8.1}%
+\contentsline {paragraph}{Δομικές Διαφορές και Συμπεριφορά των Σημάτων}{87}{table.caption.83}%
+\contentsline {paragraph}{Συμπεριφορά σε Περιόδους Έντονης Μεταβλητότητας}{88}{table.caption.83}%
+\contentsline {paragraph}{Τεκμηρίωση σε τρία επίπεδα.}{88}{table.caption.83}%
+\contentsline {paragraph}{Επίδραση δεδομένων και σημαντικότητα χαρακτηριστικών.}{88}{table.caption.83}%
+\contentsline {paragraph}{Προγραμματισμένη δειγματοληψία στο φορτίο.}{88}{table.caption.83}%
+\contentsline {section}{\numberline {8.2}Συνεισφορές της Εργασίας}{89}{section.8.2}%
+\contentsline {section}{\numberline {8.3}Περιορισμοί}{89}{section.8.3}%
+\contentsline {section}{\numberline {8.4}Μελλοντική Έρευνα}{89}{section.8.4}%
+\contentsline {section}{\numberline {8.5}Κλείσιμο}{90}{section.8.5}%

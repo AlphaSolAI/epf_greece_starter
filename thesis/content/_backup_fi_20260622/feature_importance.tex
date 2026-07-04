@@ -1,0 +1,572 @@
+\section{Ανάλυση Σημαντικότητας Χαρακτηριστικών}
+\label{ch:fi}
+
+Η ανάλυση σημαντικότητας χαρακτηριστικών (feature importance analysis) προσφέρει
+ερμηνευσιμότητα στα μοντέλα ML, αποκαλύπτοντας ποιοι παράγοντες οδηγούν τις
+προβλέψεις. Στην παρούσα εργασία, εξετάζουμε πώς η στρατηγική πρόβλεψης
+(Teacher-Forcing / Recursive / MIMO / Direct) αλλάζει τη βαρύτητα που αποδίδουν τα
+μοντέλα σε χρονικές υστερήσεις, εξωγενείς παραμέτρους και ημερολογιακά
+χαρακτηριστικά.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\subsection{Μεθοδολογία}
+\label{sec:fi_methodology}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\subsubsection*{Gain-Based Feature Importance (LGBM / XGBoost)}
+
+Για τους αλγόριθμους LightGBM και XGBoost, χρησιμοποιείται η σημαντικότητα
+βάσει \textit{κέρδους πληροφορίας} (gain): σε κάθε διαχωριστικό κόμβο δένδρου,
+το gain μετρά τη μέση μείωση της αντικειμενικής συνάρτησης (MSE) λόγω του
+συγκεκριμένου χαρακτηριστικού, σταθμισμένη από τον αριθμό δειγμάτων που
+περνούν από τον κόμβο. Η κανονικοποιημένη αθροιστική συνεισφορά κάθε
+χαρακτηριστικού προκύπτει ως~\cite{ke2017lgbm}:
+\begin{equation}
+    \text{Importance}(f) = \frac{\sum_{t} \text{gain}(t,f) \cdot \mathbb{1}[\text{feature}(t)=f]}
+    {\sum_{f'} \sum_{t} \text{gain}(t,f')}
+\end{equation}
+
+\subsubsection*{Gini Impurity Importance (Random Forest)}
+
+Για το Random Forest, χρησιμοποιείται η μέση μείωση ακαθαρσίας Gini (MDI) σε
+όλα τα δένδρα του δάσους~\cite{breiman2001rf}. Η μέθοδος αυτή τείνει να
+ευνοεί χαρακτηριστικά με υψηλή πληροφορία (όπως συνεχείς μεταβλητές με πολλές
+τιμές), γεγονός που λαμβάνεται υπόψη στην ερμηνεία.
+
+\subsubsection*{Permutation Importance (MLP / SVR)}
+
+Για τα νευρωνικά δίκτυα (MLP) και τις μηχανές διανυσμάτων υποστήριξης (SVR),
+η έννοια gain δεν εφαρμόζεται. Αντ' αυτής, χρησιμοποιείται η
+\textit{σημαντικότητα μέσω μετάθεσης} (permutation importance): μετά την
+εκπαίδευση, οι τιμές κάθε χαρακτηριστικού \(f\) αναδιατάσσονται τυχαία στο
+σύνολο επικύρωσης, και η αύξηση MAE αποτελεί το μέτρο σημαντικότητας. Λόγω
+υπολογιστικής πολυπλοκότητας, η μέθοδος εφαρμόζεται σε υποδείγματα (800 δείγματα
+για MLP, 150 για SVR), οπότε τα αποτελέσματα παρουσιάζουν μεγαλύτερη διακύμανση.
+
+\subsubsection*{Σύγκριση μεταξύ αλγόριθμων: μεθοδολογική επιφύλαξη}
+
+Οι τρεις μέθοδοι (gain, Gini/MDI, permutation) μετρούν διαφορετικά μεγέθη και δεν
+είναι άμεσα συγκρίσιμες σε απόλυτη κλίμακα: το gain ευνοεί χαρακτηριστικά με πολλά
+splits, το MDI μεροληπτεί υπέρ συνεχών μεταβλητών υψηλής καρδιναλικότητας, ενώ η
+permutation εξαρτάται από το μέγεθος του δείγματος επικύρωσης. Συνεπώς, οι
+συγκρίσεις \emph{μεταξύ} αλγόριθμων (π.χ.\ τα grouped bar charts της
+§\ref{sec:fi_strategy}) ερμηνεύονται \textbf{ποιοτικά} (ως ένδειξη του ποια
+χαρακτηριστικά αναδεικνύονται) και όχι ως ακριβής αριθμητική αντιπαραβολή. Για
+αυστηρή ποσοτική cross-model σύγκριση απαιτείται ενιαία μέθοδος (π.χ.\ SHAP ή
+permutation importance σε όλους τους αλγόριθμους), που προτείνεται ως μελλοντική
+επέκταση.
+
+\subsubsection*{Εξαγωγή για 15 Παραλλαγές}
+
+Εξάγεται feature importance για 15 μοντέλα, κατηγοριοποιημένα ανά στρατηγική:
+\begin{itemize}
+    \item \textbf{Teacher-Forcing (TF):} LGBM-TF, XGB-TF, RF-TF, MLP-TF, SVR-TF
+    (152 χαρακτηριστικά τιμής, 133 φορτίου)
+    \item \textbf{Recursive (Rec):} LGBM-Rec-Daily-Optuna, XGB-Rec-SS-Dense
+    \item \textbf{MIMO Direct:} LGBM-Direct-Dense (170 χαρακτηριστικά)
+    \item \textbf{MIMO Multi-output:} XGB-MIMO-Dense, RF-MIMO-two-stage,
+    MLP-MIMO-Dense, SVR-MIMO-Dense
+\end{itemize}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\subsection{Αποτελέσματα --- Teacher-Forcing και Recursive}
+\label{sec:fi_tf_rec}
+% ─────────────────────────────────────────────────────────────────────────────
+
+Για τις στρατηγικές Teacher-Forcing και Recursive, το βασικό σύνολο
+χαρακτηριστικών αριθμεί 152 μεταβλητές για την τιμή DAM και 133 για το φορτίο,
+χωρίς dense intraday lags. Στις ενότητες που ακολουθούν παρουσιάζονται τα top-20
+χαρακτηριστικά ανά αλγόριθμο, ξεχωριστά για τιμή και φορτίο.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\subsubsection{Τιμή DAM}
+\label{sec:fi_tf_rec_price}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\paragraph*{Teacher-Forcing}
+
+Στη στρατηγική Teacher-Forcing, η έντονη κυριαρχία της υστέρησης
+\textit{Price\_lag1} είναι χαρακτηριστική σε όλους τους αλγορίθμους
+(Σχ.~\ref{fig:fi_tf_price_lgbm_xgb}).
+Για το LightGBM-TF, το \textit{Price\_lag1} συγκεντρώνει ${\sim}88\%$ της
+συνολικής σημαντικότητας, αντικατοπτρίζοντας την υψηλή αυτοσυσχέτιση lag-1
+($\rho \approx 0{,}87$) που αναλύθηκε στο Κεφάλαιο~\ref{ch:data}. Η κυριαρχία
+αυτή μειώνεται σταδιακά για XGBoost (${\sim}63\%$), RandomForest (${\sim}11\%$),
+και περαιτέρω για MLP και SVR, αντανακλώντας διαφορετικές αρχιτεκτονικές επιλογές
+σχετικά με το ποσοστό βαρύτητας που αποδίδεται στο πιο πρόσφατο παρατηρούμενο
+σήμα.
+
+Δευτερεύοντα χαρακτηριστικά που εμφανίζονται σταθερά σε όλους τους αλγορίθμους
+περιλαμβάνουν το \textit{Price\_lag24} (τιμή ίδιας ώρας χθες, εποχικό σήμα 24h),
+το \textit{gas\_price} (τιμή φυσικού αερίου TTF, με μεγαλύτερη βαρύτητα σε XGB
+και RF) και, δευτερευόντως, το \textit{Price\_lag168} (εβδομαδιαία εποχικότητα).
+Η παρουσία των τιμών καυσίμων επιβεβαιώνει τη θεωρητική σύνδεση μεταξύ κόστους
+παραγωγής και τιμής εκκαθάρισης DAM (βλ. Ενότητα~\ref{sec:greek_market}).
+
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}{\textwidth}
+    \centering
+    \includegraphics[width=0.86\textwidth]{ch4_feature_importance/fig_fi_A_tf_price_lgbm.png}
+    \caption{LightGBM-TF}
+    \label{fig:fi_tf_price_lgbm}
+  \end{subfigure}
+
+  \vspace{0.4cm}
+
+  \begin{subfigure}{\textwidth}
+    \centering
+    \includegraphics[width=0.86\textwidth]{ch4_feature_importance/fig_fi_A_tf_price_xgb.png}
+    \caption{XGBoost-TF}
+    \label{fig:fi_tf_price_xgb}
+  \end{subfigure}
+  \caption{Βαρύτητα των χαρακτηριστικών (normalised gain), Teacher-Forcing, Τιμή DAM.
+           Top-20 χαρακτηριστικά. Πάνω: LGBM με ακραία συγκέντρωση
+           \textit{Price\_lag1} (${\sim}88\%$). Κάτω: XGB με ευρύτερη κατανομή
+           (${\sim}63\%$), αναδεικνύοντας τον ρόλο \textit{gas\_price} και
+           \textit{Price\_lag24}.}
+  \label{fig:fi_tf_price_lgbm_xgb}
+\end{figure}
+
+% [moved to appendix: fig:fi_tf_price_rf_mlp]
+
+% [moved to appendix: fig:fi_tf_price_svr]
+
+
+\paragraph*{Recursive}
+
+Στη στρατηγική Recursive, η δομή σημαντικότητας αναδιαμορφώνεται σε σχέση με
+TF (Σχ.~\ref{fig:fi_rec_price_lgbm_xgb}).
+Το LGBM-Rec αναθέτει πλέον μόλις ${\sim}9\%$ στο \textit{Price\_lag1}, έναντι
+${\sim}88\%$ στο LGBM-TF: η κυριαρχία του πιο πρόσφατου lag καταρρέει. Κατά την
+αξιολόγηση το \textit{Price\_lag1} αντικαθίσταται από πρόβλεψη του ίδιου μοντέλου
+με συσσωρευμένο σφάλμα, οπότε το μοντέλο μαθαίνει να μην το εμπιστεύεται και
+ανακατανέμει τη βαρύτητα σε πιο μακρινές υστερήσεις (\textit{Price\_lag2},
+\textit{Price\_lag24}) και στον κυλιόμενο μέσο.
+
+Ιδιαίτερα για το XGB-SS-Dense (Scheduled Sampling + dense lags 4--23), εμφανίζεται
+νέα κατηγορία χαρακτηριστικών: οι dense intraday lags διανέμουν συλλογικά βαρύτητα
+${\sim}17\%$, αντικατοπτρίζοντας ότι το μοντέλο αξιοποιεί την ενδοημερήσια δυναμική
+παρά τους αραιούς lags του βασικού συνόλου.
+
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}{\textwidth}
+    \centering
+    \includegraphics[width=0.86\textwidth]{ch4_feature_importance/fig_fi_A_rec_price_lgbm.png}
+    \caption{LGBM-Rec (Daily-Optuna)}
+    \label{fig:fi_rec_price_lgbm}
+  \end{subfigure}
+
+  \vspace{0.4cm}
+
+  \begin{subfigure}{\textwidth}
+    \centering
+    \includegraphics[width=0.86\textwidth]{ch4_feature_importance/fig_fi_A_rec_price_xgb.png}
+    \caption{XGB-Rec (SS-Dense)}
+    \label{fig:fi_rec_price_xgb}
+  \end{subfigure}
+  \caption{Σημαντικότητα χαρακτηριστικών, Recursive, Τιμή DAM.
+           Πάνω: LGBM-Rec --- κατάρρευση της κυριαρχίας \textit{Price\_lag1}
+           (${\sim}9\%$, από ${\sim}88\%$ στο TF), αυξημένη παρουσία
+           \textit{Price\_lag24} και \textit{gas\_price}. Κάτω: XGB-SS-Dense ---
+           ανάδυση dense intraday lags (4--23) ως δεύτερη ομάδα σημαντικότητας
+           (${\sim}17\%$ συλλογικά).}
+  \label{fig:fi_rec_price_lgbm_xgb}
+\end{figure}
+
+% [moved to appendix: fig:fi_rec_price_rf_mlp]
+
+
+% [moved to appendix: fig:fi_rec_price_svr]
+
+
+% ─────────────────────────────────────────────────────────────────────────────
+\subsubsection{Ηλεκτρικό Φορτίο}
+\label{sec:fi_tf_rec_load}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\paragraph*{Teacher-Forcing}
+
+Το ηλεκτρικό φορτίο παρουσιάζει σαφώς πιο ισόρροπη κατανομή σημαντικότητας σε
+σχέση με την τιμή (Σχ.~\ref{fig:fi_tf_load_lgbm_xgb}).
+Για το LightGBM-TF Φορτίου, το \textit{Load\_lag1} λαμβάνει ${\sim}70\%$
+(έναντι ${\sim}88\%$ για τιμή). Η ημερήσια και εβδομαδιαία εποχικότητα
+(\textit{Load\_lag24}, \textit{Load\_lag168}) αποκτά ορατή βαρύτητα κυρίως στο
+RandomForest (\textit{Load\_lag24} ${\sim}17\%$), ενώ στους boosters η
+σημαντικότητα συγκεντρώνεται στο \textit{Load\_lag1}.
+
+Χαρακτηριστική είναι η αυξημένη βαρύτητα των ημερολογιακών χαρακτηριστικών: το
+\textit{hour\_of\_day}, οι κυκλικοί δείκτες \textit{day\_of\_week} (sin/cos) και
+το \textit{is\_holiday} εμφανίζονται σταθερά στα top-10 για όλους τους αλγορίθμους.
+Αυτό αντανακλά τη θεμελιωδώς ντετερμινιστική εποχική συμπεριφορά του φορτίου
+(εργάσιμες ώρες, αργίες), η οποία είναι λιγότερο έντονη στη δυναμική της τιμής.
+Επίσης εμφανίζονται το \textit{Load\_lag168} (εβδομαδιαία εποχικότητα) και το
+\textit{Load\_roll24} (κυλιόμενος μέσος ως δείκτης τρέχοντος επιπέδου φορτίου),
+ενώ μετεωρολογικές μεταβλητές όπως \textit{Temp.~(Athens)} εμφανίζονται στα
+bottom-10, αντανακλώντας την έμμεση επίδραση θερμοκρασίας μέσω ζήτησης
+θέρμανσης/ψύξης.
+
+% [moved to appendix: fig:fi_tf_load_rf_mlp]
+
+
+% [moved to appendix: fig:fi_tf_load_svr]
+
+
+\paragraph*{Recursive}
+
+Στη Recursive στρατηγική φορτίου, η μεταβολή σημαντικότητας είναι ηπιότερη σε
+σχέση με την τιμή
+(Σχ.~\ref{fig:fi_rec_load_lgbm_xgb}).
+Αυτό αντικατοπτρίζει την ομαλότερη εξέλιξη του φορτίου: η αναδρομική
+τροφοδότηση προβλέψεων συσσωρεύει μικρότερο σφάλμα σε σχέση με τη
+στοχαστικότερη τιμή DAM. Τα ημερολογιακά χαρακτηριστικά διατηρούν σταθερή
+βαρύτητα, ενώ το \textit{Load\_lag24} αποκτά ελαφρώς μεγαλύτερο ρόλο ως
+αξιόπιστη εποχική αναφορά.
+
+% [moved to appendix: fig:fi_rec_load_rf_mlp]
+
+
+% [moved to appendix: fig:fi_rec_load_svr]
+
+
+% ─────────────────────────────────────────────────────────────────────────────
+\subsection{Αποτελέσματα --- MIMO και Direct}
+\label{sec:fi_mimo_direct}
+% ─────────────────────────────────────────────────────────────────────────────
+
+Για τις στρατηγικές MIMO και Direct, το σύνολο χαρακτηριστικών επεκτείνεται σε
+170 (τιμή) και 151 (φορτίο) με την προσθήκη των dense intraday lags
+$y_{t-4}, \ldots, y_{t-23}$ (18 επιπλέον υστερήσεις). Αυτό αλλάζει ριζικά τη
+δομή σημαντικότητας: χωρίς αναδρομική τροφοδότηση, η μοναδική πηγή
+βραχυπρόθεσμης πληροφορίας είναι τα παρατηρούμενα intraday lags, ενώ οι
+εξωγενείς παράγοντες αποκτούν μεγαλύτερο σχετικό ρόλο.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\subsubsection{Τιμή DAM}
+\label{sec:fi_mimo_direct_price}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\paragraph*{MIMO (H=24)}
+
+Στα MIMO μοντέλα τιμής, η δομή σημαντικότητας αλλάζει ριζικά σε σχέση με TF/Rec
+(Σχ.~\ref{fig:fi_mimo_price_lgbm_xgb}).
+Το LGBM-Direct-Dense αναδεικνύει ως κορυφαία χαρακτηριστικά τις αιολικές
+υστερήσεις (\textit{wind\_gen\_lag24}, \textit{lag48}, \textit{lag168}) και τον
+κυλιόμενο μέσο, ενώ το \textit{Price\_lag1} καταρρέει σε ${\sim}1\%$. Αυτό
+συνεπάγεται ότι το μοντέλο (χωρίς πρόσβαση σε ενδιάμεσες τιμές) βασίζεται
+περισσότερο στις εξωγενείς μεταβλητές (ΑΠΕ, καύσιμα) που καθορίζουν
+θεμελιωδώς τη στοίβα παραγωγής.
+
+Το RF-MIMO two-stage κυριαρχείται από το \textit{Price\_roll24}
+(${\sim}51{,}6\%$), υποδηλώνοντας ότι το RF αξιοποιεί κυρίως το επίπεδο τιμής
+της προηγούμενης ημέρας για να σταθεροποιήσει τις προβλέψεις σε ένα εύλογο
+εύρος. Η στρατηγική αυτή επιτυγχάνει αξιόπιστα MAE αλλά χάνει σε οξύτητα κατά
+τα spikes τιμής.
+
+Για το MIMO-XGB Dense, τα dense lags (\textit{Price\_lag4} έως
+\textit{Price\_lag23}) αποκτούν συλλογική βαρύτητα ${\sim}53\%$, επιβεβαιώνοντας
+ότι η χρήση τους βελτιώνει σημαντικά τη MIMO απόδοση ($-22{,}3\%$ MAE)
+καταγράφοντας την ενδοημερήσια δυναμική της αγοράς.
+
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}{\textwidth}
+    \centering
+    \includegraphics[width=0.86\textwidth]{ch4_feature_importance/fig_fi_A_mimo_price_lgbm.png}
+    \caption{LGBM-MIMO-Dense}
+    \label{fig:fi_mimo_price_lgbm}
+  \end{subfigure}
+
+  \vspace{0.4cm}
+
+  \begin{subfigure}{\textwidth}
+    \centering
+    \includegraphics[width=0.86\textwidth]{ch4_feature_importance/fig_fi_A_mimo_price_xgb.png}
+    \caption{XGB-MIMO-Dense}
+    \label{fig:fi_mimo_price_xgb}
+  \end{subfigure}
+  \caption{Βαρύτητα των χαρακτηριστικών (normalised gain), MIMO H=24, Τιμή DAM.
+           Πάνω: LGBM-MIMO --- ανάδυση αιολικών υστερήσεων
+           (\textit{wind\_gen} lag24/48/168) ως κορυφαίων χαρακτηριστικών, με
+           \textit{Price\_lag1} να καταρρέει σε ${\sim}1\%$.
+           Κάτω: XGB-MIMO --- dense intraday lags αποκτούν συλλογικά ${\sim}53\%$
+           της σημαντικότητας.}
+  \label{fig:fi_mimo_price_lgbm_xgb}
+\end{figure}
+
+% [moved to appendix: fig:fi_mimo_price_rf_mlp]
+
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}{\textwidth}
+    \centering
+    \includegraphics[width=0.86\textwidth]{ch4_feature_importance/fig_fi_A_direct_price_lgbm.png}
+    \caption{LGBM-Direct-Dense}
+    \label{fig:fi_direct_price_lgbm}
+  \end{subfigure}
+
+  \vspace{0.4cm}
+
+  \begin{subfigure}{\textwidth}
+    \centering
+    \includegraphics[width=0.86\textwidth]{ch4_feature_importance/fig_fi_A_direct_price_xgb.png}
+    \caption{XGB-Direct-Dense}
+    \label{fig:fi_direct_price_xgb}
+  \end{subfigure}
+  \caption{Βαρύτητα των χαρακτηριστικών (normalised gain), Direct H=24, Τιμή DAM.
+           Η δομή είναι παρόμοια με MIMO, επιβεβαιώνοντας ότι η επιλογή
+           MIMO vs.\ Direct επηρεάζει κυρίως την ανεξαρτησία εκπαίδευσης,
+           όχι τη δομή πληροφόρησης. Μόνο LGBM και XGB εκπαιδεύτηκαν ως
+           Direct λόγω υπολογιστικής πολυπλοκότητας $H \times 24$ μοντέλων.}
+  \label{fig:fi_direct_price}
+\end{figure}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\subsubsection{Ηλεκτρικό Φορτίο}
+\label{sec:fi_mimo_direct_load}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\paragraph*{MIMO (H=24)}
+
+Για το ηλεκτρικό φορτίο, τα MIMO μοντέλα διατηρούν ισχυρή παρουσία των
+ημερολογιακών χαρακτηριστικών (\textit{hour\_of\_day}, \textit{day\_of\_week}),
+επιβεβαιώνοντας ότι η εποχική δομή του φορτίου είναι αρκετά προβλέψιμη ακόμη
+και χωρίς τις πιο πρόσφατες ενδοημερήσιες υστερήσεις
+(Σχ.~\ref{fig:fi_mimo_load_lgbm_xgb}).
+Το \textit{Load\_lag1} υποχωρεί (${\sim}5$--$7\%$), καθώς τη βραχυπρόθεσμη
+πληροφορία αναλαμβάνουν συλλογικά τα dense load lags (4--23, ${\sim}70\%$).
+
+Τα dense load lags (\textit{Load\_lag4} έως \textit{Load\_lag23}) εμφανίζονται
+συλλογικά στα top features, επιβεβαιώνοντας ότι για φορτίο --- όπου η
+ενδοημερήσια αυτοσυσχέτιση είναι ισχυρή ($\rho > 0{,}9$ για γειτονικές ώρες)
+--- τα dense lags προσφέρουν ουσιαστική πρόσθετη πληροφορία, σε αντίθεση με
+την αρνητική επίδρασή τους στη Recursive στρατηγική.
+
+% [moved to appendix: fig:fi_mimo_load_rf_mlp]
+
+
+% [moved to appendix: fig:fi_mimo_load_svr]
+
+
+\paragraph*{Direct (H=24)}
+
+Η Direct στρατηγική φορτίου εκπαιδεύτηκε μόνο με LGBM και XGB
+(Σχήμα~\ref{fig:fi_direct_load}). Η δομή είναι παρόμοια με το MIMO φορτίου,
+επιβεβαιώνοντας τη συνέπεια των δύο πολυβήματων προσεγγίσεων στην
+αξιοποίηση των διαθέσιμων πληροφοριών.
+
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}{\textwidth}
+    \centering
+    \includegraphics[width=0.86\textwidth]{ch4_feature_importance/fig_fi_A_direct_load_lgbm.png}
+    \caption{LGBM-Direct-Dense}
+    \label{fig:fi_direct_load_lgbm}
+  \end{subfigure}
+
+  \vspace{0.4cm}
+
+  \begin{subfigure}{\textwidth}
+    \centering
+    \includegraphics[width=0.86\textwidth]{ch4_feature_importance/fig_fi_A_direct_load_xgb.png}
+    \caption{XGB-Direct-Dense}
+    \label{fig:fi_direct_load_xgb}
+  \end{subfigure}
+  \caption{Βαρύτητα των χαρακτηριστικών (normalised gain), Direct H=24,
+           Ηλεκτρικό Φορτίο. Η δομή αντιστοιχεί στενά με MIMO φορτίου,
+           επιβεβαιώνοντας ότι η δομή πληροφόρησης εξαρτάται κυρίως
+           από τη διαθεσιμότητα των χαρακτηριστικών και όχι από
+           τον τρόπο εκπαίδευσης (MIMO vs.\ Direct).}
+  \label{fig:fi_direct_load}
+\end{figure}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\subsection{Σύγκριση Κατά Στρατηγική}
+\label{sec:fi_strategy}
+% ─────────────────────────────────────────────────────────────────────────────
+
+Για να αποτυπωθεί συνολικά η επίδραση της στρατηγικής πρόβλεψης στη
+σημαντικότητα χαρακτηριστικών, τα
+Σχήματα~\ref{fig:fi_B_tf}--\ref{fig:fi_B_direct} παρουσιάζουν grouped bar charts
+που απεικονίζουν τα top-20 χαρακτηριστικά (union των top-15 ανά αλγόριθμο) για
+κάθε στρατηγική, χωριστά για τιμή (πάνω) και φορτίο (κάτω).
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth]{ch4_feature_importance/fig_fi_B_tf_price.png}
+  \caption{Σύγκριση της βαρύτητας των χαρακτηριστικών ανά αλγόριθμο για στρατηγική
+           Teacher-Forcing --- Τιμή DAM. Εμφανής κυριαρχία
+           \textit{Price\_lag1}, ιδιαίτερα για LGBM (μπλε). Grouped bars
+           ανά αλγόριθμο για τα top-20 χαρακτηριστικά (union top-15 ανά
+           αλγόριθμο, ταξινομημένα κατά μέσο βάρος).}
+  \label{fig:fi_B_tf}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth]{ch4_feature_importance/fig_fi_B_tf_load.png}
+  \caption{Σύγκριση της βαρύτητας των χαρακτηριστικών ανά αλγόριθμο για στρατηγική
+           Teacher-Forcing --- Ηλεκτρικό Φορτίο. Ισόρροπη κατανομή με
+           ισχυρή παρουσία ημερολογιακών χαρακτηριστικών σε όλους τους
+           αλγορίθμους.}
+  \label{fig:fi_B_tf_load}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth]{ch4_feature_importance/fig_fi_B_rec_price.png}
+  \caption{Σύγκριση της βαρύτητας των χαρακτηριστικών ανά αλγόριθμο για στρατηγική
+           Recursive --- Τιμή DAM. Μειωμένη κυριαρχία
+           \textit{Price\_lag1} (dilution effect) με αυξημένη παρουσία
+           \textit{Price\_lag24} και \textit{gas\_price}.}
+  \label{fig:fi_B_rec}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth]{ch4_feature_importance/fig_fi_B_rec_load.png}
+  \caption{Σύγκριση της βαρύτητας των χαρακτηριστικών ανά αλγόριθμο για στρατηγική
+           Recursive --- Ηλεκτρικό Φορτίο. Δομή παρόμοια με TF,
+           επιβεβαιώνοντας ότι η αναδρομική τροφοδότηση επηρεάζει
+           λιγότερο το φορτίο.}
+  \label{fig:fi_B_rec_load}
+\end{figure}
+
+Το Σχήμα~\ref{fig:fi_B_tf} (TF) αναδεικνύει την κυριαρχία του
+\textit{Price\_lag1} για τιμή σε όλους τους αλγορίθμους, με LightGBM να
+παρουσιάζει ακραία συγκέντρωση σε αντίθεση με RF που κατανέμει
+βαρύτητα πιο ομοιόμορφα. Για φορτίο, η εικόνα είναι πιο ισόρροπη με ισχυρή
+παρουσία ημερολογιακών χαρακτηριστικών σε όλους.
+
+Η σύγκριση TF vs.\ Recursive (Σχήμα~\ref{fig:fi_B_rec}) αναδεικνύει το
+``dilution effect'': στη Recursive, η βαρύτητα του \textit{Price\_lag1} μειώνεται
+και ανακατανέμεται σε πιο μακρινές υστερήσεις και εξωγενείς μεταβλητές,
+υποδηλώνοντας ότι το μοντέλο έχει μάθει την αβεβαιότητα της αναδρομικής
+τροφοδότησης.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth]{ch4_feature_importance/fig_fi_B_mimo_price.png}
+  \caption{Σύγκριση της βαρύτητας των χαρακτηριστικών ανά αλγόριθμο για στρατηγική
+           MIMO H=24 --- Τιμή DAM. Έντονη άνοδος dense
+           intraday lags και εξωγενών (\textit{wind\_gen\_lag1},
+           \textit{solar\_gen\_lag1}, \textit{gas\_price}).}
+  \label{fig:fi_B_mimo}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth]{ch4_feature_importance/fig_fi_B_mimo_load.png}
+  \caption{Σύγκριση της βαρύτητας των χαρακτηριστικών ανά αλγόριθμο για στρατηγική
+           MIMO H=24 --- Ηλεκτρικό Φορτίο. Τα ημερολογιακά χαρακτηριστικά
+           παραμένουν σταθερά πρωταγωνιστές, ενώ τα dense load lags
+           αποκτούν σημαντική συλλογική βαρύτητα.}
+  \label{fig:fi_B_mimo_load}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth]{ch4_feature_importance/fig_fi_B_direct_price.png}
+  \caption{Σύγκριση της βαρύτητας των χαρακτηριστικών ανά αλγόριθμο για στρατηγική
+           Direct H=24 --- Τιμή DAM (μόνο LGBM και XGB λόγω υπολογιστικής
+           πολυπλοκότητας $H \times 24$ μοντέλων). Η δομή σημαντικότητας
+           είναι παρόμοια με MIMO.}
+  \label{fig:fi_B_direct}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth]{ch4_feature_importance/fig_fi_B_direct_load.png}
+  \caption{Σύγκριση της βαρύτητας των χαρακτηριστικών ανά αλγόριθμο για στρατηγική
+           Direct H=24 --- Ηλεκτρικό Φορτίο. Επιβεβαιώνει ότι η επιλογή
+           MIMO vs.\ Direct επηρεάζει κυρίως την ανεξαρτησία εκπαίδευσης,
+           όχι τη δομή πληροφόρησης.}
+  \label{fig:fi_B_direct_load}
+\end{figure}
+
+Στο Σχήμα~\ref{fig:fi_B_mimo} (MIMO), η σημαντική αλλαγή είναι η άνοδος
+των dense intraday lags και εξωγενών μεταβλητών (\textit{wind\_gen\_lag1},
+\textit{solar\_gen\_lag1}, \textit{gas\_price}) για τιμή, ενώ για φορτίο τα
+ημερολογιακά χαρακτηριστικά παραμένουν σταθερά πρωταγωνιστές. Τέλος, η Direct
+στρατηγική (Σχήμα~\ref{fig:fi_B_direct}) επιβεβαιώνει τη συνέπεια των
+πολυβήματων προσεγγίσεων.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\subsection{Κατηγοριοποίηση Χαρακτηριστικών}
+\label{sec:fi_categories}
+% ─────────────────────────────────────────────────────────────────────────────
+
+Με βάση τα αποτελέσματα που παρουσιάστηκαν, τα χαρακτηριστικά κατατάσσονται
+σε τρεις κατηγορίες αναλόγως της στρατηγικής:
+
+\textbf{Κατηγορία Α --- Πρωτεύον Αυτοπαλίνδρομο Σήμα.}
+Τα χαρακτηριστικά \textit{Price\_lag1} (ή \textit{Load\_lag1} για φορτίο) και
+\textit{Price\_lag24} κυριαρχούν στις TF/Recursive στρατηγικές όπου το μοντέλο
+έχει πρόσβαση σε πρόσφατες τιμές. Το \textit{Price\_lag1} μόνο του εξηγεί
+${\sim}88\%$ για LGBM-TF, ενώ στη Recursive η βαρύτητα καταρρέει σε ${\sim}9\%$
+λόγω του dilution effect.
+
+\textbf{Κατηγορία Β --- Εξωγενείς Παράγοντες Αγοράς.}
+Τα \textit{gas\_price}, \textit{co2\_price}, \textit{solar\_gen\_lag1},
+\textit{wind\_gen\_lag1} και \textit{load\_fc} αποκτούν σχετικά μεγαλύτερη
+βαρύτητα στις MIMO/Direct στρατηγικές όπου η αυτοπαλίνδρομη πληροφορία είναι
+λιγότερη. Για LGBM-Direct, \textit{wind\_gen\_lag1} και \textit{solar\_gen\_lag1}
+ανέρχονται σε top-2 χαρακτηριστικά, αντικατοπτρίζοντας τη θεμελιώδη σύνδεση
+μεταξύ διείσδυσης ΑΠΕ και τιμής εκκαθάρισης.
+
+\textbf{Κατηγορία Γ --- Ημερολογιακά / Εποχικά.}
+Τα \textit{hour\_sin/cos}, \textit{dow\_sin/cos}, \textit{is\_holiday},
+\textit{Price\_lag168} και \textit{Load\_lag168} εμφανίζουν σταθερή παρουσία
+για φορτίο σε όλες τις στρατηγικές και δευτερεύουσα για τιμή (εκτός σε SVR/RF
+που αξιοποιούν τη δομή εποχικότητας ισχυρότερα). Η εποχική πληροφορία εκφράζει
+ντετερμινιστικές δομές (εργάσιμες ώρες, αργίες, εβδομαδιαίος κύκλος) που είναι
+ισχυρότερες για φορτίο από ό,τι για τιμή.
+
+Η κατηγοριοποίηση αυτή επιβεβαιώνει εμπειρικά ότι η στρατηγική πρόβλεψης
+αλλάζει όχι μόνο την απόδοση αλλά και τον τρόπο με τον οποίο τα μοντέλα
+αξιοποιούν τις διαθέσιμες πληροφορίες. Καθώς μεταβαίνουμε από TF $\to$
+Recursive $\to$ MIMO, η εξάρτηση μετατοπίζεται: από την κυριαρχία του άμεσου
+\textit{Price\_lag1} (TF), σε διασπορά προς μακρινότερες υστερήσεις και
+εξωγενείς μεταβλητές (Recursive), και τέλος σε εκτεταμένη χρήση των dense
+intraday lags και των ΑΠΕ/καυσίμων (MIMO). Αυτό έχει άμεσες συνέπειες στον
+σχεδιασμό χαρακτηριστικών: η βέλτιστη επιλογή feature set εξαρτάται από τη
+στρατηγική πρόβλεψης.
+
+\input{content/fi_synthesis_section}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\subsection{Σύνοψη Σημαντικότητας Χαρακτηριστικών}
+\label{sec:fi_conclusions}
+% ─────────────────────────────────────────────────────────────────────────────
+
+Η ανάλυση feature importance αποκαλύπτει τρεις βασικές κανονικότητες:
+
+\begin{enumerate}
+    \item \textbf{Η στρατηγική καθορίζει τη σημαντικότητα}: Το ίδιο χαρακτηριστικό
+    ($y_{t-1}$) έχει ριζικά διαφορετική βαρύτητα ανάλογα με τη στρατηγική
+    ($88\%$ στο TF vs.\ ${\sim}1$--$5\%$ στο MIMO), γεγονός που υποδηλώνει ότι τα μοντέλα
+    μαθαίνουν να αξιοποιούν διαφορετικές ιδιότητες των δεδομένων ανάλογα με τη
+    διαθέσιμη πληροφορία.
+
+    \item \textbf{Dense lags και ενδοημερήσια χαρακτηριστικά}:
+    Τα lags 4--23 προσθέτουν μια νέα κατηγορία πληροφορίας που οι αλγόριθμοι
+    αξιοποιούν σημαντικά στις MIMO/Direct στρατηγικές, εξηγώντας τη βελτίωση
+    απόδοσης. Αντίθετα, στη Recursive στρατηγική τα ίδια dense lags
+    βλάπτουν (\textit{dense lags paradox}), επιβεβαιώνοντας ότι η αξία τους
+    εξαρτάται κριτικά από τη διαθεσιμότητα παρατηρημένων (όχι προβλεπόμενων)
+    τιμών.
+
+    \item \textbf{Φορτίο vs.\ τιμή}: Το φορτίο εμφανίζει πιο ισόρροπη κατανομή
+    σημαντικότητας με ισχυρότερη παρουσία ημερολογιακών χαρακτηριστικών,
+    αντανακλώντας την πιο ντετερμινιστική εποχική συμπεριφορά του έναντι της τιμής.
+    Αυτό εξηγεί γιατί η Recursive στρατηγική είναι πιο ανταγωνιστική με TF για
+    φορτίο ($+3\%$ MAE) σε αντίθεση με τιμή ($+76\%$ MAE).
+\end{enumerate}
+
+Η ανάλυση των figures Part~A (§§\ref{sec:fi_tf_rec}--\ref{sec:fi_mimo_direct})
+επιβεβαιώνει ποιοτικά τα συμπεράσματα αυτά σε επίπεδο μεμονωμένου αλγορίθμου:
+οι δομές σημαντικότητας είναι πολύ συνεπείς εντός κάθε στρατηγικής
+ανεξαρτήτως αλγορίθμου, επιβεβαιώνοντας ότι η στρατηγική καθορίζει πρωτίστως
+ποια πληροφορία είναι διαθέσιμη και μόνο δευτερευόντως ο αλγόριθμος καθορίζει
+πώς τη χρησιμοποιεί.

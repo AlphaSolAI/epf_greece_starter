@@ -1,0 +1,154 @@
+\chapter[Εργαλείο Οπτικοποίησης]{Διαδραστικό Εργαλείο Οπτικοποίησης Αποτελεσμάτων}
+\label{ch:dashboard}
+
+Η ταυτόχρονη σύγκριση πολλαπλών μοντέλων και στρατηγικών πρόβλεψης 
+σε πολλαπλές χρονικές περιόδους παράγει έναν ιδιαίτερα σύνθετο όγκο δεδομένων. 
+Για την αποτελεσματική διαχείριση και ανάλυση των αποτελεσμάτων αναπτύχθηκε μία 
+διαδραστική πλατφόρμα οπτικοποίησης (dashboard).
+Η πλατφόρμα υλοποιήθηκε σε React με TypeScript και Vite, ενώ τα διαγράμματα αποδίδονται με τη βιβλιοθήκη Recharts.
+
+\section{Συνολική Όψη της Εφαρμογής}
+\label{sec:dash_overview}
+
+Η οθόνη οργανώνεται σε τέσσερις ζώνες, που ο χρήστης διαβάζει από πάνω προς τα κάτω
+(Σχήμα~\ref{fig:ui_overview}). Στην κορυφή βρίσκεται (1) ο \textbf{πίνακας ελέγχου} με όλα τα
+χειριστήρια. Ακολουθεί (2) το \textbf{γράφημα χρονοσειράς} με τις πραγματικές τιμές και τις
+προβλέψεις κάθε ορατού μοντέλου σε ωριαία ανάλυση. Κάτω από αυτό βρίσκονται (3) οι
+\textbf{πίνακες μετρικών}, που κατατάσσουν χωριστά τα μοντέλα μηχανικής μάθησης και τα μοντέλα
+αναφοράς, και τέλος (4) ο \textbf{συγκεντρωτικός πίνακας κατάταξης}, που ενοποιεί όλα τα
+μοντέλα σε ενιαία λίστα με την κατηγορία καθενός.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1.15\textwidth, center]{ui_screenshots/dash1.png}
+  \caption{Συνολική όψη του dashboard με τις τέσσερις ζώνες: (1) πίνακας ελέγχου,
+    (2) γράφημα χρονοσειράς, (3) πίνακες μετρικών, (4) συγκεντρωτικός πίνακας κατάταξης.}
+  \label{fig:ui_overview}
+\end{figure}
+
+\section{Τυπική Ροή Χρήσης}
+\label{sec:dash_workflow}
+
+Ο χρήστης διαμορφώνει το πλαίσιο της έρευνας επιλέγοντας το μέγεθος, τη στρατηγική, τη χρονική περίοδο και τα ορατά διαγράμματα στον πίνακα ελέγχου.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{ui_screenshots/panel.png}
+  \caption{Ο πίνακας ελέγχου σε μεγέθυνση.}
+  \label{fig:ui_panel}
+\end{figure}
+
+Οι λειτουργίες συνοψίζονται στον Πίνακα~\ref{tab:dash_controls}.
+
+\begin{table}[H]
+  \centering
+  \caption{Πίνακας αναφοράς χειριστηρίων του dashboard.}
+  \label{tab:dash_controls}
+  \small
+  \begin{tabular}{p{2.6cm}p{3.4cm}p{7.6cm}}
+    \toprule
+    \textbf{Χειριστήριο} & \textbf{Επιλογές} & \textbf{Λειτουργία} \\
+    \midrule
+    Task        & \texttt{Price}, \texttt{Load}                          & Επιλογή τιμής ή φορτίου \\[0.3em]
+    Strategy    & \texttt{TF}, \texttt{Rec}, \texttt{MIMO}, \texttt{Direct} & Επιλογή στρατηγικής πρόβλεψης \\[0.3em]
+    Period      & \texttt{Dec 2025}, \texttt{Q1 2026}                    & Επιλογή χρονικού ορίζοντα \\[0.3em]
+    View        & \texttt{All}, \texttt{ML}, \texttt{Baselines}, \texttt{Best} & Εμφάνιση: \texttt{All} όλα τα μοντέλα, \texttt{ML} μόνο μοντέλα μηχανικής μάθησης, \texttt{Baselines} μόνο μοντέλα αναφοράς, \texttt{Best} καλύτερο μοντέλο και καλύτερο baseline \\[0.3em]
+    Models Show & ανά μοντέλο                                            & Εμφάνιση/απόκρυψη καμπυλών \\[0.3em]
+    Zoom (From/To) & date picker                                         & Επιλογή συγκεκριμένου χρονικού διαστήματος \\[0.3em]
+    $\downarrow$~CSV & ---                                               & Κατέβασμα δεδομένων σε αρχείο csv \\[0.3em]
+    Sort by     & \texttt{MAE}, \texttt{RMSE}, \texttt{sMAPE}            & Κατάταξη κατά MAE \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Στην πράξη, σχεδόν όλες οι λειτουργίες φαίνονται στο Σχήμα~\ref{fig:ui_combo}, που
+συγκεντρώνει τρεις προβολές της ίδιας εφαρμογής.
+
+\begin{figure}[htbp]
+  \centering
+  \captionsetup[subfigure]{skip=1pt, font=footnotesize}
+  \begin{subfigure}{0.9\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{ui_screenshots/combo_top.png}
+    \caption{Recursive, Price, Q1 2026, ML, zoom.}
+    \label{fig:ui_combo_top}
+  \end{subfigure}\\[1pt]
+  \begin{subfigure}{0.9\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{ui_screenshots/combo_mid.png}
+    \caption{MIMO, Price, Baselines, Dec 2025.}
+    \label{fig:ui_combo_mid}
+  \end{subfigure}\\[1pt]
+  \begin{subfigure}{0.9\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{ui_screenshots/combo_down.png}
+    \caption{Direct, Load, Best, Dec 2025.}
+    \label{fig:ui_combo_down}
+  \end{subfigure}
+  \caption{Τρεις προβολές της εφαρμογής για διαφορετικούς συνδυασμούς εργασίας, στρατηγικής,
+    περιόδου και φίλτρου.}
+  \label{fig:ui_combo}
+\end{figure}
+
+Στην πάνω προβολή η τιμή προβλέπεται με Recursive στο Q1 2026. Το φίλτρο \texttt{ML} κρατά
+μόνο τους αλγορίθμους μηχανικής μάθησης και το zoom εστιάζει σε στενότερο διάστημα, ώστε να
+φανεί η απόκλιση των καμπυλών από τη συσσώρευση σφάλματος.
+Στη μεσαία προβολή η ίδια τιμή
+εξετάζεται με MIMO στον Δεκέμβριο 2025 με πατημένο το \texttt{Baselines}, οπότε μένουν μόνο τα
+μοντέλα αναφοράς (Naive, Seasonal Profile). 
+Στην κάτω προβολή η εργασία γίνεται φορτίο με
+Direct και το φίλτρο \texttt{Best} κρατά τρεις καμπύλες, το κορυφαίο μοντέλο, το καλύτερο
+baseline και την πραγματική τιμή. 
+
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}{0.52\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{ui_screenshots/hover.png}
+    \caption{Ωριαία σύγκριση (hover).}
+    \label{fig:ui_hover}
+  \end{subfigure}\hfill
+  \begin{subfigure}{0.42\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{ui_screenshots/hmerologio.png}
+    \caption{Επιλογή περιόδου.}
+    \label{fig:ui_calendar}
+  \end{subfigure}
+  \caption{Δύο λειτουργίες λεπτομερούς ανάγνωσης: (α) το tooltip του hover για ένα χρονικό
+    βήμα και (β) ο επιλογέας ημερομηνίας για μια υποπερίοδο.}
+  \label{fig:ui_detail}
+\end{figure}
+
+
+Η χρηστικότητα ενισχύεται από δύο βοηθητικά εργαλεία (Σχήμα~\ref{fig:ui_detail}). Με το hover,
+σταματώντας τον δείκτη σε μία ώρα, εμφανίζονται μαζί οι τιμές όλων των ενεργών μοντέλων δίπλα
+στην πραγματική, κάτι που καθιστά δυνατό να εξεταστεί ένα spike της τιμής. 
+Ο χρήστης έχει τη δυνατότητα να απομονώσει οποιοδήποτε χρονικό διάστημα επιθυμεί για να εστιάσει την ανάλυσή του.
+
+Οι αλλαγές αυτές ενημερώνουν αυτόματα τους δείκτες σφάλματος (MAE, RMSE, sMAPE) στους πίνακες. (Σχήμα~\ref{fig:ui_tables}). Η
+κατάταξη χωρίζεται σε μοντέλα μηχανικής μάθησης και μοντέλα αναφοράς, ώστε η σύγκριση να
+γίνεται μέσα σε ομοιογενείς ομάδες. Το \texttt{Sort by} ταξινομεί κατά MAE, RMSE ή sMAPE και
+το $\downarrow$~\texttt{CSV} κατεβάζει τις τρέχουσες μετρικές σε αρχείο. Στη βάση της σελίδας
+βρίσκεται ο συγκεντρωτικός πίνακας με όλα τα μοντέλα της εκάστοτε στρατηγικής.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.92\textwidth]{ui_screenshots/pinakes.png}
+  \caption{Πίνακες μετρικών: επάνω οι αυτόνομες κατατάξεις των μοντέλων μηχανικής μάθησης
+    (αριστερά) και των μοντέλων αναφοράς (δεξιά), και κάτω ο ενιαίος συγκεντρωτικός πίνακας
+    όλων των μοντέλων, με επιλογέα ταξινόμησης \texttt{Sort by}.}
+  \label{fig:ui_tables}
+\end{figure}
+
+Η διάταξη εξυπηρετεί διαφορετικούς χρήστες. Ο ερευνητής εστιάζει σε spikes με το hover και
+συγκρίνει στρατηγικές αλλάζοντας tab. Ο αναλυτής της αγοράς ελέγχει μια συγκεκριμένη εβδομάδα
+με το zoom και εξάγει τις μετρικές σε CSV. Όποιος θέλει μόνο τη συνολική εικόνα χρησιμοποιεί
+το \texttt{Best} και τον ενιαίο πίνακα.
+
+\section{Σύνοψη}
+\label{sec:dash_summary}
+
+Στην παρούσα εργασία το dashboard λειτούργησε ως βοηθητικό ερευνητικό εργαλείο. Η άμεση
+οπτικοποίηση κάθε συνδυασμού μοντέλου, στρατηγικής και περιόδου επέτρεψε να εντοπιστούν
+γρήγορα αδυναμίες, να συγκριθούν στρατηγικές χωρίς εκτέλεση κώδικα και να παρθούν αποφάσεις. 
+Στο επόμενο κεφάλαιο, η ποιοτική και οπτική εκτίμηση που εμπλουτίζεται με ποσοτική ανάλυση και στατιστική επαλήθευση.

@@ -1,0 +1,15 @@
+{
+  "objective": "regression",
+  "random_state": 42,
+  "subsample_freq": 1,
+  "learning_rate": 0.025209661899708326,
+  "num_leaves": 206,
+  "max_depth": 9,
+  "min_child_samples": 11,
+  "subsample": 0.9968655943703331,
+  "colsample_bytree": 0.5586701659759761,
+  "reg_alpha": 0.0069097114959387924,
+  "reg_lambda": 0.002961852193489149,
+  "min_split_gain": 0.17014598057038172,
+  "n_estimators": 423
+}

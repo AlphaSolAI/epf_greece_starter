@@ -1,0 +1,16 @@
+==============================================================================
+MASTER FORECAST | algo=lgbm task=price strategy=recursive
+  market=dam task=price gate=strict delay_override=None → gap=0h | horizon=24 stride=24 retrain=static
+  groups=['calendar', 'lags', 'roll', 'resfc', 'loadfc', 'xborder', 'meteo', 'fuel', 'genlags', 'loadlags', 'other']  (#features=158)
+  test=[2025-06-01 00:00:00 .. 2025-08-31 23:00:00]  train_end=2025-05-31 23:00:00
+==============================================================================
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.016678 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 24468
+[LightGBM] [Info] Number of data points in the train set: 73095, number of used features: 158
+[LightGBM] [Info] Start training from score 105.690257
+   [fit] key=static cutoff=2025-05-31 23:00:00  (block 1/92)
+   [done] 92 blocks σε 56.6s
+
+📊 RESULT | MAE=13.9152 €/MWh | RMSE=19.8573 | sMAPE=36.5531% | n=2208
+💾 saved: p1_out/lgbm_xborder_summer_static.json

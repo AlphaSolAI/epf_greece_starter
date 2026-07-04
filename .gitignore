@@ -1,0 +1,12 @@
+data/raw/
+models/*.pkl
+models/eval_cache_*
+models/backup.pkl
+models/feature_sets/
+tuning/
+src/__pycache__/
+__pycache__/
+*.pyc
+*.pth
+*.pt
+.venv/

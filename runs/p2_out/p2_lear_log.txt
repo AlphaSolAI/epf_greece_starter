@@ -1,0 +1,36 @@
+🧪 ABLATION | lear price dam recursive retrain=static gate=strict (gap=0h)
+   test: 2025-12-01 00:00 → 2026-02-28 23:00 | 6 specs
+
+[1/6] --features "default" → calendar+lags+roll+resfc+loadfc+meteo+fuel+genlags+loadlags+other | 152 features
+    MAE=19.4924 €/MWh | RMSE=25.9227 | sMAPE=27.4868% | 72.1s
+
+[2/6] --features "default,-genlags" → calendar+lags+roll+resfc+loadfc+meteo+fuel+loadlags+other | 134 features
+    MAE=19.6161 €/MWh | RMSE=26.1822 | sMAPE=27.4612% | 55.1s
+
+[3/6] --features "default,-resfc" → calendar+lags+roll+loadfc+meteo+fuel+genlags+loadlags+other | 146 features
+    MAE=18.4978 €/MWh | RMSE=25.8708 | sMAPE=26.8398% | 62.5s
+
+[4/6] --features "default,-fuel" → calendar+lags+roll+resfc+loadfc+meteo+genlags+loadlags+other | 134 features
+    MAE=18.9875 €/MWh | RMSE=25.442 | sMAPE=27.1146% | 43.5s
+
+[5/6] --features "lags,calendar" → calendar+lags | 15 features
+    MAE=19.5904 €/MWh | RMSE=28.7206 | sMAPE=27.8573% | 21.7s
+
+[6/6] --features "default,xborder" → calendar+lags+roll+resfc+loadfc+xborder+meteo+fuel+genlags+loadlags+other | 158 features
+    MAE=19.3344 €/MWh | RMSE=25.717 | sMAPE=27.3913% | 66.7s
+
+================================================================================
+spec                    #feat        MAE      ΔMAE      Δ%       RMSE   sMAPE%
+--------------------------------------------------------------------------------
+default                   152     19.492    +0.000   +0.0%     25.923    27.49
+default,-genlags          134     19.616    +0.124   +0.6%     26.182    27.46
+default,-resfc            146     18.498    -0.995   -5.1%     25.871    26.84
+default,-fuel             134     18.988    -0.505   -2.6%     25.442    27.11
+lags,calendar              15     19.590    +0.098   +0.5%     28.721    27.86
+default,xborder           158     19.334    -0.158   -0.8%     25.717    27.39
+================================================================================
+ΔMAE>0 → χειρότερο από το baseline (1ο spec). Αν π.χ. το 'all,-meteo' έχει ΔMAE≈0, η ομάδα meteo δεν προσφέρει σε αυτό το setup.
+
+✅ Ablation: 6 specs σε 5.4 min
+   CSV: C:\Users\aggel\OneDrive\Υπολογιστής\ALPHA\ECE\ΔΙΠΛΩΜΑΤΙΚΗ\epf_greece_starter\p2_out\results_ablation_lear_q1.csv
+   JSONs: C:\Users\aggel\OneDrive\Υπολογιστής\ALPHA\ECE\ΔΙΠΛΩΜΑΤΙΚΗ\epf_greece_starter\p2_out\ablation_lear_q1

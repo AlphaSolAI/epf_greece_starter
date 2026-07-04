@@ -1,0 +1,2 @@
+config,algo,task,market,strategy,retrain,gate,horizon,stride,unit,MAE,RMSE,sMAPE,n,seconds
+xgb_price_dam_tf_monthly,xgb,price,dam,tf,monthly,strict,24,24,€/MWh,10.9895,16.4091,20.7942,2160,367.7

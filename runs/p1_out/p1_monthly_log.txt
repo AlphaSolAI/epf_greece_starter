@@ -1,0 +1,34 @@
+==============================================================================
+MASTER FORECAST | algo=lgbm task=price strategy=recursive
+  market=dam task=price gate=strict delay_override=None → gap=0h | horizon=24 stride=24 retrain=monthly
+  groups=['calendar', 'lags', 'roll', 'resfc', 'loadfc', 'xborder', 'meteo', 'fuel', 'genlags', 'loadlags', 'other']  (#features=158)
+  test=[2025-12-01 00:00:00 .. 2026-02-28 23:00:00]  train_end=None
+==============================================================================
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.056406 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 24476
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 158
+[LightGBM] [Info] Start training from score 105.091640
+   [fit] key=2025-11 cutoff=2025-11-30 23:00:00  (block 1/90)
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.051460 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 24476
+[LightGBM] [Info] Number of data points in the train set: 77510, number of used features: 158
+[LightGBM] [Info] Start training from score 105.100532
+   [fit] key=2025-12 cutoff=2025-12-01 23:00:00  (block 2/90)
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.055969 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 24478
+[LightGBM] [Info] Number of data points in the train set: 78254, number of used features: 158
+[LightGBM] [Info] Start training from score 105.130774
+   [fit] key=2026-01 cutoff=2026-01-01 23:00:00  (block 33/90)
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.056656 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 24492
+[LightGBM] [Info] Number of data points in the train set: 78998, number of used features: 158
+[LightGBM] [Info] Start training from score 105.170736
+   [fit] key=2026-02 cutoff=2026-02-01 23:00:00  (block 64/90)
+   [done] 90 blocks σε 135.0s
+
+📊 RESULT | MAE=15.9288 €/MWh | RMSE=23.3785 | sMAPE=24.6166% | n=2160
+💾 saved: p1_out/lgbm_xborder_monthly_q1.json

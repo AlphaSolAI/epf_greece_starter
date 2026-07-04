@@ -1,0 +1,22 @@
+{
+  "mode": "hourly",
+  "bounds": {
+    "test_size": 168,
+    "train_start": null,
+    "train_end": null,
+    "test_start": null,
+    "test_end": null
+  },
+  "n_trials": 12,
+  "seed": 42,
+  "val_size": 720,
+  "best_val_mae": 22.42692748731953,
+  "best_params": {
+    "hidden_layer_sizes": [
+      64,
+      64
+    ],
+    "alpha": 0.001,
+    "learning_rate_init": 0.002
+  }
+}

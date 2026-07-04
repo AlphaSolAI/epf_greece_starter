@@ -1,0 +1,156 @@
+\documentclass[11pt, a4paper]{report}
+
+% Language setting — Greek primary, English secondary
+\usepackage[greek, english]{babel}
+
+% Page size and margins
+\usepackage[a4paper, top=2.5cm, bottom=2.5cm, left=3cm, right=2.5cm, headheight=14pt]{geometry}
+
+% Math
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% Graphics
+\usepackage{graphicx}
+\usepackage[export]{adjustbox}
+\usepackage{float}
+\usepackage{subcaption}
+\graphicspath{{../../epf_greece_starter/thesis_output/}}
+
+% Tables
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{xcolor}
+\usepackage{colortbl}
+
+% Links
+\usepackage[hidelinks, breaklinks]{hyperref}
+\usepackage[nameinlink, capitalize]{cleveref}
+
+% Bibliography
+\usepackage[style=ieee, sorting=none]{biblatex}
+\addbibresource{thesis.bib}
+\DeclareFieldFormat{urldate}{}
+
+% Font (Noto Sans — supports Greek)
+\usepackage{fontspec}
+\setmainfont{Noto Sans}
+\usepackage{microtype}
+\usepackage{indentfirst}
+
+% PDF pages (for cover)
+\usepackage{pdfpages}
+
+% Units
+\usepackage[mode=match]{siunitx}
+
+% Captions
+\usepackage{caption}
+\DeclareCaptionLabelSeparator{ieee}{.\quad}
+\captionsetup{labelsep=ieee, font=small}
+
+% Code listings
+\usepackage{listings}
+\lstset{basicstyle=\ttfamily\footnotesize, breaklines=true}
+
+% List customization
+\usepackage{enumitem}
+
+% Acronyms / Glossary
+\usepackage[acronym, toc]{glossaries}
+\makeglossaries
+
+% Chapter style — "Κεφάλαιο N" heading
+\usepackage{titlesec}
+\titleformat{\chapter}[display]
+  {\normalfont\huge\bfseries}
+  {\chaptertitlename\ \thechapter}{20pt}{\Huge}
+\titlespacing*{\chapter}{0pt}{50pt}{40pt}
+
+% Header / Footer
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE,RO]{\thepage}
+\fancyhead[RE]{\nouppercase{\leftmark}}
+\fancyhead[LO]{\nouppercase{\rightmark}}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ─── Abbreviations ────────────────────────────────────────────────────────────
+\newacronym{dam}{DAM}{Day-Ahead Market}
+\newacronym{epf}{EPF}{Electricity Price Forecasting}
+\newacronym{elf}{ELF}{Electricity Load Forecasting}
+\newacronym{ml}{ML}{Machine Learning}
+\newacronym{lgbm}{LightGBM}{Light Gradient Boosting Machine}
+\newacronym{xgb}{XGB}{eXtreme Gradient Boosting}
+\newacronym{rf}{RF}{Random Forest}
+\newacronym{svr}{SVR}{Support Vector Regression}
+\newacronym{mlp}{MLP}{Multi-Layer Perceptron}
+\newacronym{mimo}{MIMO}{Multi-Input Multi-Output}
+\newacronym{mae}{MAE}{Mean Absolute Error}
+\newacronym{rmse}{RMSE}{Root Mean Squared Error}
+\newacronym{smape}{sMAPE}{symmetric Mean Absolute Percentage Error}
+\newacronym{tf}{TF}{Teacher-Forcing}
+\newacronym{ol}{OL}{Open-Loop}
+\newacronym{cl}{CL}{Closed-Loop}
+\newacronym{dm}{DM}{Diebold-Mariano}
+\newacronym{entso}{ENTSO-E}{European Network of Transmission System Operators for Electricity}
+\newacronym{admhe}{ΑΔΜΗΕ}{Ανεξάρτητος Διαχειριστής Μεταφοράς Ηλεκτρικής Ενέργειας}
+\newacronym{sdac}{SDAC}{Single Day-Ahead Coupling}
+\newacronym{res}{RES}{Renewable Energy Sources}
+\newacronym{tso}{TSO}{Transmission System Operator}
+\newacronym{cv}{CV}{Cross-Validation}
+\newacronym{hln}{HLN}{Harvey-Leybourne-Newbold}
+%%% ────────────────────────────────────────────────────────────────────────────
+
+\begin{document}
+
+\selectlanguage{greek}
+
+%% ─── COVER ───────────────────────────────────────────────────────────────────
+\includepdf[pages={-}]{cover.pdf}
+
+%% ─── PREFACE ─────────────────────────────────────────────────────────────────
+\pagenumbering{roman}
+\input{content/acknowledgements}
+\newpage
+\input{content/abstract-gr}
+\newpage
+\selectlanguage{english}
+\input{content/abstract-eng}
+\selectlanguage{greek}
+\newpage
+
+%% ─── FRONT MATTER ────────────────────────────────────────────────────────────
+\tableofcontents
+\listoffigures
+\listoftables
+
+\setglossarystyle{index}
+\printglossary[type=\acronymtype, title={Κατάλογος Ακρωνύμων}, nonumberlist]
+\newpage
+
+%% ─── MAIN MATTER ─────────────────────────────────────────────────────────────
+\pagenumbering{arabic}
+\setcounter{page}{1}
+\pagestyle{fancy}
+
+\input{content/introduction}
+\input{content/literature}
+\input{content/data}
+\input{content/methods}
+\input{content/experiments}
+\input{content/feature_importance}
+\input{content/statistical_tests}
+\input{content/dashboard}
+\input{content/conclusions}
+
+%% ─── BIBLIOGRAPHY ────────────────────────────────────────────────────────────
+\newpage
+\sloppy
+\printbibliography[heading=bibintoc, title={Βιβλιογραφία}]
+
+\end{document}

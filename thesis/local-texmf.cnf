@@ -1,0 +1,3 @@
+main_memory = 12000000
+extra_mem_top = 8000000
+extra_mem_bot = 4000000

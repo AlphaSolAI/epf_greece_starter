@@ -1,0 +1,500 @@
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 1.318665 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22946
+[LightGBM] [Info] Number of data points in the train set: 77462, number of used features: 152
+[LightGBM] [Info] Start training from score 105.096403
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 1.324667 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22946
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 1.253759 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22946
+[LightGBM] [Info] Number of data points in the train set: 77462, number of used features: 152
+[LightGBM] [Info] Number of data points in the train set: 77462, number of used features: 152
+[LightGBM] [Info] Start training from score 105.095929
+[LightGBM] [Info] Start training from score 105.096849
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 1.210931 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22946
+[LightGBM] [Info] Number of data points in the train set: 77462, number of used features: 152
+[LightGBM] [Info] Start training from score 105.097701
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 1.238588 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22946
+[LightGBM] [Info] Number of data points in the train set: 77462, number of used features: 152
+[LightGBM] [Info] Start training from score 105.097128
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 1.282294 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22946
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 1.225781 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Number of data points in the train set: 77462, number of used features: 152
+[LightGBM] [Info] Start training from score 105.095439
+[LightGBM] [Info] Total Bins 22946
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 1.268503 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22946
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 1.212007 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Number of data points in the train set: 77462, number of used features: 152
+[LightGBM] [Info] Total Bins 22946
+[LightGBM] [Info] Start training from score 105.094907
+[LightGBM] [Info] Number of data points in the train set: 77462, number of used features: 152
+[LightGBM] [Info] Start training from score 105.095683
+[LightGBM] [Info] Number of data points in the train set: 77462, number of used features: 152
+[LightGBM] [Info] Start training from score 105.094456
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 1.296925 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22946
+[LightGBM] [Info] Auto-choosing row-wise multi-threading, the overhead of testing was 0.470265 seconds.
+You can set `force_row_wise=true` to remove the overhead.
+And if memory is not enough, you can set `force_col_wise=true`.
+[LightGBM] [Info] Total Bins 22946
+[LightGBM] [Info] Number of data points in the train set: 77462, number of used features: 152
+[LightGBM] [Info] Start training from score 105.097322
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 1.274944 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Number of data points in the train set: 77462, number of used features: 152
+[LightGBM] [Info] Total Bins 22946
+[LightGBM] [Info] Start training from score 105.091230
+[LightGBM] [Info] Number of data points in the train set: 77462, number of used features: 152
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 1.328587 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Start training from score 105.090950
+[LightGBM] [Info] Total Bins 22946
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 1.306765 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22946
+[LightGBM] [Info] Number of data points in the train set: 77462, number of used features: 152
+[LightGBM] [Info] Start training from score 105.093273
+[LightGBM] [Info] Number of data points in the train set: 77462, number of used features: 152
+[LightGBM] [Info] Start training from score 105.090645
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 1.339546 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 1.347162 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22946
+[LightGBM] [Info] Total Bins 22946
+[LightGBM] [Info] Number of data points in the train set: 77462, number of used features: 152
+[LightGBM] [Info] Number of data points in the train set: 77462, number of used features: 152
+[LightGBM] [Info] Start training from score 105.096537
+[LightGBM] [Info] Start training from score 105.092224
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.196643 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22946
+[LightGBM] [Info] Number of data points in the train set: 77462, number of used features: 152
+[LightGBM] [Info] Start training from score 105.090459
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.201446 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22946
+[LightGBM] [Info] Number of data points in the train set: 77462, number of used features: 152
+[LightGBM] [Info] Start training from score 105.090168
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.195825 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22946
+[LightGBM] [Info] Number of data points in the train set: 77462, number of used features: 152
+[LightGBM] [Info] Start training from score 105.089998
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.201258 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22946
+[LightGBM] [Info] Number of data points in the train set: 77462, number of used features: 152
+[LightGBM] [Info] Start training from score 105.089764
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.198353 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22946
+[LightGBM] [Info] Number of data points in the train set: 77462, number of used features: 152
+[LightGBM] [Info] Start training from score 105.089728
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.205984 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22946
+[LightGBM] [Info] Number of data points in the train set: 77462, number of used features: 152
+[LightGBM] [Info] Start training from score 105.089633
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.199640 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22946
+[LightGBM] [Info] Number of data points in the train set: 77462, number of used features: 152
+[LightGBM] [Info] Start training from score 105.089932
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.212146 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22946
+[LightGBM] [Info] Number of data points in the train set: 77462, number of used features: 152
+[LightGBM] [Info] Start training from score 105.090365
+==============================================================================
+MASTER FORECAST | algo=lgbm task=price strategy=direct
+  market=dam task=price gate=strict delay_override=None → gap=0h | horizon=24 stride=24 retrain=monthly
+  groups=['calendar', 'lags', 'roll', 'resfc', 'loadfc', 'meteo', 'fuel', 'genlags', 'loadlags', 'other']  (#features=152)
+  test=[2025-12-01 00:00:00 .. 2026-02-28 23:00:00]  train_end=None
+==============================================================================
+   [fit] key=2025-11 cutoff=2025-11-30 23:00:00  (block 1/90)
+[LightGBM] [Info] Auto-choosing row-wise multi-threading, the overhead of testing was 0.080922 seconds.
+You can set `force_row_wise=true` to remove the overhead.
+And if memory is not enough, you can set `force_col_wise=true`.
+[LightGBM] [Info] Total Bins 22946
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 152
+[LightGBM] [Info] Start training from score 105.092234
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.202641 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22946
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 152
+[LightGBM] [Info] Start training from score 105.095276
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.220381 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.197126 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22946
+[LightGBM] [Info] Total Bins 22946
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 152
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 152
+[LightGBM] [Info] Start training from score 105.092845
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.229084 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Start training from score 105.094614
+[LightGBM] [Info] Total Bins 22946
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 152
+[LightGBM] [Info] Start training from score 105.096294
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.216457 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22946
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 152
+[LightGBM] [Info] Start training from score 105.094011
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.231147 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22946
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.258783 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22946
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 152
+[LightGBM] [Info] Start training from score 105.093455
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.261372 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 152
+[LightGBM] [Info] Total Bins 22946
+[LightGBM] [Info] Start training from score 105.094662
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 152
+[LightGBM] [Info] Start training from score 105.096312
+[LightGBM] [Info] Auto-choosing row-wise multi-threading, the overhead of testing was 0.122541 seconds.
+You can set `force_row_wise=true` to remove the overhead.
+And if memory is not enough, you can set `force_col_wise=true`.
+[LightGBM] [Info] Total Bins 22946
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 152
+[LightGBM] [Info] Start training from score 105.095927
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.331106 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22946
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 152
+[LightGBM] [Info] Start training from score 105.093529
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.202785 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22946
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 152
+[LightGBM] [Info] Start training from score 105.092615
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.207398 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22946
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 152
+[LightGBM] [Info] Start training from score 105.092457
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.229167 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22946
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 152
+[LightGBM] [Info] Start training from score 105.092135
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.228031 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22946
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 152
+[LightGBM] [Info] Start training from score 105.096367
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.258802 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22946
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 152
+[LightGBM] [Info] Start training from score 105.092825
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.176537 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22946
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 152
+[LightGBM] [Info] Start training from score 105.094287
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.159158 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22946
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 152
+[LightGBM] [Info] Start training from score 105.095161
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.154717 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22946
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 152
+[LightGBM] [Info] Start training from score 105.096401
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.134910 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22946
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 152
+[LightGBM] [Info] Start training from score 105.097267
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.132297 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22946
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 152
+[LightGBM] [Info] Start training from score 105.097792
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.139418 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22946
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 152
+[LightGBM] [Info] Start training from score 105.098224
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.161039 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22946
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 152
+[LightGBM] [Info] Start training from score 105.098642
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.144548 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22946
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 152
+[LightGBM] [Info] Start training from score 105.099260
+   [fit] key=2025-12 cutoff=2025-12-01 23:00:00  (block 2/90)
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 1.389012 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22948
+[LightGBM] [Info] Number of data points in the train set: 78230, number of used features: 152
+[LightGBM] [Info] Start training from score 105.141095
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 1.712003 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22948
+[LightGBM] [Info] Number of data points in the train set: 78230, number of used features: 152
+[LightGBM] [Info] Start training from score 105.139218
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 1.750705 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22948
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 1.688633 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 1.696819 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22948
+[LightGBM] [Info] Number of data points in the train set: 78230, number of used features: 152
+[LightGBM] [Info] Total Bins 22948
+[LightGBM] [Info] Start training from score 105.139751
+[LightGBM] [Info] Number of data points in the train set: 78230, number of used features: 152
+[LightGBM] [Info] Number of data points in the train set: 78230, number of used features: 152
+[LightGBM] [Info] Start training from score 105.140245
+[LightGBM] [Info] Start training from score 105.141307
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 1.498001 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22948
+[LightGBM] [Info] Number of data points in the train set: 78230, number of used features: 152
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 1.345649 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Start training from score 105.140611
+[LightGBM] [Info] Total Bins 22948
+[LightGBM] [Info] Number of data points in the train set: 78230, number of used features: 152
+[LightGBM] [Info] Start training from score 105.140377
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 1.274431 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 1.378379 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22948
+[LightGBM] [Info] Total Bins 22948
+[LightGBM] [Info] Number of data points in the train set: 78230, number of used features: 152
+[LightGBM] [Info] Number of data points in the train set: 78230, number of used features: 152
+[LightGBM] [Info] Start training from score 105.130614
+[LightGBM] [Info] Start training from score 105.136099
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 1.348037 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22948
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 1.404144 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22948
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 1.354249 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22948
+[LightGBM] [Info] Number of data points in the train set: 78230, number of used features: 152
+[LightGBM] [Info] Start training from score 105.140891
+[LightGBM] [Info] Number of data points in the train set: 78230, number of used features: 152
+[LightGBM] [Info] Start training from score 105.139135
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 1.443163 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22948
+[LightGBM] [Info] Number of data points in the train set: 78230, number of used features: 152
+[LightGBM] [Info] Start training from score 105.133218
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 1.448744 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Number of data points in the train set: 78230, number of used features: 152
+[LightGBM] [Info] Total Bins 22948
+[LightGBM] [Info] Start training from score 105.131891
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 1.436133 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22948
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 1.533893 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Number of data points in the train set: 78230, number of used features: 152
+[LightGBM] [Info] Total Bins 22948
+[LightGBM] [Info] Start training from score 105.131037
+[LightGBM] [Info] Number of data points in the train set: 78230, number of used features: 152
+[LightGBM] [Info] Start training from score 105.134647
+[LightGBM] [Info] Number of data points in the train set: 78230, number of used features: 152
+[LightGBM] [Info] Start training from score 105.137658
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.342628 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22948
+[LightGBM] [Info] Number of data points in the train set: 78230, number of used features: 152
+[LightGBM] [Info] Start training from score 105.130248
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 1.368372 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22948
+[LightGBM] [Info] Number of data points in the train set: 78230, number of used features: 152
+[LightGBM] [Info] Start training from score 105.129864
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 1.312561 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22948
+[LightGBM] [Info] Number of data points in the train set: 78230, number of used features: 152
+[LightGBM] [Info] Start training from score 105.129582
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 1.341805 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22948
+[LightGBM] [Info] Number of data points in the train set: 78230, number of used features: 152
+[LightGBM] [Info] Start training from score 105.129214
+[LightGBM] [Info] Auto-choosing row-wise multi-threading, the overhead of testing was 0.408582 seconds.
+You can set `force_row_wise=true` to remove the overhead.
+And if memory is not enough, you can set `force_col_wise=true`.
+[LightGBM] [Info] Total Bins 22948
+[LightGBM] [Info] Number of data points in the train set: 78230, number of used features: 152
+[LightGBM] [Info] Start training from score 105.128950
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 1.019430 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22948
+[LightGBM] [Info] Number of data points in the train set: 78230, number of used features: 152
+[LightGBM] [Info] Start training from score 105.128971
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.767238 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22948
+[LightGBM] [Info] Number of data points in the train set: 78230, number of used features: 152
+[LightGBM] [Info] Start training from score 105.129110
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.764275 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22948
+[LightGBM] [Info] Number of data points in the train set: 78230, number of used features: 152
+[LightGBM] [Info] Start training from score 105.129524
+   [fit] key=2026-01 cutoff=2026-01-01 23:00:00  (block 33/90)
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.204384 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22960
+[LightGBM] [Info] Number of data points in the train set: 78974, number of used features: 152
+[LightGBM] [Info] Start training from score 105.173624
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.182862 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22960
+[LightGBM] [Info] Number of data points in the train set: 78974, number of used features: 152
+[LightGBM] [Info] Start training from score 105.174633
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.197605 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22960
+[LightGBM] [Info] Number of data points in the train set: 78974, number of used features: 152
+[LightGBM] [Info] Start training from score 105.172552
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.197036 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22960
+[LightGBM] [Info] Number of data points in the train set: 78974, number of used features: 152
+[LightGBM] [Info] Start training from score 105.174137
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.200268 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22960
+[LightGBM] [Info] Number of data points in the train set: 78974, number of used features: 152
+[LightGBM] [Info] Start training from score 105.174660
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.204411 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22960
+[LightGBM] [Info] Number of data points in the train set: 78974, number of used features: 152
+[LightGBM] [Info] Start training from score 105.173127
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.185086 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22960
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.175384 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22960
+[LightGBM] [Info] Number of data points in the train set: 78974, number of used features: 152
+[LightGBM] [Info] Start training from score 105.173857
+[LightGBM] [Info] Number of data points in the train set: 78974, number of used features: 152
+[LightGBM] [Info] Start training from score 105.175060
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.194737 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22960
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.185614 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22960
+[LightGBM] [Info] Number of data points in the train set: 78974, number of used features: 152
+[LightGBM] [Info] Start training from score 105.173228
+[LightGBM] [Info] Number of data points in the train set: 78974, number of used features: 152
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.191068 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Start training from score 105.173764
+[LightGBM] [Info] Total Bins 22960
+[LightGBM] [Info] Number of data points in the train set: 78974, number of used features: 152
+[LightGBM] [Info] Start training from score 105.171123
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.191129 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22960
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.183781 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22960
+[LightGBM] [Info] Number of data points in the train set: 78974, number of used features: 152
+[LightGBM] [Info] Start training from score 105.172650
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.191363 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Number of data points in the train set: 78974, number of used features: 152
+[LightGBM] [Info] Total Bins 22960
+[LightGBM] [Info] Start training from score 105.172163
+[LightGBM] [Info] Number of data points in the train set: 78974, number of used features: 152
+[LightGBM] [Info] Start training from score 105.174292
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.193675 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22960
+[LightGBM] [Info] Number of data points in the train set: 78974, number of used features: 152
+[LightGBM] [Info] Start training from score 105.170647
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.194779 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22960
+[LightGBM] [Info] Number of data points in the train set: 78974, number of used features: 152
+[LightGBM] [Info] Start training from score 105.171550
+[LightGBM] [Info] Auto-choosing row-wise multi-threading, the overhead of testing was 0.056189 seconds.
+You can set `force_row_wise=true` to remove the overhead.
+And if memory is not enough, you can set `force_col_wise=true`.
+[LightGBM] [Info] Total Bins 22960
+[LightGBM] [Info] Number of data points in the train set: 78974, number of used features: 152
+[LightGBM] [Info] Start training from score 105.170340
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.158622 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22960
+[LightGBM] [Info] Number of data points in the train set: 78974, number of used features: 152
+[LightGBM] [Info] Start training from score 105.170038
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.123892 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22960
+[LightGBM] [Info] Number of data points in the train set: 78974, number of used features: 152
+[LightGBM] [Info] Start training from score 105.169764
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.124654 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22960
+[LightGBM] [Info] Number of data points in the train set: 78974, number of used features: 152
+[LightGBM] [Info] Start training from score 105.169559
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.131490 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22960
+[LightGBM] [Info] Number of data points in the train set: 78974, number of used features: 152
+[LightGBM] [Info] Start training from score 105.169280
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.120650 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22960
+[LightGBM] [Info] Number of data points in the train set: 78974, number of used features: 152
+[LightGBM] [Info] Start training from score 105.169139
+[LightGBM] [Info] Auto-choosing row-wise multi-threading, the overhead of testing was 0.053772 seconds.
+You can set `force_row_wise=true` to remove the overhead.
+And if memory is not enough, you can set `force_col_wise=true`.
+[LightGBM] [Info] Total Bins 22960
+[LightGBM] [Info] Number of data points in the train set: 78974, number of used features: 152
+[LightGBM] [Info] Start training from score 105.169124
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.119726 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22960
+[LightGBM] [Info] Number of data points in the train set: 78974, number of used features: 152
+[LightGBM] [Info] Start training from score 105.169510
+   [fit] key=2026-02 cutoff=2026-02-01 23:00:00  (block 64/90)
+   [done] 90 blocks σε 777.9s
+
+📊 RESULT | MAE=19.5891 €/MWh | RMSE=27.449 | sMAPE=27.5102% | n=2160
+💾 saved: p4_out/lgbm_direct_default_monthly_q1.json

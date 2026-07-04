@@ -1,0 +1,75 @@
+{
+  "mode": "hourly",
+  "task": "price",
+  "loop": "closed",
+  "train_start": "2017-10-30 01:00:00",
+  "train_end": "2025-11-30 23:00:00",
+  "test_start": "2025-12-01 00:00:00",
+  "test_end": "2025-12-07 23:00:00",
+  "test_size": 168,
+  "metrics": [
+    {
+      "Model": "LightGBM (tuned)",
+      "Type": "ml",
+      "MAE": 11.793343275759657,
+      "RMSE": 18.346080795950012,
+      "sMAPE": 11.036008498227368
+    },
+    {
+      "Model": "XGBoost (tuned)",
+      "Type": "ml",
+      "MAE": 11.950464895339238,
+      "RMSE": 18.916083007572695,
+      "sMAPE": 11.041687164131666
+    },
+    {
+      "Model": "LightGBM (residual)",
+      "Type": "ml",
+      "MAE": 11.450968399510083,
+      "RMSE": 18.59656137349841,
+      "sMAPE": 10.730046077620134
+    },
+    {
+      "Model": "LightGBM (default)",
+      "Type": "ml",
+      "MAE": 11.54721630042718,
+      "RMSE": 18.545531055795585,
+      "sMAPE": 10.836316666813987
+    },
+    {
+      "Model": "XGBoost (default)",
+      "Type": "ml",
+      "MAE": 12.130457300458634,
+      "RMSE": 18.581352062553506,
+      "sMAPE": 11.091816805508364
+    },
+    {
+      "Model": "Seasonal profile (hour×dow×holiday)",
+      "Type": "baseline",
+      "MAE": 21.523625960927628,
+      "RMSE": 32.15681833495703,
+      "sMAPE": 18.388903623632995
+    },
+    {
+      "Model": "Naive-1",
+      "Type": "baseline",
+      "MAE": 14.92982142857143,
+      "RMSE": 25.963483731964782,
+      "sMAPE": 12.658854436917935
+    },
+    {
+      "Model": "Naive-24",
+      "Type": "baseline",
+      "MAE": 25.948511904761908,
+      "RMSE": 39.02936277892032,
+      "sMAPE": 23.251997413782284
+    },
+    {
+      "Model": "Naive-168",
+      "Type": "baseline",
+      "MAE": 27.32630952380952,
+      "RMSE": 41.378947344432696,
+      "sMAPE": 30.017980723951144
+    }
+  ]
+}

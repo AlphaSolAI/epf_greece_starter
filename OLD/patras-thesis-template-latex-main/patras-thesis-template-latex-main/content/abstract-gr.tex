@@ -1,0 +1,27 @@
+\begin{center}  \Large{\textbf{ΠΕΡΙΛΗΨΗ}}  \end{center}
+\begin{center}  \Large{\textbf{Βραχυπρόθεσμη Πρόβλεψη Τιμών και Φορτίου Ηλεκτρικής Ενέργειας\\
+στην Ελληνική Αγορά με Μεθόδους Μηχανικής Μάθησης}}  \end{center}
+\vspace{3pt}
+\vspace{10pt}
+\noindent
+Η παρούσα διπλωματική εργασία πραγματεύεται τη βραχυπρόθεσμη πρόβλεψη τιμής
+Αγοράς Επόμενης Ημέρας (DAM) και ηλεκτρικού φορτίου στην ελληνική αγορά
+ηλεκτρισμού, χρησιμοποιώντας αλγόριθμους Μηχανικής Μάθησης. Κεντρικό αντικείμενο
+αποτελεί η συστηματική σύγκριση τεσσάρων στρατηγικών πολυβήματης πρόβλεψης:
+Teacher-Forcing (TF), Recursive/Open-Loop (OL), Multi-Input Multi-Output (MIMO)
+και Walk-Forward Monthly Retraining (MR). Οι στρατηγικές εφαρμόζονται σε πέντε
+αλγόριθμους (LightGBM, XGBoost, Random Forest, SVR, MLP) και αξιολογούνται σε
+τρεις χρονικές περιόδους (Δεκέμβριος 2025, Q4 2025, Q1 2026) με δεδομένα από
+την πλατφόρμα ENTSO-E Transparency.\\\\
+\noindent
+Τα πειραματικά αποτελέσματα αναδεικνύουν την Walk-Forward Monthly Retraining ως
+τη βέλτιστη στρατηγική για μακροχρόνιους ορίζοντες: στο Q1 2026, το Ensemble
+TF-Best3 (MR) επιτυγχάνει MAE 10,49~€/MWh για τιμή (−27,7\% vs static TF) και
+67,7~MW για φορτίο (−30,0\%), αντιστεκόμενο αποτελεσματικά στη μεταβολή
+κατανομής τιμών που χαρακτήρισε τον Φεβρουάριο 2026. Η ανωτερότητα αυτή
+επιβεβαιώνεται στατιστικά μέσω ελέγχου Diebold-Mariano με διόρθωση
+Harvey-Leybourne-Newbold. Πρόσθετα ευρήματα: τα dense intraday lags (lags 4--23)
+βελτιώνουν MIMO αλλά βλάπτουν Recursive (dense lags paradox), ενώ το SVR
+αποτυγχάνει σε volatile αγορές λόγω ευαισθησίας στη μεταβολή κατανομής.\\
+\vspace{0.3cm}
+\\ \textit{Λέξεις-κλειδιά} --- \textbf{πρόβλεψη τιμών ηλεκτρισμού, LightGBM, XGBoost, MIMO, walk-forward retraining, scheduled sampling, Diebold-Mariano}

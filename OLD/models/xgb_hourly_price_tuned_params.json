@@ -1,0 +1,21 @@
+{
+  "mode": "hourly",
+  "task": "price",
+  "best_mean_cv_mae": 14.793541634991055,
+  "num_boost_round": 979,
+  "params": {
+    "objective": "reg:squarederror",
+    "eval_metric": "mae",
+    "tree_method": "hist",
+    "seed": 60,
+    "eta": 0.013949259243258554,
+    "max_depth": 8,
+    "min_child_weight": 4.369299977531011,
+    "subsample": 0.6682371874147545,
+    "colsample_bytree": 0.9700480473507189,
+    "gamma": 0.0011340531909938415,
+    "reg_alpha": 1.3238178747305002e-05,
+    "reg_lambda": 1.5199558840940792,
+    "device": "cuda"
+  }
+}

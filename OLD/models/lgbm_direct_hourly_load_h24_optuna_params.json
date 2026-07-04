@@ -1,0 +1,21 @@
+{
+  "algo": "lgbm",
+  "task": "load",
+  "horizon": 24,
+  "cv_metric": "mean_MAE_all_horizons",
+  "n_features": 133,
+  "baseline_mae": 139.7801,
+  "best_mae": 135.4919,
+  "improvement_pct": 3.07,
+  "note": "n_estimators capped at 600 for monthly retrain speed (original tuned value was 2000 on full dataset)",
+  "best_params": {
+    "n_estimators": 600,
+    "learning_rate": 0.01121012420535719,
+    "num_leaves": 83,
+    "min_child_samples": 5,
+    "subsample": 0.7133074555873652,
+    "colsample_bytree": 0.7213654436698718,
+    "reg_alpha": 9.912304431814135,
+    "reg_lambda": 0.2077039082934111
+  }
+}

@@ -1,0 +1,2022 @@
+{
+  "mode": "hourly",
+  "horizon": 24,
+  "test_size": 168,
+  "train_end": "2025-11-30 23:00:00",
+  "eval_mode": "multi_origin",
+  "origin_stride": 24,
+  "models": [
+    "mlp",
+    "rf",
+    "lgbm",
+    "xgb"
+  ],
+  "strategies": [
+    "all",
+    "topk",
+    "hybrid"
+  ],
+  "topk": [
+    10,
+    20,
+    30
+  ],
+  "rank_steps": [
+    24,
+    168
+  ],
+  "rank_n_estimators": 1000,
+  "rank_max_rows": 30000,
+  "train_max_rows": 30000,
+  "forced": [
+    "hour_sin",
+    "hour_cos",
+    "dow_sin",
+    "dow_cos",
+    "is_holiday",
+    "y_lag1",
+    "y_lag24",
+    "y_lag168"
+  ],
+  "weeks": {
+    "weekA": {
+      "label": "weekA",
+      "test_start": "2025-12-01 00:00:00",
+      "train_end": "2025-11-30 23:00:00",
+      "test_size": 168,
+      "horizon": 24,
+      "origin_stride": 24,
+      "rank_steps": [
+        24,
+        168
+      ],
+      "rank_n_estimators": 1000,
+      "rank_max_rows": 30000,
+      "train_max_rows": 30000,
+      "forced_used": [
+        "hour_sin",
+        "hour_cos",
+        "dow_sin",
+        "dow_cos",
+        "is_holiday",
+        "y_lag1",
+        "y_lag24",
+        "y_lag168"
+      ],
+      "ranked_features": [
+        {
+          "feature": "gas_lag48",
+          "importance": 0.06164572538473483,
+          "rank": 1
+        },
+        {
+          "feature": "gas_lag24",
+          "importance": 0.06040691832290661,
+          "rank": 2
+        },
+        {
+          "feature": "gas_lag12",
+          "importance": 0.05728844790283356,
+          "rank": 3
+        },
+        {
+          "feature": "gas_price",
+          "importance": 0.05564013029659467,
+          "rank": 4
+        },
+        {
+          "feature": "gas_lag2",
+          "importance": 0.05463362351828811,
+          "rank": 5
+        },
+        {
+          "feature": "gas_lag1",
+          "importance": 0.05292109609698245,
+          "rank": 6
+        },
+        {
+          "feature": "gas_lag3",
+          "importance": 0.05234190797509232,
+          "rank": 7
+        },
+        {
+          "feature": "gas_lag6",
+          "importance": 0.051900940468054435,
+          "rank": 8
+        },
+        {
+          "feature": "gas_lag168",
+          "importance": 0.051368680511908946,
+          "rank": 9
+        },
+        {
+          "feature": "y_roll168",
+          "importance": 0.04717991741155618,
+          "rank": 10
+        },
+        {
+          "feature": "y_roll24",
+          "importance": 0.03566950666181422,
+          "rank": 11
+        },
+        {
+          "feature": "y_lag3",
+          "importance": 0.023441200502929777,
+          "rank": 12
+        },
+        {
+          "feature": "y_lag1",
+          "importance": 0.021393990312281723,
+          "rank": 13
+        },
+        {
+          "feature": "y_lag2",
+          "importance": 0.019941636480478454,
+          "rank": 14
+        },
+        {
+          "feature": "y_lag12",
+          "importance": 0.0197485427185956,
+          "rank": 15
+        },
+        {
+          "feature": "y_lag48",
+          "importance": 0.019358488021641404,
+          "rank": 16
+        },
+        {
+          "feature": "y_lag6",
+          "importance": 0.017915550956037807,
+          "rank": 17
+        },
+        {
+          "feature": "y_lag24",
+          "importance": 0.015965360217211573,
+          "rank": 18
+        },
+        {
+          "feature": "y_lag168",
+          "importance": 0.014823273458271084,
+          "rank": 19
+        },
+        {
+          "feature": "co2_lag6",
+          "importance": 0.010915309518781665,
+          "rank": 20
+        },
+        {
+          "feature": "co2_price",
+          "importance": 0.01086625751178743,
+          "rank": 21
+        },
+        {
+          "feature": "co2_lag2",
+          "importance": 0.010509705693470293,
+          "rank": 22
+        },
+        {
+          "feature": "co2_lag3",
+          "importance": 0.010249847975401228,
+          "rank": 23
+        },
+        {
+          "feature": "co2_lag1",
+          "importance": 0.010218451936014623,
+          "rank": 24
+        },
+        {
+          "feature": "co2_lag24",
+          "importance": 0.009970641541070024,
+          "rank": 25
+        },
+        {
+          "feature": "co2_lag168",
+          "importance": 0.00994847725015971,
+          "rank": 26
+        },
+        {
+          "feature": "co2_lag48",
+          "importance": 0.009609367301226905,
+          "rank": 27
+        },
+        {
+          "feature": "co2_lag12",
+          "importance": 0.008591285801748871,
+          "rank": 28
+        },
+        {
+          "feature": "w_patras_temperature_2m",
+          "importance": 0.006619488672253838,
+          "rank": 29
+        },
+        {
+          "feature": "w_gr_mean_temperature_2m",
+          "importance": 0.004678887309279794,
+          "rank": 30
+        },
+        {
+          "feature": "gen_lignite",
+          "importance": 0.004542844512773887,
+          "rank": 31
+        },
+        {
+          "feature": "w_heraklion_temperature_2m",
+          "importance": 0.004055572483114039,
+          "rank": 32
+        },
+        {
+          "feature": "w_thessaloniki_temperature_2m",
+          "importance": 0.003963984261630738,
+          "rank": 33
+        },
+        {
+          "feature": "w_athens_temperature_2m",
+          "importance": 0.003858571973959921,
+          "rank": 34
+        },
+        {
+          "feature": "gen_wind_lag168",
+          "importance": 0.0036212082225642542,
+          "rank": 35
+        },
+        {
+          "feature": "w_larissa_temperature_2m",
+          "importance": 0.003475527100955298,
+          "rank": 36
+        },
+        {
+          "feature": "gen_wind_lag24",
+          "importance": 0.0033534599127123827,
+          "rank": 37
+        },
+        {
+          "feature": "gen_wind_lag48",
+          "importance": 0.003218111150897707,
+          "rank": 38
+        },
+        {
+          "feature": "gen_fc_dayahead",
+          "importance": 0.0030757158792166835,
+          "rank": 39
+        },
+        {
+          "feature": "wind_onshore_fc_dayahead",
+          "importance": 0.00303579406604212,
+          "rank": 40
+        },
+        {
+          "feature": "gen_gas",
+          "importance": 0.002902275377294989,
+          "rank": 41
+        },
+        {
+          "feature": "load_lag12",
+          "importance": 0.0026761752805188714,
+          "rank": 42
+        },
+        {
+          "feature": "gen_wind",
+          "importance": 0.002664494537096558,
+          "rank": 43
+        },
+        {
+          "feature": "residual_load_lag12",
+          "importance": 0.002627391689413492,
+          "rank": 44
+        },
+        {
+          "feature": "w_gr_mean_cloud_cover",
+          "importance": 0.0026210315797533194,
+          "rank": 45
+        },
+        {
+          "feature": "gen_wind_lag2",
+          "importance": 0.0025605261819855053,
+          "rank": 46
+        },
+        {
+          "feature": "residual_load_lag6",
+          "importance": 0.0025592124505593398,
+          "rank": 47
+        },
+        {
+          "feature": "gen_wind_lag1",
+          "importance": 0.0025505081863704347,
+          "rank": 48
+        },
+        {
+          "feature": "dow_cos",
+          "importance": 0.002484881964210894,
+          "rank": 49
+        },
+        {
+          "feature": "residual_load_lag168",
+          "importance": 0.0023925493698340773,
+          "rank": 50
+        },
+        {
+          "feature": "w_athens_relative_humidity_2m",
+          "importance": 0.002351538364349863,
+          "rank": 51
+        },
+        {
+          "feature": "load_lag6",
+          "importance": 0.0023449460491075614,
+          "rank": 52
+        },
+        {
+          "feature": "residual_load_lag48",
+          "importance": 0.002343942090153636,
+          "rank": 53
+        },
+        {
+          "feature": "load_lag3",
+          "importance": 0.002337985523423858,
+          "rank": 54
+        },
+        {
+          "feature": "w_patras_relative_humidity_2m",
+          "importance": 0.002281287305904574,
+          "rank": 55
+        },
+        {
+          "feature": "w_patras_wind_gusts_10m",
+          "importance": 0.002281259827723317,
+          "rank": 56
+        },
+        {
+          "feature": "w_gr_mean_relative_humidity_2m",
+          "importance": 0.0022755571122699183,
+          "rank": 57
+        },
+        {
+          "feature": "load_lag2",
+          "importance": 0.0022543645973725104,
+          "rank": 58
+        },
+        {
+          "feature": "load_lag168",
+          "importance": 0.0022404560053336407,
+          "rank": 59
+        },
+        {
+          "feature": "w_patras_wind_speed_10m",
+          "importance": 0.002219687761207208,
+          "rank": 60
+        },
+        {
+          "feature": "residual_load_lag24",
+          "importance": 0.0022169930745014462,
+          "rank": 61
+        },
+        {
+          "feature": "w_gr_mean_wind_speed_10m",
+          "importance": 0.002180920742371281,
+          "rank": 62
+        },
+        {
+          "feature": "load_lag48",
+          "importance": 0.002166244382647507,
+          "rank": 63
+        },
+        {
+          "feature": "w_thessaloniki_wind_gusts_10m",
+          "importance": 0.002165143323944516,
+          "rank": 64
+        },
+        {
+          "feature": "load_lag1",
+          "importance": 0.0021515217810002037,
+          "rank": 65
+        },
+        {
+          "feature": "load_lag24",
+          "importance": 0.0021467552759288403,
+          "rank": 66
+        },
+        {
+          "feature": "residual_load_lag3",
+          "importance": 0.0021050844099603505,
+          "rank": 67
+        },
+        {
+          "feature": "w_gr_mean_wind_gusts_10m",
+          "importance": 0.0020775373621770886,
+          "rank": 68
+        },
+        {
+          "feature": "w_larissa_relative_humidity_2m",
+          "importance": 0.002075450987326837,
+          "rank": 69
+        },
+        {
+          "feature": "load",
+          "importance": 0.0020706067129405473,
+          "rank": 70
+        },
+        {
+          "feature": "residual_load",
+          "importance": 0.002056886583395948,
+          "rank": 71
+        },
+        {
+          "feature": "gen_hydro",
+          "importance": 0.002054694959544778,
+          "rank": 72
+        },
+        {
+          "feature": "residual_load_lag2",
+          "importance": 0.001994716802351564,
+          "rank": 73
+        },
+        {
+          "feature": "residual_load_lag1",
+          "importance": 0.00196172696710431,
+          "rank": 74
+        },
+        {
+          "feature": "w_heraklion_wind_speed_10m",
+          "importance": 0.0019316469028934614,
+          "rank": 75
+        },
+        {
+          "feature": "w_larissa_wind_speed_10m",
+          "importance": 0.0019235274654830735,
+          "rank": 76
+        },
+        {
+          "feature": "w_heraklion_wind_gusts_10m",
+          "importance": 0.0018577508859151178,
+          "rank": 77
+        },
+        {
+          "feature": "w_thessaloniki_relative_humidity_2m",
+          "importance": 0.0018489740043932524,
+          "rank": 78
+        },
+        {
+          "feature": "w_thessaloniki_wind_speed_10m",
+          "importance": 0.001831393158906847,
+          "rank": 79
+        },
+        {
+          "feature": "w_athens_wind_speed_10m",
+          "importance": 0.001825367095196838,
+          "rank": 80
+        },
+        {
+          "feature": "w_heraklion_cloud_cover",
+          "importance": 0.0018175949529021826,
+          "rank": 81
+        },
+        {
+          "feature": "w_heraklion_relative_humidity_2m",
+          "importance": 0.001801845951102382,
+          "rank": 82
+        },
+        {
+          "feature": "w_athens_wind_gusts_10m",
+          "importance": 0.0017989729302252998,
+          "rank": 83
+        },
+        {
+          "feature": "w_larissa_wind_gusts_10m",
+          "importance": 0.0017710068804439299,
+          "rank": 84
+        },
+        {
+          "feature": "dow",
+          "importance": 0.0017326210019844596,
+          "rank": 85
+        },
+        {
+          "feature": "w_patras_cloud_cover",
+          "importance": 0.0016432842079483218,
+          "rank": 86
+        },
+        {
+          "feature": "dow_sin",
+          "importance": 0.001531741087009312,
+          "rank": 87
+        },
+        {
+          "feature": "w_larissa_cloud_cover",
+          "importance": 0.00139957079036141,
+          "rank": 88
+        },
+        {
+          "feature": "hour",
+          "importance": 0.0012181792996545486,
+          "rank": 89
+        },
+        {
+          "feature": "gen_solar_lag2",
+          "importance": 0.0012150231494682264,
+          "rank": 90
+        },
+        {
+          "feature": "w_athens_cloud_cover",
+          "importance": 0.0012074990415801008,
+          "rank": 91
+        },
+        {
+          "feature": "w_thessaloniki_cloud_cover",
+          "importance": 0.0011189406228620503,
+          "rank": 92
+        },
+        {
+          "feature": "solar_fc_dayahead",
+          "importance": 0.0010967267958336187,
+          "rank": 93
+        },
+        {
+          "feature": "hour_sin",
+          "importance": 0.0010860252040554687,
+          "rank": 94
+        },
+        {
+          "feature": "gen_solar_lag48",
+          "importance": 0.0010788733108603684,
+          "rank": 95
+        },
+        {
+          "feature": "gen_solar_lag1",
+          "importance": 0.0010426253067415269,
+          "rank": 96
+        },
+        {
+          "feature": "gen_solar_lag168",
+          "importance": 0.0009996511385949815,
+          "rank": 97
+        },
+        {
+          "feature": "gen_solar_lag24",
+          "importance": 0.0009817622403496006,
+          "rank": 98
+        },
+        {
+          "feature": "gen_solar",
+          "importance": 0.000974648306141508,
+          "rank": 99
+        },
+        {
+          "feature": "w_patras_shortwave_radiation",
+          "importance": 0.0008931269572230421,
+          "rank": 100
+        },
+        {
+          "feature": "w_gr_mean_shortwave_radiation",
+          "importance": 0.0008618400438630064,
+          "rank": 101
+        },
+        {
+          "feature": "w_larissa_shortwave_radiation",
+          "importance": 0.000838834230575707,
+          "rank": 102
+        },
+        {
+          "feature": "hour_cos",
+          "importance": 0.0007896903005297116,
+          "rank": 103
+        },
+        {
+          "feature": "w_thessaloniki_shortwave_radiation",
+          "importance": 0.000723999150003763,
+          "rank": 104
+        },
+        {
+          "feature": "w_heraklion_shortwave_radiation",
+          "importance": 0.0007225732195037299,
+          "rank": 105
+        },
+        {
+          "feature": "w_gr_mean_precipitation",
+          "importance": 0.0007150993947889804,
+          "rank": 106
+        },
+        {
+          "feature": "w_athens_shortwave_radiation",
+          "importance": 0.000701871550313891,
+          "rank": 107
+        },
+        {
+          "feature": "w_patras_precipitation",
+          "importance": 0.00041830395371680277,
+          "rank": 108
+        },
+        {
+          "feature": "is_holiday",
+          "importance": 0.00033823357677630376,
+          "rank": 109
+        },
+        {
+          "feature": "w_heraklion_relative_humidity_2m_missing",
+          "importance": 0.0002975151516438424,
+          "rank": 110
+        },
+        {
+          "feature": "w_athens_precipitation",
+          "importance": 0.0002503438728375776,
+          "rank": 111
+        },
+        {
+          "feature": "w_heraklion_precipitation",
+          "importance": 0.0002481741929035051,
+          "rank": 112
+        },
+        {
+          "feature": "w_heraklion_wind_speed_10m_missing",
+          "importance": 0.000248131985752857,
+          "rank": 113
+        },
+        {
+          "feature": "w_thessaloniki_precipitation",
+          "importance": 0.0002401168737570683,
+          "rank": 114
+        },
+        {
+          "feature": "w_heraklion_shortwave_radiation_missing",
+          "importance": 0.00023243807889197099,
+          "rank": 115
+        },
+        {
+          "feature": "w_athens_cloud_cover_missing",
+          "importance": 0.00023241931274252576,
+          "rank": 116
+        },
+        {
+          "feature": "w_athens_shortwave_radiation_missing",
+          "importance": 0.00022417771978231553,
+          "rank": 117
+        },
+        {
+          "feature": "w_larissa_precipitation",
+          "importance": 0.00021574967948925468,
+          "rank": 118
+        },
+        {
+          "feature": "w_athens_relative_humidity_2m_missing",
+          "importance": 0.00021091819614720705,
+          "rank": 119
+        },
+        {
+          "feature": "w_thessaloniki_wind_speed_10m_missing",
+          "importance": 0.0001945952353413047,
+          "rank": 120
+        },
+        {
+          "feature": "w_thessaloniki_wind_gusts_10m_missing",
+          "importance": 0.00019091918015348903,
+          "rank": 121
+        },
+        {
+          "feature": "w_heraklion_precipitation_missing",
+          "importance": 0.00018983921955385206,
+          "rank": 122
+        },
+        {
+          "feature": "w_thessaloniki_precipitation_missing",
+          "importance": 0.00017928447729982733,
+          "rank": 123
+        },
+        {
+          "feature": "w_heraklion_temperature_2m_missing",
+          "importance": 0.00017594664515980542,
+          "rank": 124
+        },
+        {
+          "feature": "w_thessaloniki_shortwave_radiation_missing",
+          "importance": 0.00017381165661317955,
+          "rank": 125
+        },
+        {
+          "feature": "w_thessaloniki_cloud_cover_missing",
+          "importance": 0.0001631999259187252,
+          "rank": 126
+        },
+        {
+          "feature": "w_heraklion_wind_gusts_10m_missing",
+          "importance": 0.00016168879046720065,
+          "rank": 127
+        },
+        {
+          "feature": "w_athens_temperature_2m_missing",
+          "importance": 0.00015186185019659508,
+          "rank": 128
+        },
+        {
+          "feature": "w_athens_precipitation_missing",
+          "importance": 0.00015065237093688113,
+          "rank": 129
+        },
+        {
+          "feature": "w_athens_wind_gusts_10m_missing",
+          "importance": 0.00014867309386095307,
+          "rank": 130
+        },
+        {
+          "feature": "w_patras_precipitation_missing",
+          "importance": 0.00014259131790126745,
+          "rank": 131
+        },
+        {
+          "feature": "solar_fc_dayahead_missing",
+          "importance": 0.00014217588645484207,
+          "rank": 132
+        },
+        {
+          "feature": "w_patras_relative_humidity_2m_missing",
+          "importance": 0.0001380973414717175,
+          "rank": 133
+        },
+        {
+          "feature": "w_patras_shortwave_radiation_missing",
+          "importance": 0.00013347897294650746,
+          "rank": 134
+        },
+        {
+          "feature": "w_patras_wind_gusts_10m_missing",
+          "importance": 0.00012879061249749683,
+          "rank": 135
+        },
+        {
+          "feature": "w_thessaloniki_temperature_2m_missing",
+          "importance": 0.00012599609707889453,
+          "rank": 136
+        },
+        {
+          "feature": "w_athens_wind_speed_10m_missing",
+          "importance": 0.00012188338585386489,
+          "rank": 137
+        },
+        {
+          "feature": "w_patras_temperature_2m_missing",
+          "importance": 0.00012034354861764838,
+          "rank": 138
+        },
+        {
+          "feature": "w_patras_cloud_cover_missing",
+          "importance": 0.00011900549623941863,
+          "rank": 139
+        },
+        {
+          "feature": "w_thessaloniki_relative_humidity_2m_missing",
+          "importance": 0.00011503795727219901,
+          "rank": 140
+        },
+        {
+          "feature": "w_heraklion_cloud_cover_missing",
+          "importance": 0.00011498565658059938,
+          "rank": 141
+        },
+        {
+          "feature": "w_patras_wind_speed_10m_missing",
+          "importance": 0.00010574116078731395,
+          "rank": 142
+        },
+        {
+          "feature": "wind_onshore_fc_dayahead_missing",
+          "importance": 9.144113053214383e-05,
+          "rank": 143
+        },
+        {
+          "feature": "gen_fc_dayahead_missing",
+          "importance": 2.3347904759189134e-05,
+          "rank": 144
+        },
+        {
+          "feature": "w_larissa_wind_gusts_10m_missing",
+          "importance": 0.0,
+          "rank": 145
+        },
+        {
+          "feature": "w_larissa_shortwave_radiation_missing",
+          "importance": 0.0,
+          "rank": 146
+        },
+        {
+          "feature": "w_larissa_precipitation_missing",
+          "importance": 0.0,
+          "rank": 147
+        },
+        {
+          "feature": "w_larissa_relative_humidity_2m_missing",
+          "importance": 0.0,
+          "rank": 148
+        },
+        {
+          "feature": "w_larissa_cloud_cover_missing",
+          "importance": 0.0,
+          "rank": 149
+        },
+        {
+          "feature": "w_larissa_wind_speed_10m_missing",
+          "importance": 0.0,
+          "rank": 150
+        },
+        {
+          "feature": "w_gr_mean_shortwave_radiation_missing",
+          "importance": 0.0,
+          "rank": 151
+        },
+        {
+          "feature": "w_gr_mean_precipitation_missing",
+          "importance": 0.0,
+          "rank": 152
+        },
+        {
+          "feature": "w_gr_mean_cloud_cover_missing",
+          "importance": 0.0,
+          "rank": 153
+        },
+        {
+          "feature": "w_gr_mean_temperature_2m_missing",
+          "importance": 0.0,
+          "rank": 154
+        },
+        {
+          "feature": "w_gr_mean_relative_humidity_2m_missing",
+          "importance": 0.0,
+          "rank": 155
+        },
+        {
+          "feature": "w_gr_mean_wind_speed_10m_missing",
+          "importance": 0.0,
+          "rank": 156
+        },
+        {
+          "feature": "w_larissa_temperature_2m_missing",
+          "importance": 0.0,
+          "rank": 157
+        },
+        {
+          "feature": "w_gr_mean_wind_gusts_10m_missing",
+          "importance": 0.0,
+          "rank": 158
+        }
+      ],
+      "feature_sets": {
+        "all": [
+          "load",
+          "gen_solar",
+          "gen_wind",
+          "gen_gas",
+          "gen_lignite",
+          "gen_hydro",
+          "residual_load",
+          "gas_price",
+          "co2_price",
+          "solar_fc_dayahead",
+          "wind_onshore_fc_dayahead",
+          "gen_fc_dayahead",
+          "solar_fc_dayahead_missing",
+          "wind_onshore_fc_dayahead_missing",
+          "gen_fc_dayahead_missing",
+          "w_gr_mean_temperature_2m",
+          "w_gr_mean_relative_humidity_2m",
+          "w_gr_mean_precipitation",
+          "w_gr_mean_cloud_cover",
+          "w_gr_mean_wind_speed_10m",
+          "w_gr_mean_wind_gusts_10m",
+          "w_gr_mean_shortwave_radiation",
+          "w_athens_temperature_2m",
+          "w_athens_relative_humidity_2m",
+          "w_athens_precipitation",
+          "w_athens_cloud_cover",
+          "w_athens_wind_speed_10m",
+          "w_athens_wind_gusts_10m",
+          "w_athens_shortwave_radiation",
+          "w_thessaloniki_temperature_2m",
+          "w_thessaloniki_relative_humidity_2m",
+          "w_thessaloniki_precipitation",
+          "w_thessaloniki_cloud_cover",
+          "w_thessaloniki_wind_speed_10m",
+          "w_thessaloniki_wind_gusts_10m",
+          "w_thessaloniki_shortwave_radiation",
+          "w_patras_temperature_2m",
+          "w_patras_relative_humidity_2m",
+          "w_patras_precipitation",
+          "w_patras_cloud_cover",
+          "w_patras_wind_speed_10m",
+          "w_patras_wind_gusts_10m",
+          "w_patras_shortwave_radiation",
+          "w_larissa_temperature_2m",
+          "w_larissa_relative_humidity_2m",
+          "w_larissa_precipitation",
+          "w_larissa_cloud_cover",
+          "w_larissa_wind_speed_10m",
+          "w_larissa_wind_gusts_10m",
+          "w_larissa_shortwave_radiation",
+          "w_heraklion_temperature_2m",
+          "w_heraklion_relative_humidity_2m",
+          "w_heraklion_precipitation",
+          "w_heraklion_cloud_cover",
+          "w_heraklion_wind_speed_10m",
+          "w_heraklion_wind_gusts_10m",
+          "w_heraklion_shortwave_radiation",
+          "w_gr_mean_temperature_2m_missing",
+          "w_gr_mean_relative_humidity_2m_missing",
+          "w_gr_mean_precipitation_missing",
+          "w_gr_mean_cloud_cover_missing",
+          "w_gr_mean_wind_speed_10m_missing",
+          "w_gr_mean_wind_gusts_10m_missing",
+          "w_gr_mean_shortwave_radiation_missing",
+          "w_athens_temperature_2m_missing",
+          "w_athens_relative_humidity_2m_missing",
+          "w_athens_precipitation_missing",
+          "w_athens_cloud_cover_missing",
+          "w_athens_wind_speed_10m_missing",
+          "w_athens_wind_gusts_10m_missing",
+          "w_athens_shortwave_radiation_missing",
+          "w_thessaloniki_temperature_2m_missing",
+          "w_thessaloniki_relative_humidity_2m_missing",
+          "w_thessaloniki_precipitation_missing",
+          "w_thessaloniki_cloud_cover_missing",
+          "w_thessaloniki_wind_speed_10m_missing",
+          "w_thessaloniki_wind_gusts_10m_missing",
+          "w_thessaloniki_shortwave_radiation_missing",
+          "w_patras_temperature_2m_missing",
+          "w_patras_relative_humidity_2m_missing",
+          "w_patras_precipitation_missing",
+          "w_patras_cloud_cover_missing",
+          "w_patras_wind_speed_10m_missing",
+          "w_patras_wind_gusts_10m_missing",
+          "w_patras_shortwave_radiation_missing",
+          "w_larissa_temperature_2m_missing",
+          "w_larissa_relative_humidity_2m_missing",
+          "w_larissa_precipitation_missing",
+          "w_larissa_cloud_cover_missing",
+          "w_larissa_wind_speed_10m_missing",
+          "w_larissa_wind_gusts_10m_missing",
+          "w_larissa_shortwave_radiation_missing",
+          "w_heraklion_temperature_2m_missing",
+          "w_heraklion_relative_humidity_2m_missing",
+          "w_heraklion_precipitation_missing",
+          "w_heraklion_cloud_cover_missing",
+          "w_heraklion_wind_speed_10m_missing",
+          "w_heraklion_wind_gusts_10m_missing",
+          "w_heraklion_shortwave_radiation_missing",
+          "hour",
+          "dow",
+          "is_holiday",
+          "hour_sin",
+          "hour_cos",
+          "dow_sin",
+          "dow_cos",
+          "y_lag1",
+          "y_lag2",
+          "y_lag3",
+          "y_lag6",
+          "y_lag12",
+          "y_lag24",
+          "y_lag48",
+          "y_lag168",
+          "load_lag1",
+          "load_lag2",
+          "load_lag3",
+          "load_lag6",
+          "load_lag12",
+          "load_lag24",
+          "load_lag48",
+          "load_lag168",
+          "residual_load_lag1",
+          "residual_load_lag2",
+          "residual_load_lag3",
+          "residual_load_lag6",
+          "residual_load_lag12",
+          "residual_load_lag24",
+          "residual_load_lag48",
+          "residual_load_lag168",
+          "gas_lag1",
+          "gas_lag2",
+          "gas_lag3",
+          "gas_lag6",
+          "gas_lag12",
+          "gas_lag24",
+          "gas_lag48",
+          "gas_lag168",
+          "co2_lag1",
+          "co2_lag2",
+          "co2_lag3",
+          "co2_lag6",
+          "co2_lag12",
+          "co2_lag24",
+          "co2_lag48",
+          "co2_lag168",
+          "gen_solar_lag1",
+          "gen_solar_lag2",
+          "gen_solar_lag24",
+          "gen_solar_lag48",
+          "gen_solar_lag168",
+          "gen_wind_lag1",
+          "gen_wind_lag2",
+          "gen_wind_lag24",
+          "gen_wind_lag48",
+          "gen_wind_lag168",
+          "y_roll24",
+          "y_roll168"
+        ],
+        "topk_10": [
+          "gas_lag48",
+          "gas_lag24",
+          "gas_lag12",
+          "gas_price",
+          "gas_lag2",
+          "gas_lag1",
+          "gas_lag3",
+          "gas_lag6",
+          "gas_lag168",
+          "y_roll168"
+        ],
+        "hybrid_10": [
+          "hour_sin",
+          "hour_cos",
+          "dow_sin",
+          "dow_cos",
+          "is_holiday",
+          "y_lag1",
+          "y_lag24",
+          "y_lag168",
+          "gas_lag48",
+          "gas_lag24",
+          "gas_lag12",
+          "gas_price",
+          "gas_lag2",
+          "gas_lag1",
+          "gas_lag3",
+          "gas_lag6",
+          "gas_lag168",
+          "y_roll168"
+        ],
+        "topk_20": [
+          "gas_lag48",
+          "gas_lag24",
+          "gas_lag12",
+          "gas_price",
+          "gas_lag2",
+          "gas_lag1",
+          "gas_lag3",
+          "gas_lag6",
+          "gas_lag168",
+          "y_roll168",
+          "y_roll24",
+          "y_lag3",
+          "y_lag2",
+          "y_lag12",
+          "y_lag48",
+          "y_lag6",
+          "co2_lag6",
+          "co2_price",
+          "co2_lag2",
+          "co2_lag3"
+        ],
+        "hybrid_20": [
+          "hour_sin",
+          "hour_cos",
+          "dow_sin",
+          "dow_cos",
+          "is_holiday",
+          "y_lag1",
+          "y_lag24",
+          "y_lag168",
+          "gas_lag48",
+          "gas_lag24",
+          "gas_lag12",
+          "gas_price",
+          "gas_lag2",
+          "gas_lag1",
+          "gas_lag3",
+          "gas_lag6",
+          "gas_lag168",
+          "y_roll168",
+          "y_roll24",
+          "y_lag3",
+          "y_lag2",
+          "y_lag12",
+          "y_lag48",
+          "y_lag6",
+          "co2_lag6",
+          "co2_price",
+          "co2_lag2",
+          "co2_lag3"
+        ],
+        "topk_30": [
+          "gas_lag48",
+          "gas_lag24",
+          "gas_lag12",
+          "gas_price",
+          "gas_lag2",
+          "gas_lag1",
+          "gas_lag3",
+          "gas_lag6",
+          "gas_lag168",
+          "y_roll168",
+          "y_roll24",
+          "y_lag3",
+          "y_lag2",
+          "y_lag12",
+          "y_lag48",
+          "y_lag6",
+          "co2_lag6",
+          "co2_price",
+          "co2_lag2",
+          "co2_lag3",
+          "co2_lag1",
+          "co2_lag24",
+          "co2_lag168",
+          "co2_lag48",
+          "co2_lag12",
+          "w_patras_temperature_2m",
+          "w_gr_mean_temperature_2m",
+          "gen_lignite",
+          "w_heraklion_temperature_2m",
+          "w_thessaloniki_temperature_2m"
+        ],
+        "hybrid_30": [
+          "hour_sin",
+          "hour_cos",
+          "dow_sin",
+          "dow_cos",
+          "is_holiday",
+          "y_lag1",
+          "y_lag24",
+          "y_lag168",
+          "gas_lag48",
+          "gas_lag24",
+          "gas_lag12",
+          "gas_price",
+          "gas_lag2",
+          "gas_lag1",
+          "gas_lag3",
+          "gas_lag6",
+          "gas_lag168",
+          "y_roll168",
+          "y_roll24",
+          "y_lag3",
+          "y_lag2",
+          "y_lag12",
+          "y_lag48",
+          "y_lag6",
+          "co2_lag6",
+          "co2_price",
+          "co2_lag2",
+          "co2_lag3",
+          "co2_lag1",
+          "co2_lag24",
+          "co2_lag168",
+          "co2_lag48",
+          "co2_lag12",
+          "w_patras_temperature_2m",
+          "w_gr_mean_temperature_2m",
+          "gen_lignite",
+          "w_heraklion_temperature_2m",
+          "w_thessaloniki_temperature_2m"
+        ]
+      },
+      "rows": [
+        {
+          "week": "weekA",
+          "test_start": "2025-12-01 00:00:00",
+          "model": "XGB",
+          "strategy": "all",
+          "k": "",
+          "n_origins": 7,
+          "MAE": 19.2343313734872,
+          "RMSE": 25.837429082810104,
+          "sMAPE": 16.602167738650344,
+          "MAE_std": 9.171031144929588,
+          "RMSE_std": 13.02752536301295,
+          "sMAPE_std": 9.340957035478013,
+          "n_features": 158
+        },
+        {
+          "week": "weekA",
+          "test_start": "2025-12-01 00:00:00",
+          "model": "LGBM",
+          "strategy": "all",
+          "k": "",
+          "n_origins": 7,
+          "MAE": 19.516901571554467,
+          "RMSE": 26.409932278169034,
+          "sMAPE": 16.86370969259858,
+          "MAE_std": 9.143418236909683,
+          "RMSE_std": 12.808882709709374,
+          "sMAPE_std": 9.456772894387973,
+          "n_features": 158
+        },
+        {
+          "week": "weekA",
+          "test_start": "2025-12-01 00:00:00",
+          "model": "MLP",
+          "strategy": "all",
+          "k": "",
+          "n_origins": 7,
+          "MAE": 21.81557704701,
+          "RMSE": 27.655051820754046,
+          "sMAPE": 19.505989170824837,
+          "MAE_std": 7.652413334771547,
+          "RMSE_std": 10.284495734499108,
+          "sMAPE_std": 8.542545623446527,
+          "n_features": 158
+        },
+        {
+          "week": "weekA",
+          "test_start": "2025-12-01 00:00:00",
+          "model": "MLP",
+          "strategy": "hybrid",
+          "k": 10,
+          "n_origins": 7,
+          "MAE": 22.376653884452285,
+          "RMSE": 30.229008057274296,
+          "sMAPE": 18.783850049060202,
+          "MAE_std": 8.574803779352672,
+          "RMSE_std": 13.560418717360704,
+          "sMAPE_std": 8.144240741357168,
+          "n_features": 18
+        },
+        {
+          "week": "weekA",
+          "test_start": "2025-12-01 00:00:00",
+          "model": "LGBM",
+          "strategy": "hybrid",
+          "k": 10,
+          "n_origins": 7,
+          "MAE": 22.64078111392313,
+          "RMSE": 31.160366796129527,
+          "sMAPE": 19.566169678613893,
+          "MAE_std": 10.359893804034552,
+          "RMSE_std": 15.839728886590065,
+          "sMAPE_std": 9.012375598852152,
+          "n_features": 18
+        },
+        {
+          "week": "weekA",
+          "test_start": "2025-12-01 00:00:00",
+          "model": "XGB",
+          "strategy": "hybrid",
+          "k": 10,
+          "n_origins": 7,
+          "MAE": 22.679546573275612,
+          "RMSE": 30.843749830792458,
+          "sMAPE": 19.502485742223005,
+          "MAE_std": 9.38111775515582,
+          "RMSE_std": 15.124587416618168,
+          "sMAPE_std": 8.108103410155646,
+          "n_features": 18
+        },
+        {
+          "week": "weekA",
+          "test_start": "2025-12-01 00:00:00",
+          "model": "XGB",
+          "strategy": "hybrid",
+          "k": 30,
+          "n_origins": 7,
+          "MAE": 22.95432854152861,
+          "RMSE": 31.949703969835127,
+          "sMAPE": 20.39096828567111,
+          "MAE_std": 10.475193262886743,
+          "RMSE_std": 14.627766240466249,
+          "sMAPE_std": 9.95770044119332,
+          "n_features": 38
+        },
+        {
+          "week": "weekA",
+          "test_start": "2025-12-01 00:00:00",
+          "model": "RF",
+          "strategy": "all",
+          "k": "",
+          "n_origins": 7,
+          "MAE": 23.024697398195396,
+          "RMSE": 30.361262375244156,
+          "sMAPE": 19.576641931183218,
+          "MAE_std": 8.669650957912697,
+          "RMSE_std": 12.937112389287366,
+          "sMAPE_std": 9.286054366888107,
+          "n_features": 158
+        },
+        {
+          "week": "weekA",
+          "test_start": "2025-12-01 00:00:00",
+          "model": "MLP",
+          "strategy": "hybrid",
+          "k": 30,
+          "n_origins": 7,
+          "MAE": 23.08581990309064,
+          "RMSE": 30.3351752154827,
+          "sMAPE": 20.07873403039083,
+          "MAE_std": 9.9652308878726,
+          "RMSE_std": 14.191536891984654,
+          "sMAPE_std": 9.92898606539526,
+          "n_features": 38
+        },
+        {
+          "week": "weekA",
+          "test_start": "2025-12-01 00:00:00",
+          "model": "XGB",
+          "strategy": "hybrid",
+          "k": 20,
+          "n_origins": 7,
+          "MAE": 23.24459605171567,
+          "RMSE": 33.29080231105875,
+          "sMAPE": 19.830582754215857,
+          "MAE_std": 9.527660956510255,
+          "RMSE_std": 13.812258801255146,
+          "sMAPE_std": 8.848216966665307,
+          "n_features": 28
+        },
+        {
+          "week": "weekA",
+          "test_start": "2025-12-01 00:00:00",
+          "model": "LGBM",
+          "strategy": "hybrid",
+          "k": 20,
+          "n_origins": 7,
+          "MAE": 23.26248387969951,
+          "RMSE": 32.87797671670194,
+          "sMAPE": 19.8385606854287,
+          "MAE_std": 9.610093484033634,
+          "RMSE_std": 14.12776286422361,
+          "sMAPE_std": 9.200722848438637,
+          "n_features": 28
+        },
+        {
+          "week": "weekA",
+          "test_start": "2025-12-01 00:00:00",
+          "model": "LGBM",
+          "strategy": "hybrid",
+          "k": 30,
+          "n_origins": 7,
+          "MAE": 23.417280481847275,
+          "RMSE": 32.036546501424525,
+          "sMAPE": 20.628301690004484,
+          "MAE_std": 11.09012175677841,
+          "RMSE_std": 15.248703006868412,
+          "sMAPE_std": 10.27180477721126,
+          "n_features": 38
+        },
+        {
+          "week": "weekA",
+          "test_start": "2025-12-01 00:00:00",
+          "model": "RF",
+          "strategy": "hybrid",
+          "k": 30,
+          "n_origins": 7,
+          "MAE": 23.557797924225245,
+          "RMSE": 31.102808523915975,
+          "sMAPE": 20.15036562294085,
+          "MAE_std": 9.548700375824613,
+          "RMSE_std": 13.96504192790173,
+          "sMAPE_std": 10.275525104978172,
+          "n_features": 38
+        },
+        {
+          "week": "weekA",
+          "test_start": "2025-12-01 00:00:00",
+          "model": "RF",
+          "strategy": "hybrid",
+          "k": 20,
+          "n_origins": 7,
+          "MAE": 23.80959097620908,
+          "RMSE": 31.871962536939858,
+          "sMAPE": 20.108427782274333,
+          "MAE_std": 9.47062473070933,
+          "RMSE_std": 13.641759860779496,
+          "sMAPE_std": 9.969467535458225,
+          "n_features": 28
+        },
+        {
+          "week": "weekA",
+          "test_start": "2025-12-01 00:00:00",
+          "model": "MLP",
+          "strategy": "hybrid",
+          "k": 20,
+          "n_origins": 7,
+          "MAE": 25.18255264776655,
+          "RMSE": 33.22281354032808,
+          "sMAPE": 21.96390218041315,
+          "MAE_std": 9.24860305581793,
+          "RMSE_std": 13.385414354521073,
+          "sMAPE_std": 9.31516056834199,
+          "n_features": 28
+        },
+        {
+          "week": "weekA",
+          "test_start": "2025-12-01 00:00:00",
+          "model": "RF",
+          "strategy": "hybrid",
+          "k": 10,
+          "n_origins": 7,
+          "MAE": 25.87311371994463,
+          "RMSE": 35.792161498699826,
+          "sMAPE": 23.917747749354056,
+          "MAE_std": 7.266649167756461,
+          "RMSE_std": 10.513291669273372,
+          "sMAPE_std": 7.95907260734946,
+          "n_features": 18
+        },
+        {
+          "week": "weekA",
+          "test_start": "2025-12-01 00:00:00",
+          "model": "XGB",
+          "strategy": "topk",
+          "k": 20,
+          "n_origins": 7,
+          "MAE": 26.41178256806873,
+          "RMSE": 35.685508275661796,
+          "sMAPE": 22.665262590478243,
+          "MAE_std": 10.992433428800181,
+          "RMSE_std": 14.784761015714224,
+          "sMAPE_std": 10.785408415412121,
+          "n_features": 20
+        },
+        {
+          "week": "weekA",
+          "test_start": "2025-12-01 00:00:00",
+          "model": "RF",
+          "strategy": "topk",
+          "k": 20,
+          "n_origins": 7,
+          "MAE": 26.553547014289723,
+          "RMSE": 35.749637823699324,
+          "sMAPE": 22.22333577647721,
+          "MAE_std": 8.199983105483305,
+          "RMSE_std": 11.931213573350696,
+          "sMAPE_std": 8.111639239846717,
+          "n_features": 20
+        },
+        {
+          "week": "weekA",
+          "test_start": "2025-12-01 00:00:00",
+          "model": "LGBM",
+          "strategy": "topk",
+          "k": 20,
+          "n_origins": 7,
+          "MAE": 26.71201990920361,
+          "RMSE": 35.565735372272634,
+          "sMAPE": 22.913655433196592,
+          "MAE_std": 10.470055595568406,
+          "RMSE_std": 14.9780173191997,
+          "sMAPE_std": 10.47469307599608,
+          "n_features": 20
+        },
+        {
+          "week": "weekA",
+          "test_start": "2025-12-01 00:00:00",
+          "model": "RF",
+          "strategy": "topk",
+          "k": 30,
+          "n_origins": 7,
+          "MAE": 26.74734621850593,
+          "RMSE": 35.4431462699917,
+          "sMAPE": 22.51696865178504,
+          "MAE_std": 8.767138476752795,
+          "RMSE_std": 12.331295166542795,
+          "sMAPE_std": 8.60534530045348,
+          "n_features": 30
+        },
+        {
+          "week": "weekA",
+          "test_start": "2025-12-01 00:00:00",
+          "model": "MLP",
+          "strategy": "topk",
+          "k": 30,
+          "n_origins": 7,
+          "MAE": 27.279882751191966,
+          "RMSE": 34.61969722057003,
+          "sMAPE": 24.589802805147965,
+          "MAE_std": 13.797371588795139,
+          "RMSE_std": 17.78749597638203,
+          "sMAPE_std": 12.26828422798398,
+          "n_features": 30
+        },
+        {
+          "week": "weekA",
+          "test_start": "2025-12-01 00:00:00",
+          "model": "MLP",
+          "strategy": "topk",
+          "k": 20,
+          "n_origins": 7,
+          "MAE": 27.72199094949883,
+          "RMSE": 37.28641295712168,
+          "sMAPE": 26.03149047575311,
+          "MAE_std": 11.838955377402197,
+          "RMSE_std": 15.606295341656594,
+          "sMAPE_std": 13.827517711012899,
+          "n_features": 20
+        },
+        {
+          "week": "weekA",
+          "test_start": "2025-12-01 00:00:00",
+          "model": "LGBM",
+          "strategy": "topk",
+          "k": 30,
+          "n_origins": 7,
+          "MAE": 28.096918262320294,
+          "RMSE": 35.90536089223207,
+          "sMAPE": 25.318175545309145,
+          "MAE_std": 12.501791681689426,
+          "RMSE_std": 17.857239644466592,
+          "sMAPE_std": 12.17629181926469,
+          "n_features": 30
+        },
+        {
+          "week": "weekA",
+          "test_start": "2025-12-01 00:00:00",
+          "model": "XGB",
+          "strategy": "topk",
+          "k": 30,
+          "n_origins": 7,
+          "MAE": 28.826192028408958,
+          "RMSE": 37.469720456077816,
+          "sMAPE": 26.192147317833626,
+          "MAE_std": 12.60197454845958,
+          "RMSE_std": 17.501953027821017,
+          "sMAPE_std": 12.384551337132946,
+          "n_features": 30
+        },
+        {
+          "week": "weekA",
+          "test_start": "2025-12-01 00:00:00",
+          "model": "MLP",
+          "strategy": "topk",
+          "k": 10,
+          "n_origins": 7,
+          "MAE": 30.66147789557317,
+          "RMSE": 39.918882673557334,
+          "sMAPE": 25.410442176120398,
+          "MAE_std": 13.391662974514409,
+          "RMSE_std": 20.518280594025512,
+          "sMAPE_std": 10.164532674199316,
+          "n_features": 10
+        },
+        {
+          "week": "weekA",
+          "test_start": "2025-12-01 00:00:00",
+          "model": "RF",
+          "strategy": "topk",
+          "k": 10,
+          "n_origins": 7,
+          "MAE": 32.17121306949527,
+          "RMSE": 41.537595634694235,
+          "sMAPE": 26.983523227126422,
+          "MAE_std": 16.00489351475465,
+          "RMSE_std": 22.99764643444818,
+          "sMAPE_std": 12.675968204692058,
+          "n_features": 10
+        },
+        {
+          "week": "weekA",
+          "test_start": "2025-12-01 00:00:00",
+          "model": "LGBM",
+          "strategy": "topk",
+          "k": 10,
+          "n_origins": 7,
+          "MAE": 32.5267172896171,
+          "RMSE": 41.75045196893124,
+          "sMAPE": 27.08483778997969,
+          "MAE_std": 15.101979361290164,
+          "RMSE_std": 21.82689502141978,
+          "sMAPE_std": 11.643228782250134,
+          "n_features": 10
+        },
+        {
+          "week": "weekA",
+          "test_start": "2025-12-01 00:00:00",
+          "model": "XGB",
+          "strategy": "topk",
+          "k": 10,
+          "n_origins": 7,
+          "MAE": 32.83956214723133,
+          "RMSE": 42.461222908034564,
+          "sMAPE": 27.36783375794962,
+          "MAE_std": 14.276556133460813,
+          "RMSE_std": 21.111654025367386,
+          "sMAPE_std": 11.015573970657584,
+          "n_features": 10
+        }
+      ]
+    }
+  },
+  "rows": [
+    {
+      "week": "weekA",
+      "test_start": "2025-12-01 00:00:00",
+      "model": "XGB",
+      "strategy": "all",
+      "k": "",
+      "n_origins": 7,
+      "MAE": 19.2343313734872,
+      "RMSE": 25.837429082810104,
+      "sMAPE": 16.602167738650344,
+      "MAE_std": 9.171031144929588,
+      "RMSE_std": 13.02752536301295,
+      "sMAPE_std": 9.340957035478013,
+      "n_features": 158
+    },
+    {
+      "week": "weekA",
+      "test_start": "2025-12-01 00:00:00",
+      "model": "LGBM",
+      "strategy": "all",
+      "k": "",
+      "n_origins": 7,
+      "MAE": 19.516901571554467,
+      "RMSE": 26.409932278169034,
+      "sMAPE": 16.86370969259858,
+      "MAE_std": 9.143418236909683,
+      "RMSE_std": 12.808882709709374,
+      "sMAPE_std": 9.456772894387973,
+      "n_features": 158
+    },
+    {
+      "week": "weekA",
+      "test_start": "2025-12-01 00:00:00",
+      "model": "MLP",
+      "strategy": "all",
+      "k": "",
+      "n_origins": 7,
+      "MAE": 21.81557704701,
+      "RMSE": 27.655051820754046,
+      "sMAPE": 19.505989170824837,
+      "MAE_std": 7.652413334771547,
+      "RMSE_std": 10.284495734499108,
+      "sMAPE_std": 8.542545623446527,
+      "n_features": 158
+    },
+    {
+      "week": "weekA",
+      "test_start": "2025-12-01 00:00:00",
+      "model": "MLP",
+      "strategy": "hybrid",
+      "k": 10,
+      "n_origins": 7,
+      "MAE": 22.376653884452285,
+      "RMSE": 30.229008057274296,
+      "sMAPE": 18.783850049060202,
+      "MAE_std": 8.574803779352672,
+      "RMSE_std": 13.560418717360704,
+      "sMAPE_std": 8.144240741357168,
+      "n_features": 18
+    },
+    {
+      "week": "weekA",
+      "test_start": "2025-12-01 00:00:00",
+      "model": "LGBM",
+      "strategy": "hybrid",
+      "k": 10,
+      "n_origins": 7,
+      "MAE": 22.64078111392313,
+      "RMSE": 31.160366796129527,
+      "sMAPE": 19.566169678613893,
+      "MAE_std": 10.359893804034552,
+      "RMSE_std": 15.839728886590065,
+      "sMAPE_std": 9.012375598852152,
+      "n_features": 18
+    },
+    {
+      "week": "weekA",
+      "test_start": "2025-12-01 00:00:00",
+      "model": "XGB",
+      "strategy": "hybrid",
+      "k": 10,
+      "n_origins": 7,
+      "MAE": 22.679546573275612,
+      "RMSE": 30.843749830792458,
+      "sMAPE": 19.502485742223005,
+      "MAE_std": 9.38111775515582,
+      "RMSE_std": 15.124587416618168,
+      "sMAPE_std": 8.108103410155646,
+      "n_features": 18
+    },
+    {
+      "week": "weekA",
+      "test_start": "2025-12-01 00:00:00",
+      "model": "XGB",
+      "strategy": "hybrid",
+      "k": 30,
+      "n_origins": 7,
+      "MAE": 22.95432854152861,
+      "RMSE": 31.949703969835127,
+      "sMAPE": 20.39096828567111,
+      "MAE_std": 10.475193262886743,
+      "RMSE_std": 14.627766240466249,
+      "sMAPE_std": 9.95770044119332,
+      "n_features": 38
+    },
+    {
+      "week": "weekA",
+      "test_start": "2025-12-01 00:00:00",
+      "model": "RF",
+      "strategy": "all",
+      "k": "",
+      "n_origins": 7,
+      "MAE": 23.024697398195396,
+      "RMSE": 30.361262375244156,
+      "sMAPE": 19.576641931183218,
+      "MAE_std": 8.669650957912697,
+      "RMSE_std": 12.937112389287366,
+      "sMAPE_std": 9.286054366888107,
+      "n_features": 158
+    },
+    {
+      "week": "weekA",
+      "test_start": "2025-12-01 00:00:00",
+      "model": "MLP",
+      "strategy": "hybrid",
+      "k": 30,
+      "n_origins": 7,
+      "MAE": 23.08581990309064,
+      "RMSE": 30.3351752154827,
+      "sMAPE": 20.07873403039083,
+      "MAE_std": 9.9652308878726,
+      "RMSE_std": 14.191536891984654,
+      "sMAPE_std": 9.92898606539526,
+      "n_features": 38
+    },
+    {
+      "week": "weekA",
+      "test_start": "2025-12-01 00:00:00",
+      "model": "XGB",
+      "strategy": "hybrid",
+      "k": 20,
+      "n_origins": 7,
+      "MAE": 23.24459605171567,
+      "RMSE": 33.29080231105875,
+      "sMAPE": 19.830582754215857,
+      "MAE_std": 9.527660956510255,
+      "RMSE_std": 13.812258801255146,
+      "sMAPE_std": 8.848216966665307,
+      "n_features": 28
+    },
+    {
+      "week": "weekA",
+      "test_start": "2025-12-01 00:00:00",
+      "model": "LGBM",
+      "strategy": "hybrid",
+      "k": 20,
+      "n_origins": 7,
+      "MAE": 23.26248387969951,
+      "RMSE": 32.87797671670194,
+      "sMAPE": 19.8385606854287,
+      "MAE_std": 9.610093484033634,
+      "RMSE_std": 14.12776286422361,
+      "sMAPE_std": 9.200722848438637,
+      "n_features": 28
+    },
+    {
+      "week": "weekA",
+      "test_start": "2025-12-01 00:00:00",
+      "model": "LGBM",
+      "strategy": "hybrid",
+      "k": 30,
+      "n_origins": 7,
+      "MAE": 23.417280481847275,
+      "RMSE": 32.036546501424525,
+      "sMAPE": 20.628301690004484,
+      "MAE_std": 11.09012175677841,
+      "RMSE_std": 15.248703006868412,
+      "sMAPE_std": 10.27180477721126,
+      "n_features": 38
+    },
+    {
+      "week": "weekA",
+      "test_start": "2025-12-01 00:00:00",
+      "model": "RF",
+      "strategy": "hybrid",
+      "k": 30,
+      "n_origins": 7,
+      "MAE": 23.557797924225245,
+      "RMSE": 31.102808523915975,
+      "sMAPE": 20.15036562294085,
+      "MAE_std": 9.548700375824613,
+      "RMSE_std": 13.96504192790173,
+      "sMAPE_std": 10.275525104978172,
+      "n_features": 38
+    },
+    {
+      "week": "weekA",
+      "test_start": "2025-12-01 00:00:00",
+      "model": "RF",
+      "strategy": "hybrid",
+      "k": 20,
+      "n_origins": 7,
+      "MAE": 23.80959097620908,
+      "RMSE": 31.871962536939858,
+      "sMAPE": 20.108427782274333,
+      "MAE_std": 9.47062473070933,
+      "RMSE_std": 13.641759860779496,
+      "sMAPE_std": 9.969467535458225,
+      "n_features": 28
+    },
+    {
+      "week": "weekA",
+      "test_start": "2025-12-01 00:00:00",
+      "model": "MLP",
+      "strategy": "hybrid",
+      "k": 20,
+      "n_origins": 7,
+      "MAE": 25.18255264776655,
+      "RMSE": 33.22281354032808,
+      "sMAPE": 21.96390218041315,
+      "MAE_std": 9.24860305581793,
+      "RMSE_std": 13.385414354521073,
+      "sMAPE_std": 9.31516056834199,
+      "n_features": 28
+    },
+    {
+      "week": "weekA",
+      "test_start": "2025-12-01 00:00:00",
+      "model": "RF",
+      "strategy": "hybrid",
+      "k": 10,
+      "n_origins": 7,
+      "MAE": 25.87311371994463,
+      "RMSE": 35.792161498699826,
+      "sMAPE": 23.917747749354056,
+      "MAE_std": 7.266649167756461,
+      "RMSE_std": 10.513291669273372,
+      "sMAPE_std": 7.95907260734946,
+      "n_features": 18
+    },
+    {
+      "week": "weekA",
+      "test_start": "2025-12-01 00:00:00",
+      "model": "XGB",
+      "strategy": "topk",
+      "k": 20,
+      "n_origins": 7,
+      "MAE": 26.41178256806873,
+      "RMSE": 35.685508275661796,
+      "sMAPE": 22.665262590478243,
+      "MAE_std": 10.992433428800181,
+      "RMSE_std": 14.784761015714224,
+      "sMAPE_std": 10.785408415412121,
+      "n_features": 20
+    },
+    {
+      "week": "weekA",
+      "test_start": "2025-12-01 00:00:00",
+      "model": "RF",
+      "strategy": "topk",
+      "k": 20,
+      "n_origins": 7,
+      "MAE": 26.553547014289723,
+      "RMSE": 35.749637823699324,
+      "sMAPE": 22.22333577647721,
+      "MAE_std": 8.199983105483305,
+      "RMSE_std": 11.931213573350696,
+      "sMAPE_std": 8.111639239846717,
+      "n_features": 20
+    },
+    {
+      "week": "weekA",
+      "test_start": "2025-12-01 00:00:00",
+      "model": "LGBM",
+      "strategy": "topk",
+      "k": 20,
+      "n_origins": 7,
+      "MAE": 26.71201990920361,
+      "RMSE": 35.565735372272634,
+      "sMAPE": 22.913655433196592,
+      "MAE_std": 10.470055595568406,
+      "RMSE_std": 14.9780173191997,
+      "sMAPE_std": 10.47469307599608,
+      "n_features": 20
+    },
+    {
+      "week": "weekA",
+      "test_start": "2025-12-01 00:00:00",
+      "model": "RF",
+      "strategy": "topk",
+      "k": 30,
+      "n_origins": 7,
+      "MAE": 26.74734621850593,
+      "RMSE": 35.4431462699917,
+      "sMAPE": 22.51696865178504,
+      "MAE_std": 8.767138476752795,
+      "RMSE_std": 12.331295166542795,
+      "sMAPE_std": 8.60534530045348,
+      "n_features": 30
+    },
+    {
+      "week": "weekA",
+      "test_start": "2025-12-01 00:00:00",
+      "model": "MLP",
+      "strategy": "topk",
+      "k": 30,
+      "n_origins": 7,
+      "MAE": 27.279882751191966,
+      "RMSE": 34.61969722057003,
+      "sMAPE": 24.589802805147965,
+      "MAE_std": 13.797371588795139,
+      "RMSE_std": 17.78749597638203,
+      "sMAPE_std": 12.26828422798398,
+      "n_features": 30
+    },
+    {
+      "week": "weekA",
+      "test_start": "2025-12-01 00:00:00",
+      "model": "MLP",
+      "strategy": "topk",
+      "k": 20,
+      "n_origins": 7,
+      "MAE": 27.72199094949883,
+      "RMSE": 37.28641295712168,
+      "sMAPE": 26.03149047575311,
+      "MAE_std": 11.838955377402197,
+      "RMSE_std": 15.606295341656594,
+      "sMAPE_std": 13.827517711012899,
+      "n_features": 20
+    },
+    {
+      "week": "weekA",
+      "test_start": "2025-12-01 00:00:00",
+      "model": "LGBM",
+      "strategy": "topk",
+      "k": 30,
+      "n_origins": 7,
+      "MAE": 28.096918262320294,
+      "RMSE": 35.90536089223207,
+      "sMAPE": 25.318175545309145,
+      "MAE_std": 12.501791681689426,
+      "RMSE_std": 17.857239644466592,
+      "sMAPE_std": 12.17629181926469,
+      "n_features": 30
+    },
+    {
+      "week": "weekA",
+      "test_start": "2025-12-01 00:00:00",
+      "model": "XGB",
+      "strategy": "topk",
+      "k": 30,
+      "n_origins": 7,
+      "MAE": 28.826192028408958,
+      "RMSE": 37.469720456077816,
+      "sMAPE": 26.192147317833626,
+      "MAE_std": 12.60197454845958,
+      "RMSE_std": 17.501953027821017,
+      "sMAPE_std": 12.384551337132946,
+      "n_features": 30
+    },
+    {
+      "week": "weekA",
+      "test_start": "2025-12-01 00:00:00",
+      "model": "MLP",
+      "strategy": "topk",
+      "k": 10,
+      "n_origins": 7,
+      "MAE": 30.66147789557317,
+      "RMSE": 39.918882673557334,
+      "sMAPE": 25.410442176120398,
+      "MAE_std": 13.391662974514409,
+      "RMSE_std": 20.518280594025512,
+      "sMAPE_std": 10.164532674199316,
+      "n_features": 10
+    },
+    {
+      "week": "weekA",
+      "test_start": "2025-12-01 00:00:00",
+      "model": "RF",
+      "strategy": "topk",
+      "k": 10,
+      "n_origins": 7,
+      "MAE": 32.17121306949527,
+      "RMSE": 41.537595634694235,
+      "sMAPE": 26.983523227126422,
+      "MAE_std": 16.00489351475465,
+      "RMSE_std": 22.99764643444818,
+      "sMAPE_std": 12.675968204692058,
+      "n_features": 10
+    },
+    {
+      "week": "weekA",
+      "test_start": "2025-12-01 00:00:00",
+      "model": "LGBM",
+      "strategy": "topk",
+      "k": 10,
+      "n_origins": 7,
+      "MAE": 32.5267172896171,
+      "RMSE": 41.75045196893124,
+      "sMAPE": 27.08483778997969,
+      "MAE_std": 15.101979361290164,
+      "RMSE_std": 21.82689502141978,
+      "sMAPE_std": 11.643228782250134,
+      "n_features": 10
+    },
+    {
+      "week": "weekA",
+      "test_start": "2025-12-01 00:00:00",
+      "model": "XGB",
+      "strategy": "topk",
+      "k": 10,
+      "n_origins": 7,
+      "MAE": 32.83956214723133,
+      "RMSE": 42.461222908034564,
+      "sMAPE": 27.36783375794962,
+      "MAE_std": 14.276556133460813,
+      "RMSE_std": 21.111654025367386,
+      "sMAPE_std": 11.015573970657584,
+      "n_features": 10
+    }
+  ]
+}

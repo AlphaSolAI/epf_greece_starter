@@ -1,0 +1,24 @@
+\begin{center}  \Large{\textbf{ABSTRACT}}  \end{center}
+\begin{center}  \Large{\textbf{Short-Term Electricity Price and Load Forecasting\\
+in the Greek Market using Machine Learning}}  \end{center}
+\vspace{10pt}
+\noindent
+This thesis investigates short-term forecasting of Day-Ahead Market (DAM) electricity
+prices and load in the Greek electricity market using Machine Learning. The central
+contribution is a systematic comparison of four multi-step forecasting strategies:
+Teacher-Forcing (TF), Recursive/Open-Loop (OL), Multi-Input Multi-Output (MIMO),
+and Walk-Forward Monthly Retraining (MR), applied across five ML algorithms
+(LightGBM, XGBoost, Random Forest, SVR, MLP) over three test periods (December 2025,
+Q4 2025, Q1 2026) using ENTSO-E Transparency data.\\\\
+\noindent
+Walk-Forward Monthly Retraining is identified as the superior strategy for extended
+horizons: on Q1 2026, the MR TF Ensemble-Best3 achieves MAE 10.49~€/MWh for price
+(−27.7\% vs static TF) and 67.7~MW for load (−30.0\%), adapting effectively to the
+distributional shift in February 2026. Significance is confirmed via Diebold-Mariano
+test with Harvey-Leybourne-Newbold correction. Additional findings: dense intraday
+lags improve MIMO (MLP −22.3\%) but degrade Recursive (dense lags paradox); SVR
+collapses under distribution shift. Feature importance analysis reveals strategy-dependent
+information utilization. Results are available via an interactive HTML/JavaScript
+dashboard.\\
+\vspace{0.3cm}
+\\ \textit{Keywords} --- \textbf{electricity price forecasting, load forecasting, LightGBM, XGBoost, MIMO, walk-forward retraining, scheduled sampling, Diebold-Mariano test}

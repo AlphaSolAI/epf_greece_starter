@@ -1,0 +1,18 @@
+
+📌 FEATURE STRATEGY COMPARE — MLP (Torch) ONLY
+[INFO] horizon=24 | test_size=168
+[INFO] train_end=2025-12-21 23:00:00 | test_start=2025-12-22 00:00:00 | week=weekD_big
+[INFO] strategies=['all', 'topk', 'hybrid'] | topk=[10, 20, 30] | rank_steps=[24, 168]
+[INFO] mlp_hidden=[1024, 1024, 512, 256] | dropout=0.1 | epochs=300 | batch=2048 | lr=0.001 | wd=1e-05 | device=auto | amp=True
+
+=== RESULTS: weekD_big | test_start=2025-12-22 00:00:00 ===
+model strategy    k  n_features       MAE      RMSE     sMAPE  MAE_std  RMSE_std  sMAPE_std  n_origins
+  MLP     topk 20.0          20 18.211675 23.461669 18.047245 7.341562  8.941890   6.046374          7
+  MLP   hybrid 20.0          28 18.681908 22.026987 18.515146 5.570400  6.270697   4.476398          7
+  MLP   hybrid 30.0          38 18.654297 21.969434 18.828038 5.678139  5.956961   6.419034          7
+  MLP      all  NaN         158 18.721867 21.820338 18.955660 5.096439  5.363118   5.998298          7
+  MLP     topk 30.0          30 18.965696 23.394208 18.972421 7.465288  8.740513   7.701828          7
+  MLP   hybrid 10.0          18 20.356682 25.537354 19.170036 7.123438  9.748211   4.726588          7
+  MLP     topk 10.0          10 21.043820 25.358534 21.204467 2.996920  4.844083   4.618741          7
+
+✅ Saved JSON: models\feature_sets\fs_hourly_H24_rank24_168_weekD_mlp_torch_big.json

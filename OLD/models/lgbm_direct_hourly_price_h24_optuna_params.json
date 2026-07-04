@@ -1,0 +1,20 @@
+{
+  "algo": "lgbm",
+  "task": "price",
+  "horizon": 24,
+  "cv_metric": "mean_MAE_all_horizons",
+  "n_features": 152,
+  "baseline_mae": 14.3924,
+  "best_mae": 13.0907,
+  "improvement_pct": 9.04,
+  "best_params": {
+    "n_estimators": 900,
+    "learning_rate": 0.0274397586568777,
+    "num_leaves": 26,
+    "min_child_samples": 54,
+    "subsample": 0.9251627980603047,
+    "colsample_bytree": 0.6407765816216827,
+    "reg_alpha": 0.0009549709245653428,
+    "reg_lambda": 0.0004379592190870733
+  }
+}

@@ -1,0 +1,262 @@
+\begin{thebibliography}{10}
+
+\bibitem{taieb2012review}
+Souhaib~Ben Taieb, Gianluca Bontempi, Amir~F. Atiya, and Antti Sorjamaa.
+\newblock A review and comparison of strategies for multi-step ahead time
+  series forecasting based on the {NN5} forecasting competition.
+\newblock {\em Expert Systems with Applications}, 39(8):7067--7083, 2012.
+
+\bibitem{weron2014electricity}
+Rafa{\l} Weron.
+\newblock Electricity price forecasting: A review of the state-of-the-art with
+  a look into the future.
+\newblock {\em International Journal of Forecasting}, 30(4):1030--1081, 2014.
+
+\bibitem{eu_directives_electricity}
+{European Parliament and Council}.
+\newblock Directives on common rules for the internal market in electricity:
+  96/92/ec, 2003/54/ec, and 2009/72/ec (third energy package).
+\newblock \url{https://eur-lex.europa.eu/}, 1996--2009.
+
+\bibitem{cacm2015}
+{European Commission}.
+\newblock Commission regulation (eu) 2015/1222 establishing a guideline on
+  capacity allocation and congestion management.
+\newblock \url{https://eur-lex.europa.eu/eli/reg/2015/1222/oj/eng}, 2015.
+
+\bibitem{nemo_sdac}
+{NEMO Committee}.
+\newblock Single day-ahead coupling (sdac).
+\newblock \url{https://www.nemo-committee.eu/sdac}.
+
+\bibitem{ipto_balancing_market}
+{IPTO (ADMIE)}.
+\newblock Balancing market.
+\newblock \url{https://www.admie.gr/en/market/general/balancing-market}.
+
+\bibitem{ypen_target_model_2020}
+{Υπουργείο Περιβάλλοντος και Ενέργειας}.
+\newblock Νέο κεφάλαιο ανοίγει στην αγορά
+  ενέργειας με την εκκίνηση του target model την
+  1η Νοεμβρίου.
+\newblock \url{https://ypen.gov.gr/neo-kefalaio-anoigei-stin-agora-energ/},
+  2020.
+
+\bibitem{lago2021}
+Jesus Lago, Grzegorz Marcjasz, Bart De~Schutter, and Rafa{\l} Weron.
+\newblock Forecasting day-ahead electricity prices: A review of
+  state-of-the-art algorithms, best practices and an open-access benchmark.
+\newblock {\em Applied Energy}, 293:116983, 2021.
+
+\bibitem{gross1987}
+George Gross and Francisco~D. Galiana.
+\newblock Short-term load forecasting.
+\newblock {\em Proceedings of the IEEE}, 75(12):1558--1573, 1987.
+
+\bibitem{hong2016}
+Tao Hong, Pierre Pinson, Shu Fan, Hamidreza Zareipour, Alberto Troccoli, and
+  Rob~J. Hyndman.
+\newblock Probabilistic energy forecasting: Global energy forecasting
+  competition 2014 and beyond.
+\newblock {\em International Journal of Forecasting}, 32(3):896--913, 2016.
+
+\bibitem{kanousis2025}
+Αλέξανδρος Κανούσης.
+\newblock Electricity price forecasting through machine learning techniques.
+\newblock Master's thesis, Department of Electrical and Computer Engineering,
+  University of Patras, 2025.
+\newblock \url{https://hdl.handle.net/10889/30268}.
+
+\bibitem{kontraros2023}
+Σωτήριος Κοντράρος.
+\newblock Μέθοδοι Υποβοηθούμενες από Τεχνητή
+  Νοημοσύνη για την Πρόβλεψη της Τιμής
+  Ηλεκτρικής Ενέργειας στην Αγορά Επόμενης
+  Ημέρας.
+\newblock Master's thesis, Τμήμα Ηλεκτρολόγων
+  Μηχανικών και Τεχνολογίας Υπολογιστών,
+  Πανεπιστήμιο Πατρών, 2023.
+\newblock \url{https://hdl.handle.net/10889/25836}.
+
+\bibitem{lago2018}
+Jesus Lago, Fjo De~Ridder, and Bart De~Schutter.
+\newblock Forecasting spot electricity prices: Deep learning approaches and
+  empirical comparison of traditional algorithms.
+\newblock {\em Applied Energy}, 221:386--405, 2018.
+
+\bibitem{marcjasz2023beating}
+Grzegorz Marcjasz, Micha{\l} Narajewski, Rafa{\l} Weron, and Florian Ziel.
+\newblock Distributional neural networks for electricity price forecasting.
+\newblock {\em Energy Economics}, 125:106843, 2023.
+
+\bibitem{lim2021temporal}
+Bryan Lim, Sercan~{\"O}. Ar{\i}k, Nicolas Loeff, and Tomas Pfister.
+\newblock Temporal fusion transformers for interpretable multi-horizon time
+  series forecasting.
+\newblock {\em International Journal of Forecasting}, 37(4):1748--1764, 2021.
+
+\bibitem{zeng2023transformers}
+Ailing Zeng, Muxi Chen, Lei Zhang, and Qiang Xu.
+\newblock Are transformers effective for time series forecasting?
+\newblock {\em Proceedings of the AAAI Conference on Artificial Intelligence},
+  37:11121--11128, 2023.
+
+\bibitem{dietterich2000}
+Thomas~G. Dietterich.
+\newblock Ensemble methods in machine learning.
+\newblock In {\em Multiple Classifier Systems}, pages 1--15. Springer, Berlin,
+  2000.
+
+\bibitem{nowotarski2014}
+Jakub Nowotarski, Eran Raviv, Stefan Tr{\"u}ck, and Rafa{\l} Weron.
+\newblock An empirical comparison of alternative schemes for combining
+  electricity spot price forecasts.
+\newblock {\em Energy Economics}, 46:395--412, 2014.
+
+\bibitem{uniejewski2019}
+Bartosz Uniejewski, Grzegorz Marcjasz, and Rafa{\l} Weron.
+\newblock On the importance of the long-term seasonal component in day-ahead
+  electricity price forecasting with {NARX} neural networks.
+\newblock {\em International Journal of Forecasting}, 35(4):1520--1532, 2019.
+
+\bibitem{marcjasz2019eneco}
+Grzegorz Marcjasz, Bartosz Uniejewski, and Rafa{\l} Weron.
+\newblock On the importance of the long-term seasonal component in day-ahead
+  electricity price forecasting.
+\newblock {\em Energy Economics}, 79:227--234, 2019.
+
+\bibitem{magklaras2018}
+Αριστείδης Μαγκλαράς.
+\newblock Βραχυπρόθεσμη Πρόβλεψη Ηλεκτρικού
+  Φορτίου Αξιοποιώντας Τεχνικές Μηχανικής
+  και Βαθιάς Μάθησης.
+\newblock Master's thesis, Τμήμα Ηλεκτρολόγων
+  Μηχανικών και Τεχνολογίας Υπολογιστών,
+  Πανεπιστήμιο Πατρών, 2018.
+\newblock \url{https://hdl.handle.net/10889/12098}.
+
+\bibitem{breiman2001rf}
+Leo Breiman.
+\newblock Random forests.
+\newblock {\em Machine Learning}, 45(1):5--32, 2001.
+
+\bibitem{chen2016xgboost}
+Tianqi Chen and Carlos Guestrin.
+\newblock {XGBoost}: A scalable tree boosting system.
+\newblock In {\em Proceedings of the 22nd ACM SIGKDD International Conference
+  on Knowledge Discovery and Data Mining}, pages 785--794, 2016.
+
+\bibitem{ke2017lgbm}
+Guolin Ke, Qi~Meng, Thomas Finley, Taifeng Wang, Wei Chen, Weidong Ma, Qiwei
+  Ye, and Tie-Yan Liu.
+\newblock {LightGBM}: A highly efficient gradient boosting decision tree.
+\newblock In {\em Advances in Neural Information Processing Systems},
+  volume~30, 2017.
+
+\bibitem{smola2004}
+Alex~J. Smola and Bernhard Sch{\"o}lkopf.
+\newblock A tutorial on support vector regression.
+\newblock {\em Statistics and Computing}, 14(3):199--222, 2004.
+
+\bibitem{goodfellow2016deep}
+Ian Goodfellow, Yoshua Bengio, and Aaron Courville.
+\newblock {\em Deep Learning}.
+\newblock MIT Press, 2016.
+
+\bibitem{hochreiter1997lstm}
+Sepp Hochreiter and J{\"u}rgen Schmidhuber.
+\newblock Long short-term memory.
+\newblock {\em Neural Computation}, 9(8):1735--1780, 1997.
+
+\bibitem{vaswani2017attention}
+Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones,
+  Aidan~N. Gomez, {\L}ukasz Kaiser, and Illia Polosukhin.
+\newblock Attention is all you need.
+\newblock In {\em Advances in Neural Information Processing Systems},
+  volume~30, 2017.
+
+\bibitem{bontempi2012strategies}
+Gianluca Bontempi, Souhaib~Ben Taieb, and Yann-A{\"e}l Le~Borgne.
+\newblock Machine learning strategies for time series forecasting.
+\newblock In {\em Business Intelligence}, pages 62--77, 2012.
+
+\bibitem{bengio2015scheduled}
+Samy Bengio, Oriol Vinyals, Navdeep Jaitly, and Noam Shazeer.
+\newblock Scheduled sampling for sequence prediction with recurrent neural
+  networks.
+\newblock In {\em Advances in Neural Information Processing Systems},
+  volume~28, 2015.
+
+\bibitem{ntua2025shortwindow}
+Vasilis Michalakopoulos, Christoforos Menos-Aikateriniadis, Elissaios Sarmas,
+  Antonis Zakynthinos, Pavlos~S. Georgilakis, and Dimitris Askounis.
+\newblock Data-driven day ahead market prices forecasting: A focus on short
+  training set windows.
+\newblock {\em arXiv preprint arXiv:2506.10536}, 2025.
+
+\bibitem{zelios2025shortterm}
+Vasileios Zelios, Paris Mastorocostas, George Kandilogiannakis, Anastasios
+  Kesidis, Panagiota Tselenti, and Athanasios Voulodimos.
+\newblock Short-term electric load forecasting using deep learning: A case
+  study in greece with rnn, lstm, and gru networks.
+\newblock {\em Electronics}, 14(14):2820, 2025.
+
+\bibitem{shiblee2025shortterm}
+Md~Fazle~Hasan Shiblee and Paraskevas Koukaras.
+\newblock Short-term load forecasting in the greek power distribution system: A
+  comparative study of gradient boosting and deep learning models.
+\newblock {\em Energies}, 18(19):5060, 2025.
+
+\bibitem{kizildag2024development}
+Mehmet K{\i}z{\i}lda{\u{g}}, Fatih Abut, and Mehmet~Fatih Akay.
+\newblock Development of new electricity system marginal price forecasting
+  models using statistical and artificial intelligence methods.
+\newblock {\em Applied Sciences}, 14(21), 2024.
+
+\bibitem{kaufman2012leakage}
+Shachar Kaufman, Saharon Rosset, Claudia Perlich, and Ori Stitelman.
+\newblock Leakage in data mining: Formulation, detection, and avoidance.
+\newblock {\em ACM Transactions on Knowledge Discovery from Data}, 6(4):1--21,
+  2012.
+
+\bibitem{entsoe_transparency}
+{ENTSO-E}.
+\newblock {ENTSO-E} transparency platform.
+\newblock \url{https://transparency.entsoe.eu}.
+
+\bibitem{ttf_gas}
+{Investing.com}.
+\newblock Dutch {TTF} natural gas futures --- historical data.
+\newblock
+  \url{https://www.investing.com/commodities/dutch-ttf-gas-c1-futures-historical-data}.
+
+\bibitem{co2_ets}
+{Investing.com}.
+\newblock Carbon emissions futures --- historical data.
+\newblock
+  \url{https://www.investing.com/commodities/carbon-emissions-historical-data}.
+
+\bibitem{openmeteo}
+{Open-Meteo}.
+\newblock Open-{Meteo}: Open-source weather {API}.
+\newblock \url{https://open-meteo.com}.
+
+\bibitem{bergmeir2018}
+Christoph Bergmeir, Rob~J. Hyndman, and Bonsoo Koo.
+\newblock A note on the validity of cross-validation for evaluating
+  autoregressive time series prediction.
+\newblock {\em Computational Statistics \& Data Analysis}, 120:70--83, 2018.
+
+\bibitem{bento2024mimo}
+Pedro M.~S. Bento, Jos{\'e} A.~N. Pombo, Maria do~Ros{\'a}rio Alves~Calado, and
+  Sílvio J. P.~S. Mariano.
+\newblock Smart grid forecasting with {MIMO} models: A comparative study of
+  machine learning techniques for day-ahead residual load prediction.
+\newblock {\em Energies}, 17(20):5219, 2024.
+
+\bibitem{iea2024_electricity}
+{International Energy Agency}.
+\newblock Electricity 2024: Analysis and forecast to 2026.
+\newblock Technical report, IEA, Paris, 2024.
+
+\end{thebibliography}

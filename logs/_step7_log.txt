@@ -1,0 +1,177 @@
+--- SS-linear default,-meteo ---
+==============================================================================
+MASTER FORECAST | algo=lgbm task=price strategy=recursive
+  market=dam task=price gate=strict delay_override=None → gap=0h | horizon=24 stride=24 retrain=static
+  groups=['calendar', 'lags', 'roll', 'resfc', 'loadfc', 'fuel', 'genlags', 'loadlags', 'other']  (#features=68)
+  test=[2025-12-01 00:00:00 .. 2026-02-28 23:00:00]  train_end=2025-11-30 23:00:00
+==============================================================================
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.008915 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 14882
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 68
+[LightGBM] [Info] Start training from score 105.091640
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.012164 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 14882
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 68
+[LightGBM] [Info] Start training from score 105.091640
+      [SS r1/3] ε=0.67 (αντικατάσταση ~33% των lags)
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.010102 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 14882
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 68
+[LightGBM] [Info] Start training from score 105.091640
+      [SS r2/3] ε=0.33 (αντικατάσταση ~67% των lags)
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.009516 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 14882
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 68
+[LightGBM] [Info] Start training from score 105.091640
+      [SS r3/3] ε=0.25 (αντικατάσταση ~75% των lags)
+   [fit] key=static cutoff=2025-11-30 23:00:00  (block 1/90)
+   [done] 90 blocks σε 35.6s
+
+📊 RESULT | MAE=15.7508 €/MWh | RMSE=23.0817 | sMAPE=25.204% | n=2160
+💾 saved: ss_out/ss_linear_no_meteo.json
+--- SS-linear default,-loadlags ---
+==============================================================================
+MASTER FORECAST | algo=lgbm task=price strategy=recursive
+  market=dam task=price gate=strict delay_override=None → gap=0h | horizon=24 stride=24 retrain=static
+  groups=['calendar', 'lags', 'roll', 'resfc', 'loadfc', 'meteo', 'fuel', 'genlags', 'other']  (#features=144)
+  test=[2025-12-01 00:00:00 .. 2026-02-28 23:00:00]  train_end=2025-11-30 23:00:00
+==============================================================================
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.016915 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 20906
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 144
+[LightGBM] [Info] Start training from score 105.091640
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.016631 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 20906
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 144
+[LightGBM] [Info] Start training from score 105.091640
+      [SS r1/3] ε=0.67 (αντικατάσταση ~33% των lags)
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.015868 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 20906
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 144
+[LightGBM] [Info] Start training from score 105.091640
+      [SS r2/3] ε=0.33 (αντικατάσταση ~67% των lags)
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.017088 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 20906
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 144
+[LightGBM] [Info] Start training from score 105.091640
+      [SS r3/3] ε=0.25 (αντικατάσταση ~75% των lags)
+   [fit] key=static cutoff=2025-11-30 23:00:00  (block 1/90)
+   [done] 90 blocks σε 47.4s
+
+📊 RESULT | MAE=15.5146 €/MWh | RMSE=22.9222 | sMAPE=24.6% | n=2160
+💾 saved: ss_out/ss_linear_no_loadlags.json
+--- SS-linear default,-fuel ---
+==============================================================================
+MASTER FORECAST | algo=lgbm task=price strategy=recursive
+  market=dam task=price gate=strict delay_override=None → gap=0h | horizon=24 stride=24 retrain=static
+  groups=['calendar', 'lags', 'roll', 'resfc', 'loadfc', 'meteo', 'genlags', 'loadlags', 'other']  (#features=134)
+  test=[2025-12-01 00:00:00 .. 2026-02-28 23:00:00]  train_end=2025-11-30 23:00:00
+==============================================================================
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.014974 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 18356
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 134
+[LightGBM] [Info] Start training from score 105.091640
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.019475 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 18356
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 134
+[LightGBM] [Info] Start training from score 105.091640
+      [SS r1/3] ε=0.67 (αντικατάσταση ~33% των lags)
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.015882 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 18356
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 134
+[LightGBM] [Info] Start training from score 105.091640
+      [SS r2/3] ε=0.33 (αντικατάσταση ~67% των lags)
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.015867 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 18356
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 134
+[LightGBM] [Info] Start training from score 105.091640
+      [SS r3/3] ε=0.25 (αντικατάσταση ~75% των lags)
+   [fit] key=static cutoff=2025-11-30 23:00:00  (block 1/90)
+   [done] 90 blocks σε 47.5s
+
+📊 RESULT | MAE=15.3777 €/MWh | RMSE=22.7588 | sMAPE=24.6829% | n=2160
+💾 saved: ss_out/ss_linear_no_fuel.json
+--- SS-linear default,-resfc ---
+==============================================================================
+MASTER FORECAST | algo=lgbm task=price strategy=recursive
+  market=dam task=price gate=strict delay_override=None → gap=0h | horizon=24 stride=24 retrain=static
+  groups=['calendar', 'lags', 'roll', 'loadfc', 'meteo', 'fuel', 'genlags', 'loadlags', 'other']  (#features=146)
+  test=[2025-12-01 00:00:00 .. 2026-02-28 23:00:00]  train_end=2025-11-30 23:00:00
+==============================================================================
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.016594 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22175
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 146
+[LightGBM] [Info] Start training from score 105.091640
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.017654 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22175
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 146
+[LightGBM] [Info] Start training from score 105.091640
+      [SS r1/3] ε=0.67 (αντικατάσταση ~33% των lags)
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.024122 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22175
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 146
+[LightGBM] [Info] Start training from score 105.091640
+      [SS r2/3] ε=0.33 (αντικατάσταση ~67% των lags)
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.018394 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22175
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 146
+[LightGBM] [Info] Start training from score 105.091640
+      [SS r3/3] ε=0.25 (αντικατάσταση ~75% των lags)
+   [fit] key=static cutoff=2025-11-30 23:00:00  (block 1/90)
+   [done] 90 blocks σε 52.2s
+
+📊 RESULT | MAE=16.931 €/MWh | RMSE=24.635 | sMAPE=25.4893% | n=2160
+💾 saved: ss_out/ss_linear_no_resfc.json
+--- SS-linear default,-loadfc ---
+==============================================================================
+MASTER FORECAST | algo=lgbm task=price strategy=recursive
+  market=dam task=price gate=strict delay_override=None → gap=0h | horizon=24 stride=24 retrain=static
+  groups=['calendar', 'lags', 'roll', 'resfc', 'meteo', 'fuel', 'genlags', 'loadlags', 'other']  (#features=151)
+  test=[2025-12-01 00:00:00 .. 2026-02-28 23:00:00]  train_end=2025-11-30 23:00:00
+==============================================================================
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.021133 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22691
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 151
+[LightGBM] [Info] Start training from score 105.091640
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.024060 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22691
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 151
+[LightGBM] [Info] Start training from score 105.091640
+      [SS r1/3] ε=0.67 (αντικατάσταση ~33% των lags)
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.018981 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22691
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 151
+[LightGBM] [Info] Start training from score 105.091640
+      [SS r2/3] ε=0.33 (αντικατάσταση ~67% των lags)
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.027027 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22691
+[LightGBM] [Info] Number of data points in the train set: 77486, number of used features: 151
+[LightGBM] [Info] Start training from score 105.091640
+      [SS r3/3] ε=0.25 (αντικατάσταση ~75% των lags)
+   [fit] key=static cutoff=2025-11-30 23:00:00  (block 1/90)
+   [done] 90 blocks σε 63.4s
+
+📊 RESULT | MAE=16.2858 €/MWh | RMSE=23.7971 | sMAPE=25.568% | n=2160
+💾 saved: ss_out/ss_linear_no_loadfc.json
+ALL_DONE
+EXITCODE:0

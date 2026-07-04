@@ -1,0 +1,37 @@
+\babel@toc {english}{}\relax 
+\babel@toc {english}{}\relax 
+\babel@toc {greek}{}\relax 
+\babel@toc {english}{}\relax 
+\babel@toc {greek}{}\relax 
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {2.1}{\ignorespaces Σύγκριση με εκπροσωπευτικές εργασίες της βιβλιογραφίας.}}{10}{table.caption.6}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {3.1}{\ignorespaces Στατιστικά περιγραφικά τιμής DAM ανά μήνα (Q1 2026).}}{12}{table.caption.7}%
+\contentsline {table}{\numberline {3.2}{\ignorespaces Στατιστικά περιγραφικά φορτίου ανά μήνα (Q1 2026).}}{12}{table.caption.8}%
+\contentsline {table}{\numberline {3.3}{\ignorespaces Εξωγενή χαρακτηριστικά και η αντίστοιχη διαθεσιμότητά τους πριν DAM gate closure.}}{13}{table.caption.9}%
+\contentsline {table}{\numberline {3.4}{\ignorespaces Χρονικός διαχωρισμός dataset.}}{14}{table.caption.10}%
+\contentsline {table}{\numberline {3.5}{\ignorespaces Αριθμός χαρακτηριστικών ανά εργασία και παραλλαγή.}}{14}{table.caption.11}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {4.1}{\ignorespaces Παράμετροι LightGBM (standard CL models).}}{15}{table.caption.12}%
+\contentsline {table}{\numberline {4.2}{\ignorespaces Παράμετροι XGBoost (standard CL models).}}{16}{table.caption.13}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {5.1}{\ignorespaces Αποτελέσματα Κλειστού Βρόχου (TF) -- Τιμή, Δεκ.\ 2025 (744h).}}{19}{table.caption.14}%
+\contentsline {table}{\numberline {5.2}{\ignorespaces Αποτελέσματα Κλειστού Βρόχου (TF) -- Φορτίο, Δεκ.\ 2025 (744h).}}{19}{table.caption.15}%
+\contentsline {table}{\numberline {5.3}{\ignorespaces Αποτελέσματα CL -- Τιμή, Q1 2026 (2160h).}}{20}{table.caption.16}%
+\contentsline {table}{\numberline {5.4}{\ignorespaces Open-Loop H=24 (daily) -- Τιμή, Δεκ.\ 2025.}}{20}{table.caption.17}%
+\contentsline {table}{\numberline {5.5}{\ignorespaces Open-Loop H=24 -- Φορτίο, Δεκ.\ 2025.}}{21}{table.caption.18}%
+\contentsline {table}{\numberline {5.6}{\ignorespaces MIMO H=24 -- Τιμή, Δεκ.\ 2025 (744h, daily prediction).}}{21}{table.caption.19}%
+\contentsline {table}{\numberline {5.7}{\ignorespaces MIMO H=24 -- Φορτίο, Δεκ.\ 2025 (744h).}}{21}{table.caption.20}%
+\contentsline {table}{\numberline {5.8}{\ignorespaces Walk-Forward Monthly Retrain -- Τιμή, Q1 2026.}}{22}{table.caption.21}%
+\contentsline {table}{\numberline {5.9}{\ignorespaces Ανάλυση ανά μήνα -- TF Monthly Retrain, τιμή.}}{22}{table.caption.22}%
+\contentsline {table}{\numberline {5.10}{\ignorespaces Walk-Forward Monthly Retrain -- Φορτίο, Q1 2026.}}{23}{table.caption.23}%
+\contentsline {table}{\numberline {5.11}{\ignorespaces Συγκεντρωτική σύγκριση βέλτιστων μοντέλων ανά στρατηγική.}}{23}{table.caption.24}%
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {7.1}{\ignorespaces Μοντέλα που συμμετέχουν στους DM ελέγχους (Q1 2026, $T=2160$ ώρες).}}{32}{table.caption.33}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {8.1}{\ignorespaces Χρωματική κωδικοποίηση dashboard.}}{37}{table.caption.38}%
+\contentsline {table}{\numberline {8.2}{\ignorespaces Χαρτογράφηση στρατηγικής/εργασίας σε αρχεία JSON.}}{38}{table.caption.39}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {9.1}{\ignorespaces Σύγκριση στρατηγικών Q1 2026 — κύρια αποτελέσματα.}}{40}{table.caption.40}%

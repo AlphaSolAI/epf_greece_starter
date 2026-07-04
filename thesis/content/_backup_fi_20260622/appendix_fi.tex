@@ -1,0 +1,229 @@
+% content/appendix_fi.tex
+\chapter{Πλήρη Διαγράμματα Feature Importance ανά Αλγόριθμο}
+\label{app:fi_full}
+
+Για λόγους πληρότητας, παρατίθενται εδώ τα αναλυτικά διαγράμματα σημαντικότητας
+χαρακτηριστικών για τους αλγόριθμους Random Forest, MLP και SVR, ανά στρατηγική
+πρόβλεψης (Teacher-Forcing, Recursive, MIMO) και ανά στόχο (τιμή DAM / φορτίο).
+Τα αντίστοιχα διαγράμματα για LightGBM και XGBoost παραμένουν στο κυρίως κείμενο,
+στην Ενότητα~\ref{ch:fi}.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.55\textwidth]{ch4_feature_importance/fig_fi_A_tf_price_svr.png}
+  \caption{Συνεισφορά των χαρακτηριστικών (permutation importance, 150 δείγματα),
+           Teacher-Forcing, Τιμή DAM --- SVR. Λόγω του kernel trick, η δομή
+           σημαντικότητας αποκλίνει από τους tree-based αλγορίθμους:
+           αναδύονται χαρακτηριστικά που σχετίζονται με την κατανομή
+           των τιμών (rolling means, \textit{co2\_price}).}
+  \label{fig:fi_tf_price_svr}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}{0.48\textwidth}
+    \includegraphics[width=\textwidth]{ch4_feature_importance/fig_fi_A_rec_price_rf.png}
+    \caption{RF-Rec}
+    \label{fig:fi_rec_price_rf}
+  \end{subfigure}\hfill
+  \begin{subfigure}{0.48\textwidth}
+    \includegraphics[width=\textwidth]{ch4_feature_importance/fig_fi_A_rec_price_mlp.png}
+    \caption{MLP-Rec (permutation importance)}
+    \label{fig:fi_rec_price_mlp}
+  \end{subfigure}
+  \caption{Σημαντικότητα χαρακτηριστικών, Recursive, Τιμή DAM.
+           Αριστερά: RF-Rec (MDI) --- ομοιόμορφη κατανομή μεταξύ υστερήσεων,
+           εποχικών και εξωγενών χαρακτηριστικών. Δεξιά: MLP-Rec ---
+           permutation importance με αυξημένη βαρύτητα στα εποχικά lags.}
+  \label{fig:fi_rec_price_rf_mlp}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.55\textwidth]{ch4_feature_importance/fig_fi_A_rec_price_svr.png}
+  \caption{Συνεισφορά των χαρακτηριστικών (permutation importance, 150 δείγματα),
+           Recursive, Τιμή DAM --- SVR.}
+  \label{fig:fi_rec_price_svr}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}{0.48\textwidth}
+    \includegraphics[width=\textwidth]{ch4_feature_importance/fig_fi_A_tf_load_lgbm.png}
+    \caption{LightGBM-TF}
+    \label{fig:fi_tf_load_lgbm}
+  \end{subfigure}\hfill
+  \begin{subfigure}{0.48\textwidth}
+    \includegraphics[width=\textwidth]{ch4_feature_importance/fig_fi_A_tf_load_xgb.png}
+    \caption{XGBoost-TF}
+    \label{fig:fi_tf_load_xgb}
+  \end{subfigure}
+  \caption{Βαρύτητα των χαρακτηριστικών (normalised gain), Teacher-Forcing, Ηλεκτρικό Φορτίο.
+           Η κατανομή είναι σαφώς πιο ισόρροπη σε σχέση με την τιμή. Εμφανής
+           η διπλή εποχικότητα (\textit{Load\_lag1} και \textit{Load\_lag24}) και
+           η συνεισφορά ημερολογιακών χαρακτηριστικών (ώρα, ημέρα εβδομάδας).}
+  \label{fig:fi_tf_load_lgbm_xgb}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}{0.48\textwidth}
+    \includegraphics[width=\textwidth]{ch4_feature_importance/fig_fi_A_tf_load_rf.png}
+    \caption{RandomForest-TF}
+    \label{fig:fi_tf_load_rf}
+  \end{subfigure}\hfill
+  \begin{subfigure}{0.48\textwidth}
+    \includegraphics[width=\textwidth]{ch4_feature_importance/fig_fi_A_tf_load_mlp.png}
+    \caption{MLP-TF (permutation importance)}
+    \label{fig:fi_tf_load_mlp}
+  \end{subfigure}
+  \caption{Σημαντικότητα χαρακτηριστικών, Teacher-Forcing, Ηλεκτρικό Φορτίο.
+           Αριστερά: RF-TF --- ισχυρή παρουσία \textit{hour\_of\_day} και
+           \textit{Load\_lag168} δίπλα στα κύρια lags.
+           Δεξιά: MLP-TF --- permutation importance αναδεικνύει θερμοκρασιακή
+           επίδραση μέσω rolling means.}
+  \label{fig:fi_tf_load_rf_mlp}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.55\textwidth]{ch4_feature_importance/fig_fi_A_tf_load_svr.png}
+  \caption{Συνεισφορά των χαρακτηριστικών (permutation importance, 150 δείγματα),
+           Teacher-Forcing, Ηλεκτρικό Φορτίο --- SVR.}
+  \label{fig:fi_tf_load_svr}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}{0.48\textwidth}
+    \includegraphics[width=\textwidth]{ch4_feature_importance/fig_fi_A_rec_load_lgbm.png}
+    \caption{LGBM-Rec}
+    \label{fig:fi_rec_load_lgbm}
+  \end{subfigure}\hfill
+  \begin{subfigure}{0.48\textwidth}
+    \includegraphics[width=\textwidth]{ch4_feature_importance/fig_fi_A_rec_load_xgb.png}
+    \caption{XGB-Rec}
+    \label{fig:fi_rec_load_xgb}
+  \end{subfigure}
+  \caption{Σημαντικότητα χαρακτηριστικών, Recursive, Ηλεκτρικό Φορτίο.
+           Η δομή παραμένει παρόμοια με TF, επιβεβαιώνοντας ότι το φορτίο
+           ανέχεται καλύτερα την αναδρομική τροφοδότηση από την τιμή.}
+  \label{fig:fi_rec_load_lgbm_xgb}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}{0.48\textwidth}
+    \includegraphics[width=\textwidth]{ch4_feature_importance/fig_fi_A_rec_load_rf.png}
+    \caption{RF-Rec}
+    \label{fig:fi_rec_load_rf}
+  \end{subfigure}\hfill
+  \begin{subfigure}{0.48\textwidth}
+    \includegraphics[width=\textwidth]{ch4_feature_importance/fig_fi_A_rec_load_mlp.png}
+    \caption{MLP-Rec (permutation importance)}
+    \label{fig:fi_rec_load_mlp}
+  \end{subfigure}
+  \caption{Σημαντικότητα χαρακτηριστικών, Recursive, Ηλεκτρικό Φορτίο --- RF και MLP.}
+  \label{fig:fi_rec_load_rf_mlp}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.55\textwidth]{ch4_feature_importance/fig_fi_A_rec_load_svr.png}
+  \caption{Συνεισφορά των χαρακτηριστικών (permutation importance, 150 δείγματα),
+           Recursive, Ηλεκτρικό Φορτίο --- SVR.}
+  \label{fig:fi_rec_load_svr}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.55\textwidth]{ch4_feature_importance/fig_fi_A_mimo_price_svr.png}
+  \caption{Συνεισφορά των χαρακτηριστικών (permutation importance, 150 δείγματα),
+           MIMO H=24, Τιμή DAM --- SVR-MIMO-Dense.}
+  \label{fig:fi_mimo_price_svr}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}{0.48\textwidth}
+    \includegraphics[width=\textwidth]{ch4_feature_importance/fig_fi_A_mimo_load_lgbm.png}
+    \caption{LGBM-MIMO-Dense}
+    \label{fig:fi_mimo_load_lgbm}
+  \end{subfigure}\hfill
+  \begin{subfigure}{0.48\textwidth}
+    \includegraphics[width=\textwidth]{ch4_feature_importance/fig_fi_A_mimo_load_xgb.png}
+    \caption{XGB-MIMO-Dense}
+    \label{fig:fi_mimo_load_xgb}
+  \end{subfigure}
+  \caption{Βαρύτητα των χαρακτηριστικών (normalised gain), MIMO H=24, Ηλεκτρικό Φορτίο.
+           Τα ημερολογιακά χαρακτηριστικά (\textit{hour\_of\_day},
+           \textit{day\_of\_week}) παραμένουν σταθεροί πρωταγωνιστές,
+           ενώ τα dense intraday lags φορτίου αποκτούν συλλογικά
+           σημαντική βαρύτητα.}
+  \label{fig:fi_mimo_load_lgbm_xgb}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}{0.48\textwidth}
+    \includegraphics[width=\textwidth]{ch4_feature_importance/fig_fi_A_mimo_load_rf.png}
+    \caption{RF-MIMO}
+    \label{fig:fi_mimo_load_rf}
+  \end{subfigure}\hfill
+  \begin{subfigure}{0.48\textwidth}
+    \includegraphics[width=\textwidth]{ch4_feature_importance/fig_fi_A_mimo_load_mlp.png}
+    \caption{MLP-MIMO-Dense (permutation importance)}
+    \label{fig:fi_mimo_load_mlp}
+  \end{subfigure}
+  \caption{Σημαντικότητα χαρακτηριστικών, MIMO H=24, Ηλεκτρικό Φορτίο --- RF και MLP.}
+  \label{fig:fi_mimo_load_rf_mlp}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.55\textwidth]{ch4_feature_importance/fig_fi_A_mimo_load_svr.png}
+  \caption{Συνεισφορά των χαρακτηριστικών (permutation importance, 150 δείγματα),
+           MIMO H=24, Ηλεκτρικό Φορτίο --- SVR-MIMO.}
+  \label{fig:fi_mimo_load_svr}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}{0.48\textwidth}
+    \includegraphics[width=\textwidth]{ch4_feature_importance/fig_fi_A_tf_price_rf.png}
+    \caption{RandomForest-TF}
+    \label{fig:fi_tf_price_rf}
+  \end{subfigure}\hfill
+  \begin{subfigure}{0.48\textwidth}
+    \includegraphics[width=\textwidth]{ch4_feature_importance/fig_fi_A_tf_price_mlp.png}
+    \caption{MLP-TF (permutation importance)}
+    \label{fig:fi_tf_price_mlp}
+  \end{subfigure}
+  \caption{Σημαντικότητα χαρακτηριστικών, Teacher-Forcing, Τιμή DAM.
+           Αριστερά: RF-TF (MDI) --- πιο ομοιόμορφη κατανομή (${\sim}28\%$
+           \textit{Price\_lag1}) με εμφανή παρουσία εποχικών χαρακτηριστικών.
+           Δεξιά: MLP-TF (permutation importance, 800 δείγματα) --- ανεβαίνει
+           σε σημαντικότητα το \textit{Price\_lag24} και \textit{load\_fc}.}
+  \label{fig:fi_tf_price_rf_mlp}
+\end{figure}
+
+
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}{0.48\textwidth}
+    \includegraphics[width=\textwidth]{ch4_feature_importance/fig_fi_A_mimo_price_rf.png}
+    \caption{RF-MIMO-two-stage}
+    \label{fig:fi_mimo_price_rf}
+  \end{subfigure}\hfill
+  \begin{subfigure}{0.48\textwidth}
+    \includegraphics[width=\textwidth]{ch4_feature_importance/fig_fi_A_mimo_price_mlp.png}
+    \caption{MLP-MIMO-Dense (permutation importance)}
+    \label{fig:fi_mimo_price_mlp}
+  \end{subfigure}
+  \caption{Σημαντικότητα χαρακτηριστικών, MIMO H=24, Τιμή DAM.
+           Αριστερά: RF-MIMO-two-stage --- κυριαρχία \textit{Price\_roll24}
+           (${\sim}51{,}6\%$), χαρακτηριστική της προσέγγισης bagging.
+           Δεξιά: MLP-MIMO-Dense --- permutation importance με αυξημένη
+           βαρύτητα στα εξωγενή χαρακτηριστικά (gas\_price, co2\_price).}
+  \label{fig:fi_mimo_price_rf_mlp}
+\end{figure}

@@ -1,0 +1,16 @@
+{
+  "objective": "regression",
+  "random_state": 42,
+  "n_jobs": -1,
+  "learning_rate": 0.010294036928357486,
+  "num_leaves": 160,
+  "max_depth": -1,
+  "min_child_samples": 115,
+  "subsample": 0.6918624119995421,
+  "subsample_freq": 1,
+  "colsample_bytree": 0.6527288871146084,
+  "reg_alpha": 1.355317347225715,
+  "reg_lambda": 1.2183250462853112,
+  "min_split_gain": 0.506329931620633,
+  "n_estimators": 1086
+}

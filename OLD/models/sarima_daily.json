@@ -1,0 +1,81 @@
+{
+  "mode": "daily",
+  "bounds": {
+    "test_size": 7,
+    "train_start": null,
+    "train_end": null,
+    "test_start": null,
+    "test_end": null
+  },
+  "stats": {
+    "order_requested": [
+      3,
+      0,
+      2
+    ],
+    "seasonal_requested": [
+      1,
+      1,
+      1,
+      7
+    ],
+    "fit_window": 1095,
+    "refit_every": 7,
+    "maxiter": 150,
+    "initial_fit": {
+      "used": {
+        "order": [
+          3,
+          0,
+          2
+        ],
+        "seasonal_order": [
+          1,
+          1,
+          1,
+          7
+        ]
+      },
+      "attempts": [
+        {
+          "order": [
+            3,
+            0,
+            2
+          ],
+          "seasonal_order": [
+            1,
+            1,
+            1,
+            7
+          ],
+          "ok": true
+        }
+      ]
+    },
+    "refits_ok": 1,
+    "fit_failures": 0,
+    "forecast_failures": 0,
+    "append_failures": 0,
+    "fallback_steps": 0,
+    "time_sec": 0.98
+  },
+  "dates": [
+    "2025-12-25T00:00:00",
+    "2025-12-26T00:00:00",
+    "2025-12-27T00:00:00",
+    "2025-12-28T00:00:00",
+    "2025-12-29T00:00:00",
+    "2025-12-30T00:00:00",
+    "2025-12-31T00:00:00"
+  ],
+  "pred": [
+    99.51828795198776,
+    87.24521157307828,
+    86.59556372251834,
+    86.58560612850845,
+    114.78740008745154,
+    106.55951353603082,
+    96.91752201943812
+  ]
+}

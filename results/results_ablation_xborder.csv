@@ -1,0 +1,3 @@
+spec,groups,n_features,MAE,RMSE,sMAPE,n,seconds
+default,calendar+lags+roll+resfc+loadfc+meteo+fuel+genlags+loadlags+other,152,16.0963,23.4151,24.903,2160,58.9
+"default,xborder",calendar+lags+roll+resfc+loadfc+xborder+meteo+fuel+genlags+loadlags+other,154,15.376,22.2816,24.16,2160,57.6

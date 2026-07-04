@@ -1,0 +1,7 @@
+config,algo,task,market,strategy,retrain,gate,horizon,stride,unit,MAE,RMSE,sMAPE,n,seconds
+xgb_price_dam_recursive_static,xgb,price,dam,recursive,static,strict,24,24,€/MWh,25.3056,34.9995,30.7598,2160,51.7
+xgb_price_dam_direct_static,xgb,price,dam,direct,static,strict,24,24,€/MWh,21.3645,29.3554,28.6736,2160,167.5
+xgb_price_dam_tf_static,xgb,price,dam,tf,static,strict,24,24,€/MWh,10.9895,16.4091,20.7942,2160,22.2
+xgb_load_dam_recursive_static,xgb,load,dam,recursive,static,strict,24,24,MW,135.8135,177.1874,2.3238,2160,74.0
+xgb_load_dam_direct_static,xgb,load,dam,direct,static,strict,24,24,MW,257.6637,372.9752,4.3282,2160,268.4
+xgb_load_dam_tf_static,xgb,load,dam,tf,static,strict,24,24,MW,72.1347,94.8643,1.2291,2160,24.0

@@ -1,0 +1,76 @@
+task,model,rank,feature,category,importance_%
+price,CL — LightGBM,1,y_lag1,Price lag,88.26%
+price,CL — LightGBM,2,y_lag24,Price lag,4.77%
+price,CL — LightGBM,3,y_lag168,Price lag,0.56%
+price,CL — LightGBM,4,y_lag2,Price lag,0.33%
+price,CL — LightGBM,5,y_lag48,Price lag,0.26%
+price,CL — XGBoost,1,y_lag1,Price lag,63.29%
+price,CL — XGBoost,2,y_lag24,Price lag,5.46%
+price,CL — XGBoost,3,y_lag168,Price lag,5.09%
+price,CL — XGBoost,4,y_lag2,Price lag,1.88%
+price,CL — XGBoost,5,hour_cos,Calendar / Time,1.62%
+price,CL — RandomForest,1,y_lag1,Price lag,11.20%
+price,CL — RandomForest,2,y_lag24,Price lag,8.48%
+price,CL — RandomForest,3,y_lag2,Price lag,8.44%
+price,CL — RandomForest,4,y_lag48,Price lag,6.33%
+price,CL — RandomForest,5,y_roll24,Price rolling,5.76%
+price,OL — LGBM Daily-Opt,1,y_lag1,Price lag,8.87%
+price,OL — LGBM Daily-Opt,2,y_lag2,Price lag,5.19%
+price,OL — LGBM Daily-Opt,3,y_lag24,Price lag,4.65%
+price,OL — LGBM Daily-Opt,4,y_lag168,Price lag,3.80%
+price,OL — LGBM Daily-Opt,5,gen_fc_dayahead,Other,2.71%
+price,OL — XGB Dense+SS,1,y_lag24,Price lag,18.51%
+price,OL — XGB Dense+SS,2,y_roll24,Price rolling,13.99%
+price,OL — XGB Dense+SS,3,y_lag1,Price lag,12.76%
+price,OL — XGB Dense+SS,4,y_lag23,Price lag (intraday dense),12.03%
+price,OL — XGB Dense+SS,5,y_lag2,Price lag,6.30%
+price,Direct — LGBM Dense,1,gen_wind_lag48,Wind gen lag,2.08%
+price,Direct — LGBM Dense,2,gen_wind_lag24,Wind gen lag,2.03%
+price,Direct — LGBM Dense,3,y_roll168,Price rolling,1.93%
+price,Direct — LGBM Dense,4,gen_wind_lag168,Wind gen lag,1.91%
+price,Direct — LGBM Dense,5,wind_onshore_fc_dayahead,Other,1.90%
+price,MIMO — XGB Dense,1,y_lag1,Price lag,4.87%
+price,MIMO — XGB Dense,2,y_lag19,Price lag (intraday dense),3.40%
+price,MIMO — XGB Dense,3,y_lag6,Price lag,3.27%
+price,MIMO — XGB Dense,4,y_lag13,Price lag (intraday dense),3.16%
+price,MIMO — XGB Dense,5,y_lag3,Price lag,2.91%
+price,MIMO — RF (two-stage),1,y_roll24,Price rolling,51.58%
+price,MIMO — RF (two-stage),2,y_roll168,Price rolling,16.55%
+price,MIMO — RF (two-stage),3,gas_lag168,Gas price lag,4.60%
+price,MIMO — RF (two-stage),4,gas_price,Gas price lag,2.58%
+price,MIMO — RF (two-stage),5,hour_sin,Calendar / Time,1.73%
+load,CL — LightGBM,1,y_lag1,Price lag,70.05%
+load,CL — LightGBM,2,load_lag1,Load / Load-FC,22.39%
+load,CL — LightGBM,3,hour_cos,Calendar / Time,3.03%
+load,CL — LightGBM,4,y_lag24,Price lag,1.29%
+load,CL — LightGBM,5,y_lag12,Price lag,0.40%
+load,CL — XGBoost,1,y_lag1,Price lag,76.57%
+load,CL — XGBoost,2,load_lag1,Load / Load-FC,7.46%
+load,CL — XGBoost,3,hour_cos,Calendar / Time,4.65%
+load,CL — XGBoost,4,y_lag24,Price lag,2.68%
+load,CL — XGBoost,5,hour_sin,Calendar / Time,1.03%
+load,CL — RandomForest,1,load_lag1,Load / Load-FC,12.32%
+load,CL — RandomForest,2,y_lag1,Price lag,12.23%
+load,CL — RandomForest,3,y_lag24,Price lag,8.27%
+load,CL — RandomForest,4,load_lag24,Load / Load-FC,8.20%
+load,CL — RandomForest,5,y_lag168,Price lag,5.81%
+load,OL — LGBM-SS Daily,1,load_lag1,Load / Load-FC,5.01%
+load,OL — LGBM-SS Daily,2,hour,Calendar / Time,3.11%
+load,OL — LGBM-SS Daily,3,hour_sin,Calendar / Time,2.90%
+load,OL — LGBM-SS Daily,4,gen_solar_lag2,Solar gen lag,2.64%
+load,OL — LGBM-SS Daily,5,gen_solar_lag1,Solar gen lag,2.44%
+load,Direct — LGBM Dense,1,y_roll168,Price rolling,5.33%
+load,Direct — LGBM Dense,2,dow,Calendar / Time,3.25%
+load,Direct — LGBM Dense,3,gen_wind_lag168,Wind gen lag,3.09%
+load,Direct — LGBM Dense,4,y_roll24,Price rolling,2.95%
+load,Direct — LGBM Dense,5,gen_wind_lag48,Wind gen lag,2.89%
+load,MIMO — XGB Dense,1,y_lag1,Price lag,5.32%
+load,MIMO — XGB Dense,2,load_lag12,Load / Load-FC,4.90%
+load,MIMO — XGB Dense,3,y_lag9,Price lag (intraday dense),4.24%
+load,MIMO — XGB Dense,4,y_lag19,Price lag (intraday dense),4.04%
+load,MIMO — XGB Dense,5,y_lag17,Price lag (intraday dense),3.99%
+load,MIMO — RF,1,y_roll24,Price rolling,31.01%
+load,MIMO — RF,2,hour_cos,Calendar / Time,15.65%
+load,MIMO — RF,3,hour,Calendar / Time,14.28%
+load,MIMO — RF,4,hour_sin,Calendar / Time,12.43%
+load,MIMO — RF,5,y_roll168,Price rolling,5.16%

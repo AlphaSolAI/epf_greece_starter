@@ -1,0 +1,21 @@
+{
+  "mode": "daily",
+  "order": [
+    4,
+    0,
+    1
+  ],
+  "seasonal_order": [
+    0,
+    1,
+    1,
+    7
+  ],
+  "trend": "n",
+  "freq": "D",
+  "n_train": 3564,
+  "train_end": "2024-11-01 00:00:00",
+  "maxiter": 200,
+  "use_log1p": true,
+  "baseline_window_days_hourly": null
+}

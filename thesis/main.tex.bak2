@@ -1,0 +1,196 @@
+\documentclass[11pt, a4paper]{report}
+
+% Language setting — Greek primary, English secondary (polyglossia for XeLaTeX)
+\usepackage{polyglossia}
+\setmainlanguage{greek}
+\setotherlanguage{english}
+% Patch: some polyglossia versions write \selectlanguage*{...} to aux file
+% which fails if the starred form is not defined. This makes * optional.
+\makeatletter
+\let\@poly@selectlanguage\selectlanguage
+\def\selectlanguage{\@ifstar\@poly@selectlanguage\@poly@selectlanguage}
+\makeatother
+
+% Page size and margins
+\usepackage[a4paper, top=2.5cm, bottom=2.5cm, left=3cm, right=2.5cm, headheight=14pt]{geometry}
+
+% Math
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% Graphics
+\usepackage{graphicx}
+\usepackage[export]{adjustbox}
+\usepackage{float}
+\usepackage{subcaption}
+\graphicspath{{../thesis_output/}}
+
+% Tables
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{makecell}
+\usepackage{xcolor}
+\usepackage{colortbl}
+
+% Links
+\usepackage[hidelinks, breaklinks]{hyperref}
+% cleveref removed — Greek polyglossia incompatible; using \ref{} directly
+
+% Bibliography (natbib fallback; use biblatex on full TeX installation)
+\usepackage[numbers, sort&compress]{natbib}
+
+% Font (DejaVu Sans — available on Linux server; on Windows swap to Calibri or Arial)
+\usepackage{fontspec}
+\setmainfont[Script=Greek]{DejaVu Sans}
+\newfontfamily\greekfont[Script=Greek]{DejaVu Sans}
+\newfontfamily\greekfontsf[Script=Greek]{DejaVu Sans}
+\newfontfamily\greekfonttt[Script=Greek]{DejaVu Sans Mono}
+\usepackage{microtype}
+% Zero indentation style (matching UPAT ECE template)
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+% Looser justification — prevents rivers/overfull hboxes in Greek
+\tolerance=1500
+\emergencystretch=2em
+\hyphenpenalty=500
+\exhyphenpenalty=500
+
+% PDF pages (for cover)
+\usepackage{pdfpages}
+
+% Euro symbol
+\usepackage{eurosym}   % provides \euro{}
+
+% Units
+% \usepackage[mode=match]{siunitx} % unavailable on this server
+
+% Captions
+\usepackage{caption}
+\DeclareCaptionLabelSeparator{ieee}{.\quad}
+\captionsetup{labelsep=ieee, font=small}
+
+% TikZ / PGF for diagrams
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usetikzlibrary{arrows.meta, positioning, shapes.geometric, calc, decorations.pathreplacing, backgrounds, fit}
+
+% Code listings
+\usepackage{listings}
+\lstset{basicstyle=\ttfamily\footnotesize, breaklines=true}
+
+% List customization
+\usepackage{enumitem}
+
+% Highlighted summary boxes
+\usepackage[most]{tcolorbox}
+
+% Acronyms / Glossary
+\usepackage[acronym, toc]{glossaries}
+\makeglossaries
+
+% Chapter style — "Κεφάλαιο N" heading
+\usepackage{titlesec}
+\titleformat{\chapter}[display]
+  {\normalfont\large\bfseries}
+  {\chaptertitlename\ \thechapter}{16pt}{\LARGE\bfseries\raggedright}
+\titlespacing*{\chapter}{0pt}{50pt}{40pt}
+\titleformat{\section}{\normalfont\Large\bfseries\raggedright}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalfont\large\bfseries\raggedright}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalfont\normalsize\bfseries\raggedright}{\thesubsubsection}{1em}{}
+
+% Header / Footer
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE,RO]{\thepage}
+\fancyhead[RE]{\nouppercase{\leftmark}}
+\fancyhead[LO]{\nouppercase{\rightmark}}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ─── Abbreviations ────────────────────────────────────────────────────────────
+\newacronym{dam}{DAM}{Day-Ahead Market}
+\newacronym{epf}{EPF}{Electricity Price Forecasting}
+\newacronym{elf}{ELF}{Electricity Load Forecasting}
+\newacronym{ml}{ML}{Machine Learning}
+\newacronym{lgbm}{LightGBM}{Light Gradient Boosting Machine}
+\newacronym{xgb}{XGB}{eXtreme Gradient Boosting}
+\newacronym{rf}{RF}{Random Forest}
+\newacronym{svr}{SVR}{Support Vector Regression}
+\newacronym{mlp}{MLP}{Multi-Layer Perceptron}
+\newacronym{mimo}{MIMO}{Multi-Input Multi-Output}
+\newacronym{mae}{MAE}{Mean Absolute Error}
+\newacronym{rmse}{RMSE}{Root Mean Squared Error}
+\newacronym{smape}{sMAPE}{symmetric Mean Absolute Percentage Error}
+\newacronym{tf}{TF}{Teacher-Forcing}
+\newacronym{ol}{OL}{Open-Loop}
+\newacronym{cl}{CL}{Closed-Loop}
+\newacronym{dm}{DM}{Diebold-Mariano}
+\newacronym{entso}{ENTSO-E}{European Network of Transmission System Operators for Electricity}
+\newacronym{admhe}{ΑΔΜΗΕ}{Ανεξάρτητος Διαχειριστής Μεταφοράς Ηλεκτρικής Ενέργειας}
+\newacronym{sdac}{SDAC}{Single Day-Ahead Coupling}
+\newacronym{res}{RES}{Renewable Energy Sources}
+\newacronym{tso}{TSO}{Transmission System Operator}
+\newacronym{cv}{CV}{Cross-Validation}
+\newacronym{hln}{HLN}{Harvey-Leybourne-Newbold}
+\newacronym{henex}{HEnEx}{Hellenic Energy Exchange}
+\newacronym{raaey}{ΡΑΑΕΥ}{Ρυθμιστική Αρχή Αποβλήτων, Ενέργειας και Υδάτων}
+\newacronym{dapeep}{ΔΑΠΕΕΠ}{Διαχειριστής ΑΠΕ και Εγγυήσεων Προέλευσης}
+\newacronym{deh}{ΔΕΗ}{Δημόσια Επιχείρηση Ηλεκτρισμού}
+\newacronym{sidc}{SIDC}{Single Intraday Coupling}
+\newacronym{lstm}{LSTM}{Long Short-Term Memory}
+\newacronym{vstlf}{VSTLF}{Very Short-Term Load Forecasting}
+\newacronym{stlf}{STLF}{Short-Term Load Forecasting}
+\newacronym{mtlf}{MTLF}{Medium-Term Load Forecasting}
+\newacronym{ltlf}{LTLF}{Long-Term Load Forecasting}
+%%% ────────────────────────────────────────────────────────────────────────────
+
+\begin{document}
+
+%% ─── COVER ───────────────────────────────────────────────────────────────────
+\includepdf[pages={-}]{cover.pdf}
+
+%% ─── PREFACE ─────────────────────────────────────────────────────────────────
+\pagenumbering{roman}
+\input{content/acknowledgements}
+\newpage
+\input{content/abstract-gr}
+\newpage
+\begin{english}
+\input{content/abstract-eng}
+\end{english}
+\newpage
+
+%% ─── FRONT MATTER ────────────────────────────────────────────────────────────
+\tableofcontents
+\listoffigures
+\listoftables
+
+\setglossarystyle{index}
+\printglossary[type=\acronymtype, title={Κατάλογος Ακρωνύμων}, nonumberlist]
+\newpage
+
+%% ─── MAIN MATTER ─────────────────────────────────────────────────────────────
+\pagenumbering{arabic}
+\setcounter{page}{1}
+\pagestyle{fancy}
+
+\input{content/introduction}
+\input{content/literature}
+\input{content/data}
+\input{content/methods}
+\input{content/dashboard}
+\input{content/experiments}
+\input{content/forecast_analysis}
+\input{content/feature_importance}
+\input{content/statistical_tests}
+\input{content/conclusions}
+
+%% ─── BIBLIOGRAPHY ──────────────────────────────
+\bibliographystyle{unsrt}
+\bibliography{thesis}
+
+\end{document}

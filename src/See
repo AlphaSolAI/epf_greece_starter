@@ -1,0 +1,32 @@
+$env:PYTHONUTF8=1
+
+python -m http.server 8001
+conda run -n epf python -m src.train_rf_mimo hourly --task price --horizon 168 --train_start "2023-12-01 00:00:00" --train_end "2025-11-30 23:00:00" --n_estimators 600 --max_features 1.0 --n_jobs -1 --n_jobs_cap 1 --chunk_size 50 --backend threading
+
+
+#bdomada
+
+conda run -n epf python -m src.train hourly --models all --train_end 2025-11-30T23:00:00
+conda run -n epf python -m src.eval  hourly --test_size 168 --sort_by MAE
+
+# OPENLOOP
+conda run -n epf python -m src.train_openloop hourly --models all --train_end 2025-11-30T23:00:00
+conda run -n epf python -m src.eval_openloop  hourly --test_size 168 --sort_by MAE
+
+# ΤUNED
+conda run -n epf python -m src.train_xgb_tuned  hourly --test_size 168 --n_trials 20 --early_stop 80 --use_in_eval
+conda run -n epf python -m src.train_svr_tuned  hourly --test_size 168 --n_trials 12 --use_in_eval
+conda run -n epf python -m src.train_mlp_tuned  hourly --test_size 168 --n_trials 12 --use_in_eval
+conda run -n epf python -m src.train_rf_tuned   hourly --test_size 168 --n_trials 12 --use_in_eval
+conda run -n epf python -m src.train_lgbm_tuned hourly --test_size 168 --n_trials 20 --early_stop 80 --use_in_eval
+conda run -n epf python -m src.sarima hourly --test_size 168
+conda run -n epf python -m src.eval  hourly --test_size 168 --sort_by MAE
+
+conda run -n epf python -m src.train_xgb_mimo hourly single --horizon 168 --n_estimators 200 --test_size 168 --test_end 2025-12-31T23:00:00
+
+
+cd "C:\Users\aggel\OneDrive\Υπολογιστής\ALPHA\ECE\ΔΙΠΛΩΜΑΤΙΚΗ\epf_greece_starter\thesis"
+xelatex -interaction=nonstopmode main.tex
+bibtex main
+xelatex -interaction=nonstopmode main.tex
+xelatex -interaction=nonstopmode main.tex

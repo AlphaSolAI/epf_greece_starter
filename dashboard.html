@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+  <meta charset="UTF-8" />
+  <title>EPF Greece – Model Evaluation Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root{
+      --bg:#0b1220;--card:rgba(15,23,42,.78);--card2:rgba(2,6,23,.72);
+      --text:#e5e7eb;--muted:#9ca3af;--border:rgba(148,163,184,.18);
+      --accent:#38bdf8;--accent2:#a855f7;--good:#22c55e;--warn:#f59e0b;--bad:#ef4444;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+      background:radial-gradient(circle at top,#182033 0,#050814 55%,#040612 100%);
+      color:var(--text);min-height:100vh;}
+    .page{max-width:1440px;margin:0 auto;padding:22px 18px 40px}
+    header{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:18px}
+    h1{margin:0;font-size:1.35rem;letter-spacing:.02em}
+    .subtitle{margin:5px 0 0;color:var(--muted);font-size:.85rem}
+    .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;
+      background:linear-gradient(135deg,rgba(15,23,42,.8),rgba(2,6,23,.6));
+      border:1px solid var(--border);border-radius:18px;padding:10px 14px;
+      backdrop-filter:blur(14px);box-shadow:0 18px 42px rgba(0,0,0,.35);margin-bottom:16px;}
+    .group{display:flex;align-items:center;gap:5px;padding:2px 8px;border-radius:999px;border:1px solid rgba(148,163,184,.14)}
+    .label{font-size:.75rem;color:var(--muted);padding-right:6px;border-right:1px solid rgba(148,163,184,.18);margin-right:2px;white-space:nowrap}
+    .chip{border:0;background:transparent;color:var(--muted);padding:6px 11px;border-radius:999px;
+      font-size:.82rem;cursor:pointer;transition:all .15s ease;user-select:none;white-space:nowrap;}
+    .chip:hover{background:rgba(148,163,184,.10)}
+    .chip.active{background:rgba(56,189,248,.14);color:var(--accent)}
+    .chip.active.purple{background:rgba(168,85,247,.14);color:var(--accent2)}
+    .chip.active.green{background:rgba(34,197,94,.14);color:var(--good)}
+    .chip.disabled{opacity:.35;cursor:not-allowed;pointer-events:none}
+    .btn{border:1px solid rgba(148,163,184,.22);background:rgba(2,6,23,.35);color:var(--text);
+      padding:7px 13px;border-radius:999px;cursor:pointer;font-size:.82rem;transition:all .15s ease;white-space:nowrap;}
+    .btn:hover{border-color:rgba(56,189,248,.55)}
+    .date-input{background:rgba(2,6,23,.45);border:1px solid rgba(148,163,184,.22);
+      color:var(--text);border-radius:8px;padding:4px 8px;font-size:.78rem;outline:none;cursor:pointer;}
+    .date-input:focus{border-color:rgba(56,189,248,.55)}
+    .date-input::-webkit-calendar-picker-indicator{filter:invert(1);opacity:.6;cursor:pointer}
+    .grid{display:grid;grid-template-columns:1fr;gap:14px}
+    .card{background:linear-gradient(135deg,var(--card),var(--card2));border:1px solid rgba(148,163,184,.16);
+      border-radius:18px;padding:16px 16px 14px;box-shadow:0 20px 60px rgba(0,0,0,.45);
+      backdrop-filter:blur(16px);overflow:hidden;}
+    .card-title{display:flex;align-items:center;gap:10px;margin:2px 0 6px}
+    .dot{width:7px;height:7px;border-radius:999px;background:var(--accent);box-shadow:0 0 0 4px rgba(56,189,248,.12)}
+    .dot.purple{background:var(--accent2);box-shadow:0 0 0 4px rgba(168,85,247,.12)}
+    .card-title h2{margin:0;font-size:1rem;font-weight:560}
+    .card-sub{margin:0 0 10px;color:var(--muted);font-size:.83rem}
+    .chart-wrap{height:500px;display:flex;align-items:center;justify-content:center}
+    @media(max-width:1000px){.chart-wrap{height:360px}}
+    canvas{width:100%!important;height:100%!important}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    @media(max-width:1100px){.row{grid-template-columns:1fr}}
+    .table-wrap{border:1px solid rgba(148,163,184,.18);border-radius:14px;overflow:hidden;background:rgba(2,6,23,.35)}
+    table{width:100%;border-collapse:collapse;font-size:.86rem}
+    thead{background:rgba(2,6,23,.55)}
+    th,td{padding:10px 12px;text-align:right;border-bottom:1px solid rgba(148,163,184,.10);white-space:nowrap}
+    th:first-child,td:first-child{text-align:left}
+    th{color:var(--muted);font-weight:600}
+    tbody tr:hover{background:rgba(56,189,248,.07);cursor:pointer}
+    .pill{display:inline-flex;align-items:center;gap:8px;font-size:.78rem;color:var(--muted);
+      border:1px solid rgba(148,163,184,.22);border-radius:999px;padding:5px 10px;background:rgba(2,6,23,.25);}
+    .tag{font-size:.72rem;padding:2px 8px;border-radius:999px;border:1px solid rgba(148,163,184,.25);color:var(--muted)}
+    .tag.ml{border-color:rgba(56,189,248,.45);color:var(--accent)}
+    .tag.baseline{border-color:rgba(245,158,11,.45);color:#fdba74}
+    .tag.ensemble{border-color:rgba(34,197,94,.35);color:#86efac}
+    .flex{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+    .errors{border:1px solid rgba(245,158,11,.25);background:rgba(245,158,11,.06);border-radius:14px;padding:10px 12px;color:#fde68a;font-size:.85rem}
+    .muted{color:var(--muted)}
+    .footer{margin-top:10px;color:var(--muted);font-size:.75rem;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+    code{background:rgba(2,6,23,.45);padding:2px 6px;border:1px solid rgba(148,163,184,.18);border-radius:6px;color:var(--accent)}
+    .rank-select{border:1px solid rgba(148,163,184,.22);background:rgba(2,6,23,.25);color:var(--text);
+      padding:4px 8px;border-radius:12px;font-size:.78rem;outline:none;cursor:pointer;}
+    .rank-select:focus{border-color:rgba(56,189,248,.55)}
+    .no-chart{color:var(--muted);font-size:.9rem;text-align:center;padding:20px}
+    .date-sep{color:var(--muted);font-size:.78rem;padding:0 2px}
+  </style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <div>
+      <h1>⚡ EPF Greece – Model Evaluation Dashboard</h1>
+      <p class="subtitle">Electricity Price &amp; Load Forecasting • Greek Market (HEnEx) • Dec 2025 | Q1 2026</p>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <!-- Task -->
+    <div class="group">
+      <span class="label">Task</span>
+      <button class="chip active" id="btn-price">⚡ Price</button>
+      <button class="chip" id="btn-load">📊 Load</button>
+    </div>
+
+    <!-- Strategy (all show 1-month data) -->
+    <div class="group">
+      <span class="label">Strategy</span>
+      <button class="chip active" id="btn-cl">Teacher-Forcing (TF)</button>
+      <button class="chip" id="btn-ol">Recursive</button>
+      <button class="chip" id="btn-mimo">MIMO</button>
+      <button class="chip" id="btn-direct">Direct</button>
+    </div>
+
+    <!-- Period -->
+    <div class="group">
+      <span class="label">Περίοδος</span>
+      <button class="chip active" id="btn-dec2025">Dec 2025</button>
+      <button class="chip" id="btn-q1-2026">Q1 2026 (Δεκ–Φεβ)</button>
+    </div>
+
+    <!-- View -->
+    <div class="group">
+      <span class="label">View</span>
+      <button class="chip active" id="btn-view-all">All</button>
+      <button class="chip" id="btn-view-ml">ML</button>
+      <button class="chip" id="btn-view-baselines">Baselines</button>
+      <button class="chip" id="btn-view-best" title="Καλύτερο μοντέλο ανά οικογένεια + baselines">⭐ Best</button>
+    </div>
+
+    <!-- Models toggle -->
+    <div class="group">
+      <span class="label">Models</span>
+      <button class="chip" id="btn-actual">Show</button>
+    </div>
+
+    <!-- Date range filter -->
+    <div class="group" id="grp-daterange">
+      <span class="label">Zoom</span>
+      <input type="date" class="date-input" id="inp-from" title="From date" />
+      <span class="date-sep">→</span>
+      <input type="date" class="date-input" id="inp-to" title="To date" />
+      <button class="chip" id="btn-date-apply" title="Apply date filter">✓</button>
+      <button class="chip" id="btn-date-clear" title="Clear date filter">✕</button>
+    </div>
+
+    <button class="btn" id="btn-export">⬇ CSV</button>
+    <button class="btn" id="btn-reload">↺ Reload</button>
+  </div>
+
+  <div class="grid">
+    <section class="card">
+      <div class="flex">
+        <div>
+          <div class="card-title"><span class="dot" id="chart-dot"></span><h2 id="chart-title">Actual vs Models</h2></div>
+          <p class="card-sub" id="chart-subtitle">—</p>
+        </div>
+        <div class="pill"><span id="summary-text">—</span></div>
+      </div>
+      <div class="chart-wrap" id="chart-wrap"><canvas id="chart"></canvas></div>
+    </section>
+
+    <section class="card">
+      <div class="flex" style="margin-bottom:12px">
+        <div>
+          <div class="card-title"><span class="dot purple"></span><h2>Metrics</h2></div>
+          <p class="card-sub" id="metrics-sub">Αποτελέσματα test period Dec 1–7 2025.</p>
+        </div>
+        <div class="pill">
+          <span class="muted">Sort by</span>
+          <select id="rank-by" class="rank-select">
+            <option value="MAE">MAE (↓)</option>
+            <option value="RMSE">RMSE (↓)</option>
+            <option value="sMAPE">sMAPE (↓)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="table-wrap">
+          <table id="tbl-ml">
+            <thead>
+              <tr><th colspan="5" style="text-align:left">ML Models <span class="tag ml" style="margin-left:6px">ml</span></th></tr>
+              <tr><th>#</th><th>Model</th><th id="th-mae-ml">MAE</th><th>RMSE</th><th>sMAPE%</th></tr>
+            </thead><tbody></tbody>
+          </table>
+        </div>
+        <div class="table-wrap">
+          <table id="tbl-baselines">
+            <thead>
+              <tr><th colspan="5" style="text-align:left">Baselines <span class="tag baseline" style="margin-left:6px">baseline</span></th></tr>
+              <tr><th>#</th><th>Model</th><th>MAE</th><th>RMSE</th><th>sMAPE%</th></tr>
+            </thead><tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div style="height:12px"></div>
+      <div class="table-wrap">
+        <table id="tbl-all">
+          <thead>
+            <tr><th colspan="6" style="text-align:left">Αναλυτικός Πίνακας — Όλα τα Μοντέλα</th></tr>
+            <tr><th>#</th><th>Model</th><th>Type</th><th>MAE</th><th>RMSE</th><th>sMAPE%</th></tr>
+          </thead><tbody></tbody>
+        </table>
+      </div>
+
+      <div id="errors-box" style="margin-top:12px;display:none" class="errors"></div>
+      <div class="footer">
+        <span id="footer-files">—</span>
+        <span id="footer-cmd">—</span>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+// ── STATE ──────────────────────────────────────────────────────────
+const S = {
+  task:"price", strategy:"cl", view:"all", showModels:false, rankBy:"MAE",
+  cache:{}, fromDate:"", toDate:"", period:"dec2025"
+};
+
+// ── FILE MAP ───────────────────────────────────────────────────────
+// Dec 2025: 1-month data (Dec 1-31 2025)
+// Q1 2026: 3-month data (Dec 2025 + Jan 2026 + Feb 2026)
+// MIMO = XGB multi-output models | Direct = LGBM direct (H separate models)
+const FILE_MAP = {
+  price:{
+    cl:           "dashboard_data_hourly_price_cl_monthly.json",
+    ol:           "dashboard_data_hourly_price_openloop_h24_monthly.json",
+    direct:       "dashboard_data_hourly_price_direct_h24_monthly.json",
+    mimo:         "dashboard_data_hourly_price_mimo_h24_monthly.json",
+    cl_q1_2026:   "dashboard_data_hourly_price_cl_monthly_q1_2026.json",
+    ol_q1_2026:   "dashboard_data_hourly_price_openloop_h24_monthly_q1_2026.json",
+    direct_q1_2026:"dashboard_data_hourly_price_direct_h24_monthly_q1_2026.json",
+    mimo_q1_2026: "dashboard_data_hourly_price_mimo_h24_monthly_q1_2026.json",
+  },
+  load:{
+    cl:           "dashboard_data_hourly_load_cl_monthly.json",
+    ol:           "dashboard_data_hourly_load_openloop_h24_monthly.json",
+    direct:       "dashboard_data_hourly_load_direct_h24_monthly.json",
+    mimo:         "dashboard_data_hourly_load_mimo_h24_monthly.json",
+    cl_q1_2026:   "dashboard_data_hourly_load_cl_monthly_q1_2026.json",
+    ol_q1_2026:   "dashboard_data_hourly_load_openloop_h24_monthly_q1_2026.json",
+    direct_q1_2026:"dashboard_data_hourly_load_direct_h24_monthly_q1_2026.json",
+    mimo_q1_2026: "dashboard_data_hourly_load_mimo_h24_monthly_q1_2026.json",
+  },
+};
+
+// ── PERIOD CONFIG ─────────────────────────────────────────────────
+const PERIOD_DATES = {
+  dec2025: { from:"2025-12-01", to:"2025-12-31", label:"Δεκέμβριος 2025 (744h)" },
+  q1_2026: { from:"2025-12-01", to:"2026-02-28", label:"Q1 2026: Δεκ 2025 – Φεβ 2026 (~2160h)" },
+};
+
+const TASK_LABEL  = { price:"⚡ Price (€/MWh)", load:"📊 Load (MW)" };
+const STRAT_LABEL = { cl:"Teacher-Forcing (TF)", ol:"Recursive", mimo:"MIMO", direct:"Direct Multistep" };
+const Y_LABEL     = { price:"Day-ahead Price (€/MWh)", load:"Load (MW)" };
+const MAE_UNIT    = { price:"€/MWh", load:"MW" };
+
+// ── COLORS ─────────────────────────────────────────────────────────
+const PAL=["#38bdf8","#a855f7","#22c55e","#f59e0b","#ef4444","#10b981","#eab308","#60a5fa",
+           "#f97316","#fb7185","#c084fc","#4ade80","#93c5fd","#fde047","#34d399","#f472b6"];
+const BASELINE_COL={
+  "Naive-1":"#94a3b8","Naive-24":"#64748b","Naive-168":"#475569",
+  "Seasonal Profile":"#f0abfc","Seasonal profile (hour×dow×holiday)":"#f0abfc"
+};
+const hash=s=>{let h=0;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;return h;};
+// Family-based colors: same algorithm = same color across ALL strategy views
+const FAMILY_COLORS = {
+  lgbm:          "#38bdf8",  // sky blue   — LightGBM (CL reference)
+  xgb:           "#f97316",  // orange     — XGBoost
+  rf:            "#22c55e",  // green      — RandomForest
+  mlp:           "#a855f7",  // purple     — MLP
+  svr:           "#ef4444",  // red        — SVR
+  ensemble_best3:"#eab308",  // gold       — Ensemble Best3 (1/MAE)
+  ensemble_all:  "#14b8a6",  // teal       — Ensemble All (1/MAE)
+};
+function _familyOf(n){
+  const u=n.toLowerCase();
+  if(/(lgbm|lightgbm)/.test(u)) return "lgbm";
+  if(/(xgb|xgboost)/.test(u))  return "xgb";
+  if(/\brf\b|randomforest/.test(u)) return "rf";
+  if(/\bmlp\b/.test(u))        return "mlp";
+  if(/\bsvr\b/.test(u))        return "svr";
+  if(/ensemble.*(best3|top3)|(best3|top3).*ensemble/i.test(u)) return "ensemble_best3";
+  if(/ensemble/.test(u))       return "ensemble_all";
+  return null;
+}
+const colFor=n=>{
+  if(n==="Actual") return "#e5e7eb";
+  if(BASELINE_COL[n]) return BASELINE_COL[n];
+  const nL=n.toLowerCase();
+  for(const [k,v] of Object.entries(BASELINE_COL)){ if(k.toLowerCase()===nL) return v; }
+  const fam=_familyOf(n); if(fam) return FAMILY_COLORS[fam];
+  return PAL[hash(n)%PAL.length];
+};
+const dashFor=n=>{
+  if(n==="Actual") return [];
+  const nL=n.toLowerCase();
+  // Baselines: long dashes
+  if(BASELINE_COL[n]||nL.includes("naive")||nL.includes("seasonal")||nL.includes("profile"))
+    return [8,4];
+  // Weekly (168h) models: short dashes to distinguish from daily within same family
+  if(nL.includes("weekly")||nL.includes("168h")) return [5,3];
+  return [];
+};
+
+// ── HELPERS ────────────────────────────────────────────────────────
+const normType=t=>{ if(!t)return"unknown"; const x=t.toLowerCase();
+  if(x.includes("base"))return"baseline"; if(x.includes("ensemble"))return"ensemble";
+  if(x.includes("ml"))return"ml"; return x; };
+const sortM=ms=>[...ms].sort((a,b)=>((a[S.rankBy])??1e18)-((b[S.rankBy])??1e18));
+const minMax=arr=>{ const x=arr.filter(Number.isFinite).sort((a,b)=>a-b);
+  if(!x.length)return{min:0,max:1};
+  const mn=x[0],mx=x[x.length-1],pad=(mx-mn)*0.03+1e-6; return{min:mn-pad,max:mx+pad}; };
+
+// ── SHORT LABEL ─────────────────────────────────────────────────────
+function shortLabel(name){
+  const n=name||"";
+  if(/actual/i.test(n))                                           return "Actual";
+  if(/ensemble.*(best3|top3)|(best3|top3).*ensemble/i.test(n))   return "Ensemble Top3";
+  if(/ensemble.*all|all.*ensemble/i.test(n))                     return "Ensemble All";
+  if(/ensemble/i.test(n))                                         return "Ensemble";
+  if(/(lgbm|lightgbm)/i.test(n))                                 return "LightGBM";
+  if(/(xgb|xgboost)/i.test(n))                                   return "XGBoost";
+  if(/(rf|randomforest)/i.test(n))                               return "RandomForest";
+  if(/\bmlp\b/i.test(n))                                         return "MLP";
+  if(/\bsvr\b/i.test(n))                                         return "SVR";
+  if(/naive.?1\b|naive.*lag.*1\b/i.test(n)||/\bnaive-1\b/i.test(n)) return "Naïve (lag 1h)";
+  if(/naive.?24\b|naive.*lag.*24\b/i.test(n)||/\bnaive-24\b/i.test(n)) return "Naïve (lag 24h)";
+  if(/naive.?168\b|naive.*lag.*168\b/i.test(n)||/\bnaive-168\b/i.test(n)) return "Naïve (lag 168h)";
+  if(/seasonal/i.test(n))                                         return "Seasonal Profile";
+  return n; // fallback: raw name
+}
+
+// ── BEST FILTER (best ML + best baseline + actual) ───────────────────
+function bestPerFamily(metrics){
+  const ml=sortM(metrics.filter(m=>normType(m.Type)!=="baseline"));
+  const bl=sortM(metrics.filter(m=>normType(m.Type)==="baseline"));
+  const result=[];
+  if(ml.length) result.push(ml[0]);   // single best ML/ensemble
+  if(bl.length) result.push(bl[0]);   // single best baseline
+  return result;
+}
+
+const filterM=ms=>S.view==="best"?bestPerFamily(ms):S.view==="all"?ms:S.view==="ml"?ms.filter(m=>{ const t=normType(m.Type);return t==="ml"||t==="ensemble"; }):ms.filter(m=>normType(m.Type)==="baseline");
+
+// ── DATE RANGE FILTER ──────────────────────────────────────────────
+function applyDateFilter(data){
+  if(!S.fromDate && !S.toDate) return data;
+  if(!data || !data.dates.length) return data;
+
+  const from = S.fromDate ? new Date(S.fromDate).getTime() : -Infinity;
+  const to   = S.toDate   ? new Date(S.toDate + "T23:59:59").getTime() : Infinity;
+
+  const indices=[];
+  data.dates.forEach((d,i)=>{ const t=new Date(d).getTime(); if(t>=from&&t<=to) indices.push(i); });
+  if(!indices.length) return data; // no match → show all
+
+  const filteredDates   = indices.map(i=>data.dates[i]);
+  const filteredActual  = indices.map(i=>data.actual[i]);
+  const filteredSeries  = {};
+  for(const [k,vals] of Object.entries(data.series)){
+    filteredSeries[k] = indices.map(i=>vals[i]);
+  }
+  return {...data, dates:filteredDates, actual:filteredActual, series:filteredSeries};
+}
+
+// ── NORMALIZE JSON ─────────────────────────────────────────────────
+function normalize(raw){
+  const raw_metrics = raw.metrics ?? raw.metrics_test ?? raw.results ?? [];
+  const metrics = raw_metrics.map(m=>({
+    Model: m.Model??m.model??"?",
+    Type:  m.Type ??m.type ??"ml",
+    MAE:   +(m.MAE  ??m.mae  ??0),
+    RMSE:  +(m.RMSE ??m.rmse ??0),
+    sMAPE: +(m.sMAPE??m.smape??0),
+  }));
+  return { task:raw.task??S.task, strategy:raw.strategy??S.strategy,
+           dates:raw.dates??[], actual:raw.actual??[], series:raw.series??{},
+           metrics, errors:raw.errors??[] };
+}
+
+// ── FILE RESOLUTION ────────────────────────────────────────────────
+function getFileName(){
+  const q = S.period === "q1_2026" ? "_q1_2026" : "";
+  const key = q ? `${S.strategy}${q}` : S.strategy;
+  return FILE_MAP[S.task]?.[key] ?? null;
+}
+
+// ── LOAD DATA ──────────────────────────────────────────────────────
+async function loadData(){
+  const fname=getFileName();
+  const key=`${S.task}:${fname}`;
+  if(S.cache[key]) return S.cache[key];
+  if(!fname) return null;
+  const r=await fetch(fname,{cache:"no-store"});
+  if(!r.ok) throw new Error(`${fname}: ${r.status}`);
+  const data=normalize(await r.json());
+  S.cache[key]=data; return data;
+}
+
+// ── CHART ──────────────────────────────────────────────────────────
+let CH=null;
+function renderChart(data){
+  const wrap=document.getElementById("chart-wrap");
+  if(!data||!data.dates.length){
+    if(CH){CH.destroy();CH=null;}
+    wrap.innerHTML=`<div class="no-chart">📊 Δεν υπάρχουν χρονοσειρές για <strong>${STRAT_LABEL[S.strategy]??S.strategy}</strong>.<br><span style="font-size:.8rem">Ο πίνακας metrics παραμένει διαθέσιμος παρακάτω.</span></div>`;
+    return;
+  }
+  if(!document.getElementById("chart")) wrap.innerHTML=`<canvas id="chart"></canvas>`;
+  const sorted=sortM(filterM(data.metrics));
+  const ds=[];
+  // Actual always shown and always visible
+  if(data.actual.length)
+    ds.push({label:"Actual",data:data.actual,borderColor:colFor("Actual"),backgroundColor:colFor("Actual"),
+      borderWidth:1.5,pointRadius:0,tension:.12,hidden:false});
+  // Models: always in legend, but start hidden until user clicks them (or presses Show)
+  for(const m of sorted){
+    if(!(m.Model in data.series)) continue;
+    ds.push({label:shortLabel(m.Model),data:data.series[m.Model],borderColor:colFor(m.Model),backgroundColor:colFor(m.Model),
+      borderWidth:2,pointRadius:0,tension:.12,borderDash:dashFor(m.Model),
+      hidden:!S.showModels});
+  }
+  const allV=[];ds.forEach(d=>(d.data||[]).forEach(v=>{if(Number.isFinite(+v))allV.push(+v);}));
+  const mm=minMax(allV);
+  const ctx=document.getElementById("chart").getContext("2d");
+  if(CH) CH.destroy();
+  CH=new Chart(ctx,{type:"line",data:{labels:data.dates,datasets:ds},options:{
+    responsive:true,maintainAspectRatio:false,interaction:{mode:"index",intersect:false},
+    plugins:{legend:{labels:{color:"#e5e7eb",font:{size:11}}},
+      tooltip:{callbacks:{label:c=>{ const v=c.parsed.y;
+        return(v===null||Number.isNaN(v))?`${c.dataset.label}: —`:`${c.dataset.label}: ${v.toFixed(3)} ${MAE_UNIT[S.task]}`; }}}},
+    scales:{
+      x:{ticks:{color:"#9ca3af",maxTicksLimit:12},grid:{color:"rgba(148,163,184,.12)"},
+         title:{display:true,text:"Ώρα",color:"#9ca3af",font:{size:11,weight:"600"}}},
+      y:{ticks:{color:"#9ca3af"},grid:{color:"rgba(148,163,184,.12)"},min:mm.min,max:mm.max,
+         title:{display:true,text:Y_LABEL[S.task],color:"#9ca3af",font:{size:11,weight:"600"}}}
+    }
+  }});
+  wrap._iso=(name)=>{
+    if(!CH)return;
+    const visCount=CH.data.datasets.filter((_,i)=>CH.getDatasetMeta(i).hidden===false).length;
+    const only=(CH.data.datasets.filter(d=>d.label===name).length>0&&visCount<=2);
+    CH.data.datasets.forEach((_,i)=>{
+      const lbl=CH.data.datasets[i].label;
+      CH.setDatasetVisibility(i,only||(lbl==="Actual")||lbl===name);
+    });
+    CH.update();
+  };
+}
+
+// ── RECOMPUTE METRICS FROM FILTERED DATA ───────────────────────────
+function recomputeMetrics(filteredData, originalMetrics) {
+  // No filter active or no series → use original pre-computed metrics
+  if (!filteredData || (!S.fromDate && !S.toDate)) return originalMetrics;
+  if (!filteredData.actual?.length || !Object.keys(filteredData.series ?? {}).length)
+    return originalMetrics;
+  const actual = filteredData.actual.map(v => (v === null ? NaN : +v));
+  return originalMetrics.map(m => {
+    const preds = filteredData.series[m.Model];
+    if (!preds || !preds.length) return m;
+    const p = preds.map(v => (v === null ? NaN : +v));
+    const n = actual.length;
+    let maeSum=0, rmseSum=0, smapeSum=0, cnt=0;
+    for (let i=0; i<n; i++) {
+      const a=actual[i], b=p[i];
+      if (!isFinite(a)||!isFinite(b)) continue;
+      const diff=a-b, denom=Math.abs(a)+Math.abs(b);
+      maeSum  += Math.abs(diff);
+      rmseSum += diff*diff;
+      smapeSum+= 200*Math.abs(diff)/(denom<1e-9?1e-9:denom);
+      cnt++;
+    }
+    if (cnt===0) return m;
+    return { ...m,
+      MAE:   +((maeSum/cnt).toFixed(4)),
+      RMSE:  +(Math.sqrt(rmseSum/cnt).toFixed(4)),
+      sMAPE: +((smapeSum/cnt).toFixed(4)),
+    };
+  });
+}
+
+// ── TABLES ─────────────────────────────────────────────────────────
+function fillTbl(id,rows,withType){
+  const tb=document.querySelector(`#${id} tbody`); tb.innerHTML="";
+  if(!rows.length){ tb.innerHTML=`<tr><td colspan="${withType?6:5}" style="text-align:center;color:var(--muted)">Δεν υπάρχουν δεδομένα.</td></tr>`; return; }
+  rows.forEach((m,i)=>{
+    const tr=document.createElement("tr");
+    const type=normType(m.Type);
+    const cells=[i+1,shortLabel(m.Model)];
+    if(withType) cells.push(type);
+    cells.push(m.MAE.toFixed(3),m.RMSE.toFixed(3),m.sMAPE.toFixed(3));
+    cells.forEach((v,j)=>{
+      const td=document.createElement("td");
+      if(withType&&j===2){ td.innerHTML=`<span class="tag ${type}">${type}</span>`; td.style.textAlign="left"; }
+      else td.textContent=v;
+      if(j===1) td.style.fontWeight="600";
+      tr.appendChild(td);
+    });
+    tr.addEventListener("click",()=>{ const w=document.getElementById("chart-wrap"); if(w._iso) w._iso(shortLabel(m.Model)); });
+    tb.appendChild(tr);
+  });
+}
+function renderTables(data){
+  if(!data){["tbl-ml","tbl-baselines","tbl-all"].forEach(id=>{ document.querySelector(`#${id} tbody`).innerHTML=`<tr><td colspan="6" style="text-align:center;color:var(--muted)">Σε εξέλιξη — δεν υπάρχει αρχείο ακόμα.</td></tr>`; }); return; }
+  const all=sortM(data.metrics);
+  fillTbl("tbl-ml",        all.filter(m=>{ const t=normType(m.Type); return t==="ml"||t==="ensemble"; }), false);
+  fillTbl("tbl-baselines", all.filter(m=>normType(m.Type)==="baseline"), false);
+  fillTbl("tbl-all",       sortM(filterM(data.metrics)), true);
+  const box=document.getElementById("errors-box");
+  if((data.errors||[]).length){ box.style.display="block"; box.innerHTML=`<strong>Warnings</strong><ul>${data.errors.map(e=>`<li>${e}</li>`).join("")}</ul>`; }
+  else box.style.display="none";
+}
+
+// ── TOOLBAR SYNC ───────────────────────────────────────────────────
+function setA(id,on,cls=""){ const el=document.getElementById(id); if(!el)return; el.classList.toggle("active",!!on); if(cls)el.classList.toggle(cls,!!on); }
+
+function syncToolbar(){
+  // Task
+  setA("btn-price", S.task==="price"); setA("btn-load", S.task==="load");
+  // Strategy (4 buttons — all monthly)
+  setA("btn-cl",    S.strategy==="cl");
+  setA("btn-ol",    S.strategy==="ol",    "purple");
+  setA("btn-mimo",  S.strategy==="mimo");
+  setA("btn-direct",S.strategy==="direct");
+  // All strategies available for both periods (MIMO/Direct Q1 2026 supported)
+  document.getElementById("btn-mimo").classList.remove("disabled");
+  document.getElementById("btn-direct").classList.remove("disabled");
+  // Period buttons
+  setA("btn-dec2025", S.period==="dec2025");
+  setA("btn-q1-2026", S.period==="q1_2026");
+  // View
+  setA("btn-view-all",       S.view==="all");
+  setA("btn-view-ml",        S.view==="ml");
+  setA("btn-view-baselines", S.view==="baseline");
+  setA("btn-view-best",      S.view==="best");
+  // Models toggle (actual always visible)
+  setA("btn-actual", S.showModels);
+  // Date inputs: reflect filter state; if no filter, show period calendar defaults
+  const pd = PERIOD_DATES[S.period];
+  document.getElementById("inp-from").value = S.fromDate || pd.from;
+  document.getElementById("inp-to").value   = S.toDate   || pd.to;
+  // Chart title
+  const stratLabel = STRAT_LABEL[S.strategy]??S.strategy;
+  document.getElementById("chart-title").textContent=`${TASK_LABEL[S.task]} — ${stratLabel}`;
+  // Other
+  document.getElementById("rank-by").value=S.rankBy;
+  document.getElementById("th-mae-ml").textContent=`MAE (${MAE_UNIT[S.task]})`;
+  const fn=getFileName()??"—";
+  document.getElementById("footer-files").textContent=`JSON: ${fn}`;
+  // Metrics subtitle — based on period
+  document.getElementById("metrics-sub").textContent = `Αποτελέσματα — ${pd.label}.`;
+}
+
+// ── SUMMARY ────────────────────────────────────────────────────────
+function updateSummary(data){
+  if(!data||!data.metrics.length){ document.getElementById("summary-text").textContent="Χωρίς δεδομένα"; return; }
+  const best=sortM(data.metrics.filter(m=>normType(m.Type)!=="baseline"))[0];
+  if(!best){ document.getElementById("summary-text").textContent="—"; return; }
+  const v=best[S.rankBy], unit=S.rankBy==="sMAPE"?"%":MAE_UNIT[S.task];
+  const nFilt = (S.fromDate||S.toDate) ? ` | 🔍 filtered` : "";
+  document.getElementById("summary-text").textContent=`🏆 Best: ${shortLabel(best.Model)} (${S.rankBy}=${Number.isFinite(v)?v.toFixed(3):"—"}${unit}) • n=${data.metrics.length}${nFilt}`;
+}
+
+// ── REFRESH ────────────────────────────────────────────────────────
+async function refresh(){
+  syncToolbar();
+  try{
+    const rawData=await loadData();
+    const data = applyDateFilter(rawData); // apply date range filter
+    if(data){
+      const n=data.dates.length;
+      const n_raw = rawData?.dates?.length ?? n;
+      let sub = n>0
+        ? `Test: ${data.dates[0]?.slice(0,13)} → ${data.dates[n-1]?.slice(0,13)} (${n}h)`
+        : `${STRAT_LABEL[S.strategy]??S.strategy}: ${data.metrics.length} μοντέλα (χωρίς χρονοσειρές)`;
+      if((S.fromDate||S.toDate) && n<n_raw)
+        sub += ` | 🔍 zoom ${n}h / ${n_raw}h total`;
+      const periodStr = S.period==="q1_2026" ? " | Q1 2026 (Δεκ–Φεβ)" : "";
+      if(S.strategy==="mimo")
+        sub += ` • MIMO H=24: XGB/RF/SVR/MLP multi-output (1 ανά οικογένεια)`;
+      else if(S.strategy==="direct")
+        sub += ` • Direct H=24: LGBM, 24 χωριστά μοντέλα (1 ανά ώρα)`;
+      else if(S.strategy==="ol")
+        sub += ` • Recursive: reset every 24h (day-ahead market scenario)` + periodStr;
+      else if(S.strategy==="cl")
+        sub += ` • Teacher-Forcing: actual lags always available (no error propagation)` + periodStr;
+      document.getElementById("chart-subtitle").textContent=sub;
+    } else {
+      document.getElementById("chart-subtitle").textContent="Σε εξέλιξη — δεν υπάρχει αρχείο ακόμα.";
+    }
+    // Recompute metrics for the filtered period (if date range active)
+    const tableMetrics = rawData ? recomputeMetrics(data, rawData.metrics) : [];
+    const tableData    = rawData ? {...rawData, metrics: tableMetrics} : null;
+    renderChart(data); renderTables(tableData); updateSummary(tableData);
+
+    // Update metrics subtitle to reflect filtered period
+    const isFiltered = (S.fromDate||S.toDate) && data && data.dates.length < (rawData?.dates?.length ?? Infinity);
+    if (isFiltered && data.dates.length > 0) {
+      const nd = data.dates.length;
+      document.getElementById("metrics-sub").textContent =
+        `🔍 Metrics για επιλεγμένη περίοδο: ${data.dates[0]?.slice(0,13)} → ${data.dates[nd-1]?.slice(0,13)} (${nd}h)`;
+    }
+  } catch(e){
+    document.getElementById("chart-subtitle").textContent=`⚠ ${e.message}`;
+    console.error(e);
+  }
+}
+
+// ── EXPORT ─────────────────────────────────────────────────────────
+async function doExport(){
+  const data=await loadData(); if(!data)return;
+  const rows=sortM(filterM(data.metrics));
+  const lines=[["Rank","Model","Type","MAE","RMSE","sMAPE"].join(",")].concat(
+    rows.map((m,i)=>[i+1,shortLabel(m.Model),normType(m.Type),m.MAE,m.RMSE,m.sMAPE].map(x=>`"${x}"`).join(",")));
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([lines.join("\n")],{type:"text/csv;charset=utf-8"}));
+  a.download=`epf_${S.task}_${S.strategy}_${S.rankBy}.csv`; a.click(); a.remove();
+}
+
+// ── EVENTS ─────────────────────────────────────────────────────────
+// Task
+document.getElementById("btn-price").onclick  =()=>{ S.task="price"; S.cache={}; refresh(); };
+document.getElementById("btn-load").onclick   =()=>{ S.task="load";  S.cache={}; refresh(); };
+// Strategy (4 buttons, all monthly)
+document.getElementById("btn-cl").onclick     =()=>{ S.strategy="cl";     S.cache={}; refresh(); };
+document.getElementById("btn-ol").onclick     =()=>{ S.strategy="ol";     S.cache={}; refresh(); };
+document.getElementById("btn-mimo").onclick   =()=>{ S.strategy="mimo";   S.cache={}; refresh(); };
+document.getElementById("btn-direct").onclick =()=>{ S.strategy="direct"; S.cache={}; refresh(); };
+// Period buttons
+document.getElementById("btn-dec2025").onclick=()=>{ S.period="dec2025"; S.fromDate=""; S.toDate=""; S.cache={}; refresh(); };
+document.getElementById("btn-q1-2026").onclick=()=>{
+  S.period="q1_2026"; S.fromDate=""; S.toDate=""; S.cache={};
+  refresh();
+};
+// View
+document.getElementById("btn-view-all").onclick      =()=>{ S.view="all";      refresh(); };
+document.getElementById("btn-view-ml").onclick       =()=>{ S.view="ml";       refresh(); };
+document.getElementById("btn-view-baselines").onclick=()=>{ S.view="baseline"; refresh(); };
+document.getElementById("btn-view-best").onclick     =()=>{ S.view="best";     refresh(); };
+// Actual
+document.getElementById("btn-actual").onclick =()=>{ S.showModels=!S.showModels; refresh(); };
+// Date range
+document.getElementById("btn-date-apply").onclick=()=>{
+  S.fromDate=document.getElementById("inp-from").value;
+  S.toDate  =document.getElementById("inp-to").value;
+  refresh();
+};
+document.getElementById("btn-date-clear").onclick=()=>{
+  S.fromDate=""; S.toDate="";
+  // Restore calendar defaults for current period (so calendar opens at the right month)
+  const pd = PERIOD_DATES[S.period];
+  document.getElementById("inp-from").value = pd.from;
+  document.getElementById("inp-to").value   = pd.to;
+  refresh();
+};
+// Rank / Reload / Export
+document.getElementById("btn-reload").onclick =()=>{ S.cache={}; refresh(); };
+document.getElementById("btn-export").onclick =()=>doExport();
+document.getElementById("rank-by").onchange   =e=>{ S.rankBy=e.target.value; refresh(); };
+
+// ── INIT ───────────────────────────────────────────────────────────
+refresh().catch(e=>{alert("Dashboard error: "+e.message);console.error(e);});
+</script>
+</body>
+</html>

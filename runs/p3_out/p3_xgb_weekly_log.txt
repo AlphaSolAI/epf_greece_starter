@@ -1,0 +1,24 @@
+==============================================================================
+MASTER FORECAST | algo=xgb task=price strategy=recursive
+  market=dam task=price gate=strict delay_override=None → gap=0h | horizon=24 stride=24 retrain=weekly
+  groups=['calendar', 'lags', 'roll', 'resfc', 'loadfc', 'meteo', 'fuel', 'genlags', 'loadlags', 'other']  (#features=152)
+  test=[2025-12-01 00:00:00 .. 2026-02-28 23:00:00]  train_end=None
+==============================================================================
+   [fit] key=2025-W48 cutoff=2025-11-30 23:00:00  (block 1/90)
+   [fit] key=2025-W49 cutoff=2025-12-01 23:00:00  (block 2/90)
+   [fit] key=2025-W50 cutoff=2025-12-08 23:00:00  (block 9/90)
+   [fit] key=2025-W51 cutoff=2025-12-15 23:00:00  (block 16/90)
+   [fit] key=2025-W52 cutoff=2025-12-22 23:00:00  (block 23/90)
+   [fit] key=2026-W01 cutoff=2025-12-29 23:00:00  (block 30/90)
+   [fit] key=2026-W02 cutoff=2026-01-05 23:00:00  (block 37/90)
+   [fit] key=2026-W03 cutoff=2026-01-12 23:00:00  (block 44/90)
+   [fit] key=2026-W04 cutoff=2026-01-19 23:00:00  (block 51/90)
+   [fit] key=2026-W05 cutoff=2026-01-26 23:00:00  (block 58/90)
+   [fit] key=2026-W06 cutoff=2026-02-02 23:00:00  (block 65/90)
+   [fit] key=2026-W07 cutoff=2026-02-09 23:00:00  (block 72/90)
+   [fit] key=2026-W08 cutoff=2026-02-16 23:00:00  (block 79/90)
+   [fit] key=2026-W09 cutoff=2026-02-23 23:00:00  (block 86/90)
+   [done] 90 blocks σε 650.9s
+
+📊 RESULT | MAE=15.1974 €/MWh | RMSE=22.2085 | sMAPE=24.1588% | n=2160
+💾 saved: p3_out/xgb_default_weekly_q1.json

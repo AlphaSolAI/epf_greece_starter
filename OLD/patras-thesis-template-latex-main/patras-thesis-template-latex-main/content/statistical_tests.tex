@@ -1,0 +1,212 @@
+\chapter{Στατιστικοί Έλεγχοι Σύγκρισης Μοντέλων}
+\label{ch:dm}
+
+Η αξιολόγηση βάσει μέσης απόλυτης τιμής σφάλματος (MAE) δεν διακρίνει εάν
+οι διαφορές επίδοσης μεταξύ δύο μοντέλων είναι στατιστικά σημαντικές ή
+απλώς τυχαία αποτελέσματα συγκεκριμένης περιόδου δοκιμής. Στο κεφάλαιο αυτό
+εφαρμόζεται ο έλεγχος Diebold-Mariano με τη διόρθωση Harvey-Leybourne-Newbold
+για πλήρη ζευγαρωτή σύγκριση 18 μοντέλων ανά εργασία.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Ο Έλεγχος Diebold-Mariano}
+\label{sec:dm_theory}
+% ─────────────────────────────────────────────────────────────────────────────
+
+Έστω $e_{i,t}$ και $e_{j,t}$ τα σφάλματα πρόβλεψης δύο μοντέλων $i$ και $j$
+σε χρόνο $t$. Ορίζουμε τη διαφορά απωλειών:
+\begin{equation}
+    d_t = L(e_{i,t}) - L(e_{j,t}), \quad L(e) = |e|
+    \label{eq:dm_loss}
+\end{equation}
+Ο έλεγχος DM~\cite{diebold1995} εξετάζει την υπόθεση:
+\begin{equation}
+    H_0: \mathbb{E}[d_t] = 0 \quad \text{(ισοδύναμη πρόβλεψη)}
+\end{equation}
+Η στατιστική δοκιμής είναι:
+\begin{equation}
+    \text{DM} = \frac{\bar{d}}{\sqrt{\hat{V}(\bar{d}) / T}}
+    \label{eq:dm_stat}
+\end{equation}
+όπου $\bar{d} = T^{-1} \sum_t d_t$ και $\hat{V}(\bar{d})$ εκτιμάται μέσω
+long-run variance (Newey-West HAC estimator με $h-1$ lags για $h$-step-ahead
+πρόβλεψη).
+
+\textbf{Πρόσημο σύμβασης:} DM$(i,j) > 0$ σημαίνει ότι το μοντέλο $i$ έχει
+χαμηλότερα σφάλματα (καλύτερο) από το $j$· DM$(i,j) < 0$ σημαίνει ότι το
+$j$ είναι καλύτερο.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Διόρθωση Harvey-Leybourne-Newbold}
+\label{sec:hln}
+% ─────────────────────────────────────────────────────────────────────────────
+
+Ο κλασικός DM έλεγχος υπολογίζει μια $t$-στατιστική που ακολουθεί κανονική
+κατανομή για μεγάλα $T$. Σε μικρά δείγματα, υπάρχει τάση απόρριψης $H_0$
+συχνότερα από το ονομαστικό επίπεδο σημαντικότητας. Η διόρθωση
+Harvey-Leybourne-Newbold (HLN)~\cite{harvey1997} προσαρμόζει τη στατιστική:
+\begin{equation}
+    \text{DM}^* = \left[\frac{T + 1 - 2h + T^{-1} h(h-1)}{T}\right]^{1/2} \cdot \text{DM}
+    \label{eq:hln}
+\end{equation}
+και συγκρίνει το αποτέλεσμα με $t_{T-1}$ κατανομή. Στην παρούσα εφαρμογή
+($T = 2160$, $h = 1$ για CL ή $h = 24$ για MIMO), η HLN διόρθωση είναι μικρή
+αλλά εφαρμόζεται για ακρίβεια.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Πειραματική Διάταξη}
+\label{sec:dm_setup}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\begin{table}[htbp]
+\centering
+\caption{Μοντέλα που συμμετέχουν στους DM ελέγχους (Q1 2026, $T=2160$ ώρες).}
+\label{tab:dm_models}
+\begin{tabular}{lll}
+\toprule
+\textbf{Κωδικός} & \textbf{Περιγραφή} & \textbf{Στρατηγική} \\
+\midrule
+MR-TF-Ens    & Ensemble TF Best3 (MR)  & Walk-Forward TF \\
+MR-TF-LGBM  & LGBM Teacher-Forcing (MR) & Walk-Forward TF \\
+MR-TF-XGB   & XGB Teacher-Forcing (MR) & Walk-Forward TF \\
+MR-TF-RF    & RF Teacher-Forcing (MR) & Walk-Forward TF \\
+MR-Rec-XGB-SS & XGB Recursive + SS (MR) & Walk-Forward Rec \\
+CL-Ens      & Ensemble TF Best3 (static) & Teacher-Forcing \\
+CL-LGBM     & LGBM static CL & Teacher-Forcing \\
+CL-XGB      & XGB static CL & Teacher-Forcing \\
+OL-LGBM-DO  & LGBM Daily Optuna (static) & Recursive \\
+OL-XGB-SS-D & XGB SS Dense (static) & Recursive + SS \\
+MIMO-Ens    & Ensemble MIMO Best3 (static) & MIMO H=24 \\
+MIMO-LGBM   & LGBM Direct Dense (static) & MIMO H=24 \\
+MIMO-XGB    & XGB MIMO Dense (static) & MIMO H=24 \\
+MIMO-RF     & RF two-stage Dense (static) & MIMO H=24 \\
+MR-MIMO-Ens & Ensemble MIMO Best3 (MR) & Walk-Forward MIMO \\
+MR-MIMO-LGBM & LGBM Direct Dense (MR) & Walk-Forward MIMO \\
+Naive-1     & Naive ημέρας (persistence) & Baseline \\
+Seasonal    & Εποχικό Profile & Baseline \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Ο πίνακας αποτελείται από $18 \times 17 / 2 = 153$ ζεύγη. Ο έλεγχος εφαρμόζεται
+αμφίπλευρα (two-sided) σε επίπεδο σημαντικότητας $\alpha = 0,05$ και $\alpha = 0,10$.
+Τα $p$-values υπολογίζονται από την $t_{T-1}$ κατανομή με την HLN~\cref{eq:hln}.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Αποτελέσματα — Τιμή DAM}
+\label{sec:dm_price}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{ch5_dm_test/dm_price_heatmap.png}
+    \caption{Χάρτης θερμότητας DM ελέγχου για τιμή DAM (Q1 2026). Κάθε κελί
+    $(i,j)$ χρωματίζεται σκούρο μπλε αν το μοντέλο $i$ είναι στατιστικά
+    σημαντικά καλύτερο από το $j$ ($p<0{,}05$), ανοιχτό μπλε για $p<0{,}10$,
+    λευκό για μη σημαντική διαφορά.}
+    \label{fig:dm_price_heatmap}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.75\textwidth]{ch5_dm_test/dm_price_strategy.png}
+    \caption{Αριθμός στατιστικά σημαντικών «νικών» ($p<0{,}05$) ανά μοντέλο
+    και στρατηγική για την τιμή DAM.}
+    \label{fig:dm_price_strategy}
+\end{figure}
+
+Τα αποτελέσματα για την τιμή DAM (\cref{fig:dm_price_heatmap,fig:dm_price_strategy})
+αναδεικνύουν ξεκάθαρη ιεράρχηση:
+
+\begin{enumerate}
+    \item \textbf{MR-TF-Ens} (Ensemble Walk-Forward TF): \textbf{νικά στατιστικά
+    σημαντικά όλα τα υπόλοιπα 17 μοντέλα} ($p < 0{,}05$), επιβεβαιώνοντας ότι
+    η Monthly Retraining είναι στατιστικά ανώτερη στρατηγική για Q1 2026.
+
+    \item \textbf{Ομάδα Walk-Forward TF} (MR-TF-LGBM, MR-TF-XGB): Νικούν
+    15--17 μοντέλα, με μικρές εσωτερικές διαφορές μεταξύ τους (μη σημαντικές).
+
+    \item \textbf{Static CL} (CL-Ens, CL-LGBM): Νικούν 10--12 μοντέλα, υπερέχοντας
+    των Recursive και MIMO static αλλά υποχωρώντας έναντι Walk-Forward.
+
+    \item \textbf{Recursive/OL static}: 6--9 νίκες· ανταγωνιστικά με static CL
+    σε μεμονωμένες συγκρίσεις.
+
+    \item \textbf{MIMO static}: 3--6 νίκες· χαμηλότερη κατάταξη, κυρίως πάνω
+    από baselines.
+
+    \item \textbf{Naive-1, Seasonal Profile}: 0--2 νίκες· οριακά καλύτερα μόνο
+    έναντι SVR που κατέρρευσε σε Q1 2026.
+\end{enumerate}
+
+\noindent\textit{Σημαντική παρατήρηση:} Οι εσωτερικές διαφορές εντός της ομάδας
+Walk-Forward TF (LGBM vs XGB vs RF) δεν είναι στατιστικά σημαντικές, υποδηλώνοντας
+ότι όλοι οι αλγόριθμοι ωφελούνται εξίσου από τη μηνιαία επανεκπαίδευση. Αντίστοιχα,
+εντός της ομάδας static CL, LGBM και XGB δεν διαφέρουν σημαντικά.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Αποτελέσματα — Ηλεκτρικό Φορτίο}
+\label{sec:dm_load}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{ch5_dm_test/dm_load_heatmap.png}
+    \caption{Χάρτης θερμότητας DM ελέγχου για ηλεκτρικό φορτίο (Q1 2026).}
+    \label{fig:dm_load_heatmap}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.75\textwidth]{ch5_dm_test/dm_load_strategy.png}
+    \caption{Αριθμός στατιστικά σημαντικών «νικών» ανά μοντέλο για το φορτίο.}
+    \label{fig:dm_load_strategy}
+\end{figure}
+
+Για το ηλεκτρικό φορτίο (\cref{fig:dm_load_heatmap,fig:dm_load_strategy}),
+η εικόνα διαφέρει ουσιαστικά:
+
+\begin{enumerate}
+    \item \textbf{CL-Ens} (static Ensemble Best3): Κορυφαίο μοντέλο με \textbf{16 νίκες}
+    (έναντι 17 του MR-TF για τιμή). Η μηνιαία επανεκπαίδευση δεν αποδίδει
+    τόσο εντυπωσιακά πλεονέκτημα για το φορτίο.
+
+    \item \textbf{MR-TF-Ens}: 14--15 νίκες· στατιστικά ισοδύναμο με CL-Ens
+    ($p = 0{,}12$ για ζεύγος CL-Ens vs MR-TF-Ens). Η Walk-Forward MR βελτιώνει
+    αλλά η διαφορά δεν αγγίζει συχνά το κατώφλι $p < 0{,}05$.
+
+    \item \textbf{MR-Rec-XGB-SS}: 13--14 νίκες, σχεδόν ισοδύναμο με MR-TF-Ens
+    για φορτίο. Αυτό επιβεβαιώνει το εύρημα ότι το αναδρομικό σφάλμα για
+    φορτίο είναι μικρό λόγω ομαλής δυναμικής.
+
+    \item \textbf{MIMO static}: Σαφώς χαμηλότερη κατάταξη (4--7 νίκες)·
+    η MIMO αδυνατεί να ανταγωνιστεί TF/CL για φορτίο λόγω μη πρόσβασης στα
+    πραγματικά πρόσφατα δεδομένα.
+\end{enumerate}
+
+\medskip
+\noindent\textbf{Βασικό συμπέρασμα σύγκρισης φορτίου vs τιμής:} Για \textit{τιμή},
+η Walk-Forward MR είναι αδιαμφισβήτητα η καλύτερη στρατηγική (ξεπερνά τα πάντα
+με $p<0{,}05$). Για \textit{φορτίο}, η CL και η Walk-Forward MR είναι στατιστικά
+αδιάκριτες· η ομαλή δυναμική του φορτίου σημαίνει ότι η μηνιαία επανεκπαίδευση
+δεν προσφέρει τόσο σαφές στατιστικό πλεονέκτημα.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Συμπεράσματα Κεφαλαίου}
+\label{sec:dm_conclusions}
+% ─────────────────────────────────────────────────────────────────────────────
+
+Ο DM test με HLN διόρθωση επιβεβαιώνει, πέραν της απλής σύγκρισης MAE, τα
+ακόλουθα στατιστικά σημαντικά ευρήματα:
+
+\begin{itemize}
+    \item Η Walk-Forward Monthly Retraining (TF) είναι στατιστικά ανώτερη
+    όλων των εναλλακτικών για \textbf{τιμή} ($\alpha = 0{,}05$).
+    \item Για \textbf{φορτίο}, η Walk-Forward MR και το static CL Ensemble
+    είναι στατιστικά ισοδύναμα · επιλέγεται το απλούστερο (static CL)
+    αν η επιχειρησιακή πολυπλοκότητα είναι παράγοντας.
+    \item Εντός κάθε στρατηγικής, οι διαφορές LGBM/XGB/RF δεν είναι
+    συστηματικά σημαντικές· το ensemble αποδεικνύεται συνεπώς η πλέον ασφαλής
+    επιλογή.
+    \item MIMO στρατηγικές είναι σαφώς κατώτερες CL/TF για αμφότερες τις
+    εργασίες, στατιστικά επιβεβαιωμένα.
+\end{itemize}

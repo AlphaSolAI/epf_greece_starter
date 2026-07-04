@@ -1,0 +1,11 @@
+spec,groups,n_features,MAE,RMSE,sMAPE,n,seconds
+default,calendar+lags+roll+resfc+loadfc+meteo+fuel+genlags+loadlags+other,152,19.594,27.3467,27.4389,2160,351.8
+"default,-resfc",calendar+lags+roll+loadfc+meteo+fuel+genlags+loadlags+other,146,19.277,26.9553,27.3271,2160,255.6
+"default,-loadfc",calendar+lags+roll+resfc+meteo+fuel+genlags+loadlags+other,151,19.5885,27.5126,27.4111,2160,193.3
+"default,-genlags",calendar+lags+roll+resfc+loadfc+meteo+fuel+loadlags+other,134,19.7682,27.48,27.6781,2160,213.7
+"default,-loadlags",calendar+lags+roll+resfc+loadfc+meteo+fuel+genlags+other,144,19.8224,27.6509,27.7023,2160,349.5
+"default,-meteo",calendar+lags+roll+resfc+loadfc+fuel+genlags+loadlags+other,68,19.8851,27.7425,28.0854,2160,140.3
+"default,-fuel",calendar+lags+roll+resfc+loadfc+meteo+genlags+loadlags+other,134,19.5609,27.6869,27.4022,2160,175.6
+"lags,calendar",calendar+lags,15,19.9143,28.1081,29.133,2160,69.9
+"lags,calendar,resfc,loadfc",calendar+lags+resfc+loadfc,22,20.5098,28.6153,29.2835,2160,75.7
+"lags,calendar,genlags,loadlags",calendar+lags+genlags+loadlags,41,20.5747,28.2479,29.6805,2160,101.8

@@ -1,0 +1,258 @@
+\documentclass[11pt, a4paper]{report}
+
+% Language setting — Greek primary, English secondary (polyglossia for XeLaTeX)
+\usepackage{polyglossia}
+\setmainlanguage{greek}
+\setotherlanguage{english}
+% Patch: some polyglossia versions write \selectlanguage*{...} to aux file
+% which fails if the starred form is not defined. This makes * optional.
+\makeatletter
+\let\@poly@selectlanguage\selectlanguage
+\def\selectlanguage{\@ifstar\@poly@selectlanguage\@poly@selectlanguage}
+\makeatother
+
+% Page size and margins
+\usepackage[a4paper, top=2.5cm, bottom=2.5cm, left=3cm, right=2.5cm, headheight=14pt]{geometry}
+
+% Math
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% Graphics
+\usepackage{graphicx}
+\usepackage[export]{adjustbox}
+\usepackage{float}
+\usepackage{subcaption}
+\usepackage{placeins}   % \FloatBarrier — περιορίζει floats στην ενότητά τους
+\graphicspath{{../thesis_output/}}
+
+% Float placement tuning — αποτρέπει μεγάλα λευκά κενά / σελίδες μόνο με floats
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\bottomfraction}{0.85}
+\renewcommand{\textfraction}{0.07}
+\renewcommand{\floatpagefraction}{0.75}
+\setcounter{topnumber}{3}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{5}
+
+% Tables
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{makecell}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+
+% Links
+\usepackage[hidelinks, breaklinks]{hyperref}
+% cleveref removed — Greek polyglossia incompatible; using \ref{} directly
+
+% Bibliography (natbib fallback; use biblatex on full TeX installation)
+\usepackage[numbers, sort&compress]{natbib}
+
+% Font (Calibri — Windows; change to DejaVu Sans on Linux)
+\usepackage{fontspec}
+\setmainfont[Script=Greek]{Calibri}
+\newfontfamily\greekfont[Script=Greek]{Calibri}
+\newfontfamily\greekfontsf[Script=Greek]{Calibri}
+\newfontfamily\greekfonttt[Script=Greek]{Courier New}
+\usepackage{microtype}
+% Zero indentation style (matching UPAT ECE template)
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+% Looser justification — prevents rivers/overfull hboxes in Greek
+\tolerance=1500
+\emergencystretch=2em
+\hyphenpenalty=500
+\exhyphenpenalty=500
+
+% PDF pages (for cover)
+\usepackage{pdfpages}
+
+% Euro symbol
+\usepackage{eurosym}   % provides \euro{}
+
+% Units
+% \usepackage[mode=match]{siunitx} % unavailable on this server
+
+% Captions
+\usepackage{caption}
+\DeclareCaptionLabelSeparator{ieee}{.\quad}
+\captionsetup{labelsep=ieee, font=small}
+
+% TikZ / PGF for diagrams
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usetikzlibrary{arrows.meta, positioning, shapes.geometric, calc, decorations.pathreplacing, backgrounds, fit}
+
+% Code listings
+\usepackage{listings}
+\lstset{basicstyle=\ttfamily\footnotesize, breaklines=true}
+
+% List customization
+\usepackage{enumitem}
+
+% Highlighted summary boxes
+\usepackage[most]{tcolorbox}
+
+% Acronyms / Glossary
+\usepackage[acronym, toc, nogroupskip, nopostdot]{glossaries}
+\makeglossaries
+
+% Chapter style — "Κεφάλαιο N" heading
+% Chapter style - bigger "Κεφάλαιο N" heading
+\usepackage{titlesec}
+\titleformat{\chapter}[hang]
+  {\normalfont\huge\bfseries\raggedright}
+  {\thechapter.}{0.5em}{}
+\titlespacing*{\chapter}{0pt}{30pt}{36pt}
+\titleformat{\section}{\normalfont\Large\bfseries\raggedright}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalfont\large\bfseries\raggedright}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalfont\normalsize\bfseries\raggedright}{\thesubsubsection}{1em}{}
+
+% Header / Footer
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE,RO]{\thepage}
+\fancyhead[RE]{\nouppercase{\leftmark}}
+\fancyhead[LO]{\nouppercase{\rightmark}}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ─── Abbreviations ────────────────────────────────────────────────────────────
+\newacronym{dam}{DAM}{Day-Ahead Market}
+\newacronym{epf}{EPF}{Electricity Price Forecasting}
+\newacronym{elf}{ELF}{Electricity Load Forecasting}
+\newacronym{ml}{ML}{Machine Learning}
+\newacronym{lgbm}{LightGBM}{Light Gradient Boosting Machine}
+\newacronym{xgb}{XGB}{eXtreme Gradient Boosting}
+\newacronym{rf}{RF}{Random Forest}
+\newacronym{svr}{SVR}{Support Vector Regression}
+\newacronym{mlp}{MLP}{Multi-Layer Perceptron}
+\newacronym{mimo}{MIMO}{Multi-Input Multi-Output}
+\newacronym{mae}{MAE}{Mean Absolute Error}
+\newacronym{rmse}{RMSE}{Root Mean Squared Error}
+\newacronym{smape}{sMAPE}{symmetric Mean Absolute Percentage Error}
+\newacronym{tf}{TF}{Teacher-Forcing}
+\newacronym{dm}{DM}{Diebold-Mariano}
+\newacronym{entso}{ENTSO-E}{European Network of Transmission System Operators for Electricity}
+\newacronym{admhe}{ΑΔΜΗΕ}{Ανεξάρτητος Διαχειριστής Μεταφοράς Ηλεκτρικής Ενέργειας}
+\newacronym{sdac}{SDAC}{Single Day-Ahead Coupling}
+\newacronym{res}{RES}{Renewable Energy Sources}
+\newacronym{tso}{TSO}{Transmission System Operator}
+\newacronym{cv}{CV}{Cross-Validation}
+\newacronym{hln}{HLN}{Harvey-Leybourne-Newbold}
+\newacronym{henex}{HEnEx}{Hellenic Energy Exchange}
+\newacronym{raaey}{ΡΑΑΕΥ}{Ρυθμιστική Αρχή Αποβλήτων, Ενέργειας και Υδάτων}
+\newacronym{dapeep}{ΔΑΠΕΕΠ}{Διαχειριστής ΑΠΕ και Εγγυήσεων Προέλευσης}
+\newacronym{deh}{ΔΕΗ}{Δημόσια Επιχείρηση Ηλεκτρισμού}
+\newacronym{sidc}{SIDC}{Single Intraday Coupling}
+\newacronym{lstm}{LSTM}{Long Short-Term Memory}
+\newacronym{vstlf}{VSTLF}{Very Short-Term Load Forecasting}
+\newacronym{stlf}{STLF}{Short-Term Load Forecasting}
+\newacronym{mtlf}{MTLF}{Medium-Term Load Forecasting}
+\newacronym{ltlf}{LTLF}{Long-Term Load Forecasting}
+% --- Πρόσθετα Ελληνικά ακρωνύμια ---
+\newacronym{ape}{ΑΠΕ}{Ανανεώσιμες Πηγές Ενέργειας}
+\newacronym{dep}{ΔΕΠ}{Αγορά Εξισορρόπησης}
+\newacronym{esmhe}{ΕΣΜΗΕ}{Εθνικό Σύστημα Μεταφοράς Ηλεκτρικής Ενέργειας}
+\newacronym{hep}{ΗΕΠ}{Ημερήσιος Ενεργειακός Προγραμματισμός}
+\newacronym{sped}{ΣΠΕΔ}{Ενδοημερήσιοι Κύκλοι Αγοράς}
+% --- Πρόσθετα ξενόγλωσσα ακρωνύμια ---
+\newacronym{acf}{ACF}{Autocorrelation Function}
+\newacronym{api}{API}{Application Programming Interface}
+\newacronym{arima}{ARIMA}{Autoregressive Integrated Moving Average}
+\newacronym{bzngr}{BZN\textbar GR}{Bidding Zone Greece}
+\newacronym{cet}{CET}{Central European Time}
+\newacronym{cnn}{CNN}{Convolutional Neural Network}
+\newacronym{co2}{CO\textsubscript{2}}{Carbon Dioxide}
+\newacronym{css}{CSS}{Cascading Style Sheets}
+\newacronym{csv}{CSV}{Comma-Separated Values}
+\newacronym{direct}{Direct}{Direct Multistep}
+\newacronym{euets}{EU ETS}{European Union Emissions Trading System}
+\newacronym{eua}{EUA}{European Union Allowance}
+\newacronym{fdr}{FDR}{False Discovery Rate}
+\newacronym{fwer}{FWER}{Family-Wise Error Rate}
+\newacronym{garch}{GARCH}{Generalized Autoregressive Conditional Heteroskedasticity}
+\newacronym{goss}{GOSS}{Gradient-based One-Side Sampling}
+\newacronym{gru}{GRU}{Gated Recurrent Unit}
+\newacronym{hac}{HAC}{Heteroskedasticity and Autocorrelation Consistent}
+\newacronym{html}{HTML}{HyperText Markup Language}
+\newacronym{iea}{IEA}{International Energy Agency}
+\newacronym{iqr}{IQR}{Interquartile Range}
+\newacronym{mdi}{MDI}{Mean Decrease Impurity}
+\newacronym{mr}{MR}{Monthly Retraining}
+\newacronym{mse}{MSE}{Mean Squared Error}
+\newacronym{mw}{MW}{Megawatt}
+\newacronym{mwh}{MWh}{Megawatt-hour}
+\newacronym{nan}{NaN}{Not a Number}
+\newacronym{nat}{NaT}{Not a Time}
+\newacronym{nn}{NN}{Neural Networks}
+\newacronym{ols}{OLS}{Ordinary Least Squares}
+\newacronym{pacf}{PACF}{Partial Autocorrelation Function}
+\newacronym{rbf}{RBF}{Radial Basis Function}
+\newacronym{rec}{Rec}{Recursive}
+\newacronym{relu}{ReLU}{Rectified Linear Unit}
+\newacronym{rnn}{RNN}{Recurrent Neural Network}
+\newacronym{sarima}{SARIMA}{Seasonal Autoregressive Integrated Moving Average}
+\newacronym{ss}{SS}{Scheduled Sampling}
+\newacronym{svm}{SVM}{Support Vector Machine}
+\newacronym{tpe}{TPE}{Tree-structured Parzen Estimator}
+\newacronym{ttf}{TTF}{Title Transfer Facility}
+\newacronym{utc}{UTC}{Coordinated Universal Time}
+\newacronym{var}{VAR}{Vector Autoregression}
+\newacronym{wf}{WF}{Walk-Forward}
+%%% ────────────────────────────────────────────────────────────────────────────
+
+\begin{document}
+
+%% ─── COVER ───────────────────────────────────────────────────────────────────
+\includepdf[pages={-}]{cover.pdf}
+
+%% ─── PREFACE ─────────────────────────────────────────────────────────────────
+\pagenumbering{roman}
+\input{content/acknowledgements}
+\newpage
+\input{content/abstract-gr}
+\newpage
+\begin{english}
+\input{content/abstract-eng}
+\end{english}
+\newpage
+
+%% ─── FRONT MATTER ────────────────────────────────────────────────────────────
+\tableofcontents
+\listoffigures
+\listoftables
+
+\setglossarystyle{index}
+\glsaddall
+\printglossary[type=\acronymtype, title={Κατάλογος Ακρωνύμων}, nonumberlist]
+\newpage
+
+%% ─── MAIN MATTER ─────────────────────────────────────────────────────────────
+\pagenumbering{arabic}
+\setcounter{page}{1}
+\pagestyle{fancy}
+
+\input{content/introduction}
+\input{content/literature}
+\input{content/data}
+\input{content/methods}
+\input{content/dashboard}
+\input{content/experiments}
+\input{content/feature_importance}
+\input{content/conclusions}
+
+%% ─── APPENDICES ─────────────────────────────────
+
+
+%% ─── BIBLIOGRAPHY ──────────────────────────────
+\bibliographystyle{unsrt}
+\bibliography{thesis}
+
+\end{document}

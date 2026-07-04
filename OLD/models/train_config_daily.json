@@ -1,0 +1,12 @@
+{
+  "mode": "daily",
+  "test_days": 365,
+  "test_size_samples": 365,
+  "n_total": 3988,
+  "split_idx": 3623,
+  "n_train": 3623,
+  "n_test": 365,
+  "train_end": "2024-12-31T00:00:00",
+  "test_start": "2025-01-01T00:00:00",
+  "test_end": "2025-12-31T00:00:00"
+}

@@ -1,0 +1,164 @@
+\chapter{Σύστημα Οπτικοποίησης Αποτελεσμάτων}
+\label{ch:dashboard}
+
+Για την αποτελεσματική παρουσίαση και εξερεύνηση των αποτελεσμάτων αναπτύχθηκε
+ένα διαδραστικό σύστημα οπτικοποίησης (\textit{dashboard}) με βάση
+HTML5/JavaScript/Chart.js. Το σύστημα λειτουργεί ως αυτόνομο αρχείο, χωρίς
+απαίτηση web server ή προγραμματιστικών εργαλείων, και είναι άμεσα
+αναπαραγώγιμο.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Αρχιτεκτονική}
+\label{sec:dash_arch}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\subsection*{Τεχνολογίες}
+
+\begin{itemize}
+    \item \textbf{HTML5 + Vanilla JavaScript}: Το κύριο αρχείο \texttt{dashboard.html}
+    (~2500 γραμμές κώδικα) δεν απαιτεί npm, webpack ή άλλα build tools.
+    \item \textbf{Chart.js 4.x}: Βιβλιοθήκη JavaScript για διαδραστικά
+    γραμμικά διαγράμματα, φορτωμένη μέσω CDN.
+    \item \textbf{JSON data files}: 14 αρχεία δεδομένων (ένα ανά
+    task × strategy × horizon) φορτώνονται δυναμικά μέσω \texttt{fetch()}.
+    \item \textbf{Python http.server}: Απαιτείται μόνο για να εξυπηρετηθούν
+    τα JSON αρχεία λόγω CORS policy· εκκινείται με
+    \texttt{python -m http.server 8000}.
+\end{itemize}
+
+\subsection*{Δομή Δεδομένων (JSON Schema)}
+
+Κάθε JSON αρχείο ακολουθεί ενιαίο σχήμα:
+\begin{lstlisting}[language={}]
+{
+  "strategy": "cl" | "ol" | "mimo" | "direct",
+  "task":     "price" | "load",
+  "dates":    ["2025-12-01 00:00", ...],   // 744 timestamps
+  "actual":   [110.2, 98.7, ...],          // πραγματικές τιμές
+  "series": {
+    "LightGBM":       [...],
+    "XGBoost":        [...],
+    "Ensemble-Best3": [...],
+    "Naive-1":        [...],
+    ...
+  },
+  "metrics": [
+    {"Model": "LightGBM", "Type": "ml",
+     "MAE": 10.334, "RMSE": 16.236, "sMAPE": 11.178},
+    ...
+  ]
+}
+\end{lstlisting}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Στοιχεία Διεπαφής Χρήστη}
+\label{sec:dash_ui}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\subsection*{Επιλογή Task και Στρατηγικής}
+
+\begin{itemize}
+    \item \textbf{Task toggle [PRICE / LOAD]}: Εναλλαγή μεταξύ τιμής DAM
+    (€/MWh) και ηλεκτρικού φορτίου (MW).
+    \item \textbf{Strategy buttons [CL | OL | MIMO | Direct]}: Επιλογή
+    στρατηγικής· κάθε κουμπί φορτώνει το αντίστοιχο JSON.
+    \item \textbf{Horizon sub-toggle [H=24 | H=168]}: Εμφανίζεται για
+    OL, MIMO και Direct· επιλέγει daily (24h) ή weekly (168h) chunks.
+\end{itemize}
+
+\subsection*{Φιλτράρισμα και Ζουμ Χρονικής Περιόδου}
+
+\begin{itemize}
+    \item \textbf{Date range inputs}: Τα πεδία «Από» / «Έως» επιτρέπουν
+    ζουμ σε υπό-περίοδο (π.χ. μία εβδομάδα Χριστουγέννων).
+    \item \textbf{Δυναμική επαναϋπολογιστική μετρικών}: Μετά την εφαρμογή
+    του date range, υπολογίζονται εκ νέου MAE/RMSE/sMAPE \textit{μόνο για
+    την επιλεγμένη περίοδο}· ο υπότιτλος αλλάζει σε
+    «\texttt{Metrics για επιλεγμένη περίοδο: \{from\} $\to$ \{to\}}''.
+\end{itemize}
+
+\subsection*{Φιλτράρισμα ανά Algorithm Family}
+
+Το κουμπί \textbf{[Best] Best} ενεργοποιεί τη λογική \textit{best-per-family}:
+για κάθε αλγόριθμο (LGBM, XGB, RF, SVR, MLP) εμφανίζεται μόνο η καλύτερη
+παραλλαγή για την τρέχουσα στρατηγική. Αυτό αποφεύγει τον «σωρό» πολλαπλών
+γραμμών του ίδιου αλγόριθμου και εστιάζει στη σύγκριση \textit{μεταξύ}
+αλγόριθμων.
+
+\subsection*{Χρωματική Κωδικοποίηση}
+
+Κάθε αλγόριθμος / τύπος μοντέλου έχει σταθερό χρώμα σε όλες τις
+στρατηγικές:
+
+\begin{table}[htbp]
+\centering
+\caption{Χρωματική κωδικοποίηση dashboard.}
+\label{tab:dash_colors}
+\begin{tabular}{lll}
+\toprule
+\textbf{Μοντέλο} & \textbf{Χρώμα} & \textbf{Hex} \\
+\midrule
+LightGBM         & Sky blue       & \texttt{\#38bdf8} \\
+XGBoost          & Orange         & \texttt{\#f97316} \\
+Random Forest    & Green          & \texttt{\#22c55e} \\
+MLP              & Purple         & \texttt{\#a855f7} \\
+SVR              & Red            & \texttt{\#ef4444} \\
+Ensemble Best3   & Gold           & \texttt{\#eab308} \\
+Ensemble All     & Amber          & \texttt{\#fbbf24} \\
+Actual           & White/Light    & \texttt{\#e5e7eb} \\
+Naive-1          & Gray dashed    & \texttt{\#9ca3af} \\
+Naive-24         & Gray dashed    & \texttt{\#6b7280} \\
+Seasonal Profile & Pink dashed    & \texttt{\#ec4899} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Χαρτογράφηση Αρχείων JSON}
+\label{sec:dash_filemap}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\begin{table}[htbp]
+\centering\small
+\caption{Χαρτογράφηση στρατηγικής/εργασίας σε αρχεία JSON.}
+\label{tab:dash_filemap}
+\begin{tabular}{lllp{5.5cm}}
+\toprule
+\textbf{Task} & \textbf{Strategy} & \textbf{Horizon} & \textbf{Αρχείο} \\
+\midrule
+price & cl & — & \texttt{...price\_cl\_monthly.json} \\
+price & ol & h24 & \texttt{...price\_openloop\_h24\_monthly.json} \\
+price & ol & h168 & \texttt{...price\_openloop\_h168\_monthly.json} \\
+price & mimo & h24 & \texttt{...price\_mimo\_h24\_monthly.json} \\
+price & direct & h24 & \texttt{...price\_direct\_h24\_monthly.json} \\
+load  & cl & — & \texttt{...load\_cl\_monthly.json} \\
+load  & ol & h24 & \texttt{...load\_openloop\_h24\_monthly.json} \\
+\ldots & \ldots & \ldots & \ldots \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Συνολικά 14 JSON αρχεία (7 ανά task) φορτώνονται δυναμικά ανάλογα με την
+επιλογή του χρήστη. Το μέγεθος κάθε αρχείου κυμαίνεται στα 200--500~KB.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Οδηγίες Χρήσης}
+\label{sec:dash_usage}
+% ─────────────────────────────────────────────────────────────────────────────
+
+Για εκκίνηση του dashboard:
+\begin{lstlisting}[language=bash]
+# Από τον κατάλογο του project (epf_greece_starter/)
+conda run -n epf python -m http.server 8000
+# Άνοιγμα στον browser: http://localhost:8000/dashboard.html
+\end{lstlisting}
+
+\noindent Τυπική ροή χρήσης:
+\begin{enumerate}
+    \item Επιλέξτε εργασία (PRICE ή LOAD).
+    \item Επιλέξτε στρατηγική (CL / OL / MIMO / Direct).
+    \item Για OL/MIMO/Direct, επιλέξτε ορίζοντα (H=24 ή H=168).
+    \item Πατήστε [Best] Best για εμφάνιση μόνο του καλύτερου ανά οικογένεια.
+    \item Χρησιμοποιήστε Date Range για εστίαση σε υπό-περίοδο.
+    \item Ο πίνακας μετρικών ανανεώνεται αυτόματα.
+\end{enumerate}
