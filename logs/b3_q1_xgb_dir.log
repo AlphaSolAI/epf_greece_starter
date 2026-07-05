@@ -1,0 +1,32 @@
+🧪 ABLATION | xgb price dam direct retrain=static gate=strict (gap=0h)
+   test: 2025-12-01 00:00 → 2026-02-28 23:00 | 5 specs
+
+[1/5] --features "default" → calendar+lags+roll+resfc+loadfc+meteo+fuel+genlags+loadlags+other | 152 features
+    MAE=19.2105 €/MWh | RMSE=26.873 | sMAPE=27.3221% | 221.1s
+
+[2/5] --features "default,-meteo" → calendar+lags+roll+resfc+loadfc+fuel+genlags+loadlags+other | 68 features
+    MAE=19.641 €/MWh | RMSE=27.2876 | sMAPE=28.2933% | 155.1s
+
+[3/5] --features "default,-resfc" → calendar+lags+roll+loadfc+meteo+fuel+genlags+loadlags+other | 146 features
+    MAE=19.5806 €/MWh | RMSE=27.097 | sMAPE=27.7212% | 171.5s
+
+[4/5] --features "default,-genlags,-loadlags" → calendar+lags+roll+resfc+loadfc+meteo+fuel+other | 126 features
+    MAE=19.5549 €/MWh | RMSE=27.1471 | sMAPE=27.5304% | 152.6s
+
+[5/5] --features "lags,calendar,genlags" → calendar+lags+genlags | 33 features
+    MAE=21.0383 €/MWh | RMSE=29.0679 | sMAPE=30.4903% | 102.6s
+
+================================================================================
+spec                    #feat        MAE      ΔMAE      Δ%       RMSE   sMAPE%
+--------------------------------------------------------------------------------
+default                   152     19.210    +0.000   +0.0%     26.873    27.32
+default,-meteo             68     19.641    +0.430   +2.2%     27.288    28.29
+default,-resfc            146     19.581    +0.370   +1.9%     27.097    27.72
+default,-genlags,-loadlags    126     19.555    +0.344   +1.8%     27.147    27.53
+lags,calendar,genlags      33     21.038    +1.828   +9.5%     29.068    30.49
+================================================================================
+ΔMAE>0 → χειρότερο από το baseline (1ο spec). Αν π.χ. το 'all,-meteo' έχει ΔMAE≈0, η ομάδα meteo δεν προσφέρει σε αυτό το setup.
+
+✅ Ablation: 5 specs σε 13.4 min
+   CSV: C:\Users\aggel\OneDrive\Υπολογιστής\ALPHA\ECE\ΔΙΠΛΩΜΑΤΙΚΗ\epf_greece_starter\results\b3_q1_xgb_dir.csv
+   JSONs: C:\Users\aggel\OneDrive\Υπολογιστής\ALPHA\ECE\ΔΙΠΛΩΜΑΤΙΚΗ\epf_greece_starter\runs\b3_ablation\q1_xgb_dir

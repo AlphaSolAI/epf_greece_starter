@@ -124,14 +124,19 @@ Baselines: LGBM 14.43 · XGB 15.03. Test 2025-06-01→08-31, static.
 
 ### 5.4 Scheduled Sampling — σχήματα, interactions, retrain (2026-07-02 + P5 2026-07-04)
 
+⚠️ **ΟΛΟΚΛΗΡΟΣ ο πίνακας παρακάτω είναι ΠΡΟ-AEL/ΠΡΟ-TZFIX, ΣΕ ΑΝΑΣΤΟΛΗ** (baseline 16.096
+ανήκει στα suspended νούμερα του §5.9/§5.10 fix — validity-reviewer, 2026-07-05, στο πλαίσιο
+του overnight audit). ΔΕΝ χρησιμοποιείται πλέον ως σύγκριση/αντίφαση για νέα ευρήματα.
+Νέο leak-free SS σήμα: §5.12ε παρακάτω (static-retrain recursive, μόνο LGBM ακόμα, PENDING).
+
 `runs/ss_out/*.json` + `runs/p5_out/lgbm_ss_linear_default_monthly_q1.json`.
 
 | Εύρημα | Νούμερα | Κατάσταση |
 |---|---|---|
-| SS-linear = το μόνο σχήμα που βελτιώνει | static Q1: 16.096→15.830 (−0.266), far-offsets 17.59→17.36· exp/step χειρότερα | 🟢 ΔΕΚΤΟ (υπογραφή exposure-bias, Bengio 2015) |
-| **SS ΔΕΝ είναι redundant με retrain** | monthly Q1: 15.795→15.552 (**−0.243**) σε καθαρό `default` | 🟢 ΔΙΟΡΘΩΣΗ προηγούμενου συμπεράσματος — το «redundant» είχε μετρηθεί σε xborder-μολυσμένο config |
-| SS×features interaction | υπό SS: resfc −0.04→**+1.10**, loadfc →+0.46, loadlags +0.22→**−0.32** (αναστροφή) | 🟢 Επιβεβαιωμένο — το μοντέλο ακουμπά στα πάντα-αξιόπιστα day-ahead exogenous όταν τα y-lags γίνονται θορυβώδη |
-| SS×weekly | — | ⬜ ΔΕΝ έχει τρέξει ποτέ (επόμενος λογικός έλεγχος) |
+| SS-linear = το μόνο σχήμα που βελτιώνει | static Q1: 16.096→15.830 (−0.266), far-offsets 17.59→17.36· exp/step χειρότερα | ⚠️ ΣΕ ΑΝΑΣΤΟΛΗ (προ-AEL) |
+| **SS ΔΕΝ είναι redundant με retrain** | monthly Q1: 15.795→15.552 (**−0.243**) σε καθαρό `default` | ⚠️ ΣΕ ΑΝΑΣΤΟΛΗ (προ-AEL) — η μεθοδολογική διόρθωση (xborder-contamination) παραμένει έγκυρη ως μάθημα, οι τιμές όχι |
+| SS×features interaction | υπό SS: resfc −0.04→**+1.10**, loadfc →+0.46, loadlags +0.22→**−0.32** (αναστροφή) | ⚠️ ΣΕ ΑΝΑΣΤΟΛΗ (προ-AEL) |
+| SS×weekly | — | ⬜ ΔΕΝ έχει τρέξει ποτέ leak-free (SS καλωδιωμένο μόνο static στο overnight batch — βλ. §5.12ε) |
 
 ### 5.5 Μοντέλα & Ensembles (Βήμα 9 έγκυρα μέρη + P2 + P3, 2026-07-02/04)
 
@@ -347,30 +352,162 @@ summariser: `scripts/b3_summarize.py`.
 - Σημ.: dense×direct + bare×direct ΔΕΝ έτρεξαν στο Β3 → γεμίζουν στο overnight
   (Blocks B/D, 2026-07-05 νύχτα).
 
-### 5.12 OVERNIGHT 2026-07-05 — cadence/Μάρτιος/LOAD/SS/conformal (⏳ τρέχει)
+### 5.12 OVERNIGHT 2026-07-05 — cadence/Μάρτιος/LOAD/SS/conformal (✅ ΟΛΟΚΛΗΡΩΘΗΚΕ 13:34:56 — Block A+B ΔΕΚΤΑ, C/D/E/F BLOCKED/PENDING μετά από validity-reviewer)
 
-**Batch**: `scripts/overnight_20260705.sh` (εκκίνηση 2026-07-05 βράδυ, detached).
-Outputs: `runs/overnight_20260705/{a_cadence,b_march,c_load,d_fill,e_ss,f_conformal}/`,
-log: `logs/overnight_20260705_master.log`.
-Σύνοψη το πρωί: `conda run -n epf --no-capture-output python -X utf8 scripts/overnight_summarize.py`
-→ `results/overnight_20260705.csv`.
+**Batch**: `scripts/overnight_20260705.sh` (εκκίνηση 2026-07-05 04:58:50, detached, τέλος
+13:34:56). Outputs: `runs/overnight_20260705/{a_cadence,b_march,c_load,d_fill,e_ss,f_conformal}/`
+(24/28/56/8/4/2 = 122 runs), log: `logs/overnight_20260705_master.log`. **0 FAILED** στο log.
+Verdicts §5.12α/β περάσαν από `validity-reviewer` (ανεξάρτητος επανυπολογισμός Δ, confirmed).
+Verdicts §5.12γ-στ (Blocks C/D/E/F, δεύτερος γύρος validity-reviewer 2026-07-05 μετά την
+ολοκλήρωση του batch) — **καμία headline lock ακόμα**: βρέθηκε ότι το seed-check του Block D
+δοκιμάζει ΛΑΘΟΣ config (§5.12δ), το Block C χρειάζεται poisoning test που ποτέ δεν έτρεξε για
+task=load, και το Block F έχει μόνο 1 window. Σύνοψη: `conda run -n epf --no-capture-output
+python -X utf8 scripts/overnight_summarize.py` → `results/overnight_20260705.csv`.
 
-Γέμισμα το πρωί (ΜΟΝΟ από το CSV/summarizer, κριτήρια §2):
-- **§5.12α Cadence (Block A)**: weekly/monthly × {default,dense · default,−resfc · default}
-  × LGBM+XGB × Q1+summer, recursive. → πίνακας + απόφαση **ΝΕΟΥ HEADLINE** (μαζί με seeds
-  του Block D). _[πίνακας εδώ]_
-- **§5.12β Μάρτιος tie-break (Block B)**: 7 specs × LGBM+XGB × rec+dir static
-  (2026-03-01→03-20). Λύνει: resfc/lean/genlags/bare MIXED + πρώτα dense×direct κελιά.
-  _[Δ-πίνακας + τελικά verdicts εδώ]_
-- **§5.12γ LOAD ablation (Block C)**: πρώτο πλήρες load ablation (7 specs × 2 algos ×
-  rec+dir × 2 windows, MAE σε MW). Ερωτήματα: κυριαρχεί το loadfc (TSO forecast);
-  meteo; loadlags; dense; _[πίνακας εδώ]_
-- **§5.12δ Seeds + dense×direct (Block D)**: seeds 7/123 στο default,dense (το 42 υπάρχει
-  από Β3) → std για headline κριτήριο Α3. _[εδώ]_
-- **§5.12ε SS (Block E)**: SS-linear×3 σε default & default,dense (Q1+summer, static).
-  Ερώτημα: το SS κέρδος επιβιώνει leak-free; προσθέτει πάνω στο dense; _[εδώ]_
-- **§5.12στ Conformal smoke (Block F)**: split-conformal + quantile-LGBM στο q1 weekly
-  default,dense. Coverage/sharpness πρώτη εικόνα (πλήρες Β4 χωριστά). _[εδώ]_
+**§5.12α Cadence (Block A, recursive, static, price/DAM) — weekly vs monthly:**
+
+| spec | Q1/LGBM (m→w) | Q1/XGB (m→w) | Summer/LGBM (m→w) | Summer/XGB (m→w) |
+|---|---|---|---|---|
+| default | 19.222→17.431 (Δ−1.79) | 19.486→17.672 (Δ−1.81) | 15.080→14.147 (Δ−0.93) | 15.419→14.573 (Δ−0.85) |
+| default,dense | 18.351→17.035 (Δ−1.32) | 18.571→16.924 (Δ−1.65) | 14.063→13.812 (Δ−0.25) | 14.406→14.400 (Δ−0.01) |
+| default,−resfc | 17.644→17.362 (Δ−0.28) | 17.702→17.169 (Δ−0.53) | 15.546→15.050 (Δ−0.50) | 15.522→14.959 (Δ−0.56) |
+
+🟢 **weekly > monthly — ACCEPTED** (12/12 συνθήκες αρνητικό Δ, |Δ|>0.15 σε 11/12· η μόνη
+οριακή summer/xgb/dense Δ=−0.006 αγνοείται ως θόρυβος). Directional finding, ΟΧΙ ακόμα
+headline (Κανόνας 5 — χρειάζεται seeds, Block D).
+
+Στο weekly cadence, `default,dense` έναντι `default`: Q1/LGBM −0.40, Q1/XGB −0.75,
+Summer/LGBM −0.34, Summer/XGB −0.17 → 🟢 **dense καλύτερο spec στο cadence stage — ACCEPTED
+(4/4, |Δ|>0.15 σε 3/4)**, συνεπές με §5.11. `default,−resfc` έναντι `default`: μικτό στο Q1
+(θετικό, βοηθάει) αλλά χειρότερο στο καλοκαίρι (+0.5/+0.9) — επιβεβαιώνει το ήδη γνωστό
+εποχιακό flip, όχι νέο εύρημα. **Καλύτερο observed μέχρι στιγμής**: `default,dense`
+weekly-LGBM Q1=17.035, Summer=13.812 (υποψήφιο headline, εκκρεμεί seeds+2ο window — Block D/§5.12δ).
+
+**§5.12β Μάρτιος tie-break (Block B, static train_end=2026-02-28, test 03-01→03-20) — ΔMAE
+vs default — ΟΛΟΚΛΗΡΩΘΗΚΕ 28/28:**
+
+| spec effect | lgbm/rec (base 20.934) | lgbm/dir (base 24.479) | xgb/rec (base 21.187) | xgb/dir (base 24.690) |
+|---|---|---|---|---|
+| dense | −0.557 | −2.795 | −0.636 | −2.576 |
+| nometeo (αφαίρεση meteo) | −0.667 | −0.979 | −0.003 | −1.569 |
+| noresfc (αφαίρεση resfc) | −0.271 | +0.233 | −0.609 | +0.837 |
+| no genlags/loadlags | +0.948 | +0.704 | +0.435 | +1.847 |
+| lean (lags,cal,genlags) | −0.280 | −1.419 | −1.466 | −1.013 |
+| lags,calendar (bare) | +0.553 | −1.748 | +0.417 | −0.827 |
+
+Verdicts (τελικά, περασμένα από validity-reviewer σε 2 γύρους — 1ος με 3/4, 2ος με 4/4
+συνθήκες):
+1. 🟢 **dense ΑΝΤΕΧΕΙ πλήρως στον Μάρτιο — ACCEPTED** (4/4 αρνητικό, |Δ|>0.15) — ενισχύει
+   §5.11, τώρα 2ο ανεξάρτητο window υπέρ του dense σε ΟΛΕΣ τις 4 συνθήκες.
+2. 🔵 **resfc: επιβεβαιώνει το ήδη γνωστό strategy×season interaction** (recursive: resfc
+   τοξικό −0.27/−0.61, direct: βοηθάει +0.23/+0.84) — απλή ενίσχυση της §5.11 ετυμηγορίας.
+3. ⚠️ **ΑΝΟΙΧΤΗ ΣΥΓΚΡΟΥΣΗ — meteo (ΠΑΡΑΜΕΝΕΙ PENDING μετά το 2ο validity pass)**: με
+   4/4 πλέον, 3/4 δείχνουν meteo ΝΑ ΒΛΑΠΤΕΙ (rec −0.67, dir −0.98, xgb/dir −1.57· xgb/rec
+   ουδέτερο −0.003, κάτω από seed-noise floor) — αντίθετο πρόσημο από το §5.11 ACCEPTED
+   «meteo βοηθάει» (8/8). Ρητή ετυμηγορία validity-reviewer: ΔΕΝ αρκεί να ανατρέψει το
+   §5.11 — είναι 1 window (Μάρτιος, όσα κελιά κι αν έχει) έναντι 2 ανεξάρτητων windows
+   (Q1+summer) στο §5.11· τα κελιά ΕΝΤΟΣ του Μαρτίου είναι συσχετισμένα (ίδιο test
+   διάστημα), όχι ισοδύναμα με ανεξάρτητα δείγματα. Χρειάζεται 3ο ανεξάρτητο window
+   (π.χ. μόνο Δεκέμβριος) για να ανοίξει επίσημη επανεξέταση.
+4. ⚠️ **ΑΝΟΙΧΤΗ ΣΥΓΚΡΟΥΣΗ — lean core στο direct (ΠΑΡΑΜΕΝΕΙ PENDING)**: με xgb/dir
+   συμπληρωμένο, 2/2 direct κελιά Μαρτίου δείχνουν lean core ΝΑ ΚΕΡΔΙΖΕΙ (lgbm −1.42,
+   xgb −1.01) — αντίθετο από τα 4 κελιά §5.11 direct (lean πάντα έχανε, +1.2..+1.8 σε
+   Q1/summer). Ίδια λογική με το meteo: 2 συσχετισμένα κελιά ενός window δεν αρκούν να
+   ανατρέψουν 4 κελιά δύο ανεξάρτητων windows. Χρειάζεται 3ο window με direct strategy.
+5. 🔵 **genlags+loadlags**: 4/4 στον Μάρτιο συνεπές (βοηθάει, +0.44..+1.85) αλλά τα 8
+   παλιότερα Q1/summer κελιά ήταν μικτά (±0.5) — **Παραμένει ΟΡΙΑΚΟ/MIXED** (§5.11
+   αμετάβλητο)· χρειάζεται Block C ή 3ο window.
+6. 💡 **bare core (lags,calendar)**: μικτό στο Μάρτιο (rec: χειρότερο +0.55/+0.42· dir:
+   καλύτερο −1.75/−0.83) — strategy-dependent, συνεπές με το ήδη γνωστό winter-recursive
+   pattern του §5.11 (bare/lean κερδίζουν winter-recursive, όχι απαραίτητα winter-direct).
+
+**§5.12γ LOAD ablation (Block C, static, task=load, MAE σε MW) — ✅ 56/56 ΟΛΟΚΛΗΡΩΘΗΚΕ
+(LGBM+XGB × dir/rec × Q1/summer × 7 specs) — validity-reviewer 2ος γύρος 2026-07-05:**
+
+🟢 **`-loadfc` arm ΑΚΥΡΟ — ACCEPTED ως γνωστό VOID (bug confirmed, ΟΧΙ εύρημα)**:
+bit-for-bit Δ=0.000 σε 8/8 κελιά τώρα (πλήρες 56/56, LGBM+XGB, dir+rec, Q1+summer) —
+`data/processed/hourly_load.parquet` δεν έχει καθόλου στήλη `load_fc` (σε αντίθεση με το
+`hourly.parquet` του price). Καμία γραμμή «loadfc» δεν είναι εύρημα. Fix (μελλοντικό,
+ΟΧΙ τώρα, `data/processed/` προστατευμένο): rebuild με merge του `load_forecast_hourly.parquet`.
+
+🔴 **Όλα τα υπόλοιπα arms (genlags/loadlags, loadlags-only, nometeo, dense) — BLOCKED, ΟΧΙ
+ούτε καν PENDING με directional claim.** Με το πλήρες 8-κελιό (LGBM+XGB × dir+rec × Q1+summer)
+το πρόσημο αντιστρέφεται σε ΚΑΘΕ arm — καμία ομάδα δεν πιάνει το κριτήριο §2 (ίδιο πρόσημο σε
+≥2 ανεξάρτητες συνθήκες):
+
+| spec effect | q1/lgbm/dir | q1/lgbm/rec | q1/xgb/dir | q1/xgb/rec | summer/lgbm/dir | summer/lgbm/rec | summer/xgb/dir | summer/xgb/rec |
+|---|---|---|---|---|---|---|---|---|
+| no genlags/loadlags | −87.857 | +2.213 | −101.587 | −5.176 | +26.708 | −8.278 | +21.399 | −22.084 |
+| no loadlags (μόνο) | −84.159 | −2.582 | −90.241 | −9.842 | +13.061 | +26.158 | −8.277 | +32.101 |
+| nometeo | +48.472 | +109.482 | +41.400 | +101.643 | +13.423 | −7.014 | −14.410 | −23.106 |
+| dense | −64.591 | +0.220 | −72.035 | −1.275 | −10.568 | −10.762 | −22.323 | +15.971 |
+
+Επιπλέον, **καμία poisoning/crosslag-fairness δοκιμή δεν έχει τρέξει ΠΟΤΕ για task=load**
+(το `src/check_crosslag_fairness.py` υποστηρίζει `--task load` στον κώδικα αλλά μόνο
+`--task price` έχει εκτελεστεί μέχρι σήμερα — βλ. Block 0 στο log). Effect sizes έως 26-30%
+του baseline (genlags/loadlags στο dir) είναι ακριβώς η υπογραφή που το AEL fix έπιασε στο
+price task — **χρειάζεται targeted poisoning check στο crosslag family για task=load πριν
+γραφτεί οποιοδήποτε από τα παραπάνω arms ως εύρημα** (leakage-sensitive core rule, CLAUDE.md).
+Εντολή: `conda run -n epf --no-capture-output python -X utf8 -m src.check_crosslag_fairness
+--task load --algo lgbm --strategy {recursive,direct} --market dam --gate strict`.
+
+**§5.12δ Seeds robustness / headline lock (Block D) — 🔴 BLOCKED, headline ΔΕΝ κλειδώνει:**
+
+Ο υποψήφιος headline (§5.12α: LGBM `default,dense` **weekly**-retrain recursive, Q1=17.035/
+Summer=13.812) ΔΕΝ έχει καθόλου valid seed evidence. Το seed-loop του Block D
+(`scripts/overnight_20260705.sh:127-137`) έτρεξε με `--retrain static`, ΟΧΙ `weekly` — δηλ.
+δοκίμασε διαφορετικό config από τον υποψήφιο headline. Confirmed: τα seed7/seed123 MAE
+(Q1 19.9699/19.8542, Summer 14.1263/14.0797) ταιριάζουν με το **static**-retrain seed=42
+anchor από το Β3 (`runs/b3_ablation/q1_lgbm_rec/lgbm_price_dam_recursive_default-dense.json`
+= 19.713 Q1, `summer_lgbm_rec/...` = 14.166 summer) — ΟΧΙ με τα weekly 17.035/13.812. Τα μόνα
+weekly-seed artifacts που υπάρχουν (`runs/p6_out/lgbm_weekly_default_seed{43,44}.json`) είναι
+ΔΙΠΛΑ άκυρα: προ-AEL (§5.8, ΣΕ ΑΝΑΣΤΟΛΗ) ΚΑΙ χωρίς `dense`.
+
+**Καμία headline δεν κλειδώνει έως ότου ξανατρέξει το seed-check με `--retrain weekly`**
+(algo=lgbm, features=default,dense, strategy=recursive, seeds 7+123, Q1+summer) και τα MAE
+πέσουν εντός ~0.05-0.15 του 17.035/13.812. Μέχρι τότε το `default,dense` weekly παραμένει
+**candidate**, όχι κλειδωμένο headline.
+
+**§5.12ε Scheduled Sampling (Block E, static-retrain recursive LGBM) — 🟡 PENDING:**
+
+Σωστό baseline (static, ΟΧΙ τα weekly numbers του Block A) από `runs/b3_ablation/`:
+q1/default=20.7926, q1/default,dense=19.7130, summer/default=15.1421, summer/default,dense=14.1656.
+
+| spec | Q1 SS (Δ vs baseline) | Summer SS (Δ vs baseline) |
+|---|---|---|
+| default | 21.3171 (**+0.524**) | 15.2953 (**+0.153**) |
+| default,dense | 19.8234 (+0.110, κάτω από floor) | 14.2881 (+0.122, κάτω από floor) |
+
+🟡 **`default` (χωρίς dense): SS ΒΛΑΠΤΕΙ — clears το §2 κριτήριο** (2/2 ανεξάρτητα windows,
+ίδιο πρόσημο, |Δ|>0.15) — αλλά μόνο 1 algorithm (LGBM) δοκιμασμένο, θέλει XGB ή 3ο window
+πριν ΔΕΚΤΟ οριστικά. Αυτό **ανατρέπει το προ-AEL §5.4 «SS-linear ΔΕΚΤΟ, −0.266»** — εκείνο
+είναι πλέον suspended (βλ. §5.4 πάνω), άρα καμία πραγματική σύγκρουση, μόνο ενημέρωση.
+`default,dense`: και τα δύο Δ κάτω από το 0.15 noise floor — καμία ετυμηγορία, θα χρειαστεί
+repeated-seed run για να ξεχωρίσει από θόρυβο.
+
+**§5.12στ Conformal smoke (Block F, LGBM weekly default,dense, Q1 μόνο) — 🔵 δεδομένα ΥΠΑΡΧΟΥΝ
+αλλά ΟΧΙ αρκετά για headline probabilistic claim (Rule 6: ≥2 μοντέλα × ≥2 windows):**
+
+⚠️ Ο summarizer ανέφερε "NO-MAE" — αυτό είναι **σφάλμα του `scripts/overnight_summarize.py`**
+(δεν ξέρει να διαβάσει το σχήμα `results.<window>.mae_p50` των conformal JSONs), ΟΧΙ αποτυχία
+run. Πραγματικοί αριθμοί (από τα JSON απευθείας):
+
+| μέθοδος | n | avg_pinball | MAE(p50) | coverage 80% (nominal) | p10 emp% | p90 emp% |
+|---|---|---|---|---|---|---|
+| quantile-LGBM | 2160 | 6.075 | 16.4454 | **43.19** | 38.94 | 82.13 |
+| split-conformal | 1488 | 5.8544 | 17.238 | 72.38 | — | — |
+
+🔴 **quantile-LGBM coverage 43.19% έναντι 80% nominal είναι σοβαρό miscalibration** (λιγότερο
+από το μισό του στόχου) — πρέπει να αναφέρεται ΠΑΝΤΑ μαζί με το pinball/MAE αν αυτή η μέθοδος
+γραφτεί οπουδήποτε, όχι να αποσιωπάται (κανόνας Α4/§2 σημείο 6: coverage πάντα μαζί με
+sharpness). Το split-conformal (72.38%) είναι πιο κοντά στο 80% αλλά σε μικρότερο n (1488 vs
+2160 — τα πρώτα ~672 rows είναι το αναμενόμενο causal trailing-calibration warm-up του
+`src/conformal.py`, ΟΧΙ leak). `march_2026` κλειδί υπάρχει και στα δύο JSON αλλά n=0 (καμία
+πραγματική δεδομένα Μαρτίου για conformal ακόμα) — άρα μόνο 1 πραγματικό window, 1 μοντέλο
+έναντι 1 εναλλακτικής. **Καμία headline probabilistic claim δεν μπορεί να γραφτεί πριν
+τρέξει conformal σε 2ο window (Μάρτιος) και σε ≥2 point-μοντέλα (π.χ. + XGB weekly).**
+Μικρό fix ανοιχτό: patch `overnight_summarize.py` ώστε να διαβάζει το conformal schema
+σωστά (ώστε να μη ξαναγράψει "NO-MAE" σε επόμενο batch).
 
 ### 5.8 Robustness τελικού νικητή (P6, 2026-07-04) — ⚠️ ΠΡΟ-AEL, ΣΕ ΑΝΑΣΤΟΛΗ
 
@@ -411,6 +548,13 @@ log: `logs/overnight_20260705_master.log`.
    `data.py` + rebuild. ΝΕΟ ανοιχτό: re-run confirmτο headline στα ευθυγραμμισμένα δεδομένα.
 9. **`henex_premarket` ομάδα** — παραμένει εντελώς υποαξιοποιημένη (κανένα τεστ ποτέ).
 10. **xb_lag1_h0** — vetted νέο feature candidate (βλ. §8.1).
+11. **Headline seed-lock (§5.12δ)** — το Block D seed-check έτρεξε στο ΛΑΘΟΣ retrain cadence
+    (static αντί για weekly)· χρειάζεται re-run πριν κλειδώσει το `default,dense` weekly headline.
+12. **Block C LOAD ablation arms (§5.12γ)** — genlags/loadlags/meteo/dense αλλάζουν πρόσημο σε
+    κάθε συνθήκη· χρειάζεται `check_crosslag_fairness.py --task load` (ποτέ δεν έτρεξε) πριν
+    από οποιοδήποτε claim.
+13. **Conformal 2ο window/2ο μοντέλο (§5.12στ)** — μόνο Q1 quantile-LGBM/split-conformal
+    υπάρχουν· quantile-LGBM coverage 43.19% έναντι 80% nominal είναι μη διορθωμένο miscalibration.
 
 ## 8. Επόμενα βήματα
 

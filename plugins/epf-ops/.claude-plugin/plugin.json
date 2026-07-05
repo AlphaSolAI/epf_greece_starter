@@ -1,0 +1,10 @@
+{
+  "name": "epf-ops",
+  "version": "0.1.0",
+  "description": "Operating & compounding layer για το epf_greece_starter (GR energy forecasting thesis): validity-first SOP skills (energy-forecast, ingest-audit, synthesize-ablation, cycle-ops), read-only validity-reviewer agent, και single-writer guard hook. Επεκτάσιμο με QA pack (debug/code-review/testing) χωρίς redesign.",
+  "author": {
+    "name": "ANGELOS SOLOMOS"
+  },
+  "license": "UNLICENSED",
+  "keywords": ["energy", "forecasting", "epf", "thesis", "validity", "leakage"]
+}

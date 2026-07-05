@@ -1,12 +1,17 @@
 ---
 name: energy-forecast
-description: Leakage-free προβλέψεις τιμής/φορτίου GR (DAM/IDM/Forward) με το master pipeline του epf_greece_starter. Χρησιμοποίησέ το ΠΑΝΤΑ πριν από οποιοδήποτε training run, backtest, ablation, grid, ensemble, conformal/probabilistic δουλειά, προσθήκη νέου feature/πηγής δεδομένων (ENTSO-E fetch, parquet rebuild), ή όταν αναφέρονται MAE/headline/gate/leakage/retrain — ακόμα κι αν ο χρήστης δεν πει τη λέξη «forecast». Περιέχει τους σκληρούς κανόνες (no Optuna, strict gate, ΕΝΑ conda process), το pre-flight πρωτόκολλο leakage, και έτοιμα scripts ελέγχου.
+description: Leakage-free προβλέψεις τιμής/φορτίου/παραγωγής GR (DAM/IDM/Forward) με το master pipeline του epf_greece_starter — WHAT (domain rules, feature groups, commands) + HOW (operating protocol, interaction, output format). Χρησιμοποίησέ το ΠΑΝΤΑ πριν από training run, backtest, ablation, grid, ensemble, conformal, προσθήκη feature/πηγής, ή όταν αναφέρονται MAE/headline/gate/leakage/retrain — και όταν ο χρήστης θέλει να συνεχίσει πειράματα, να τρέξει scripts, ή να parse-άρει results.
+metadata:
+  version: "0.1.0"
+  source: "repo .claude/skills/energy-forecast + energy-runner (merged 2026-07-05)"
 ---
 
 # Energy Forecast Pipeline — Κανόνες & Εντολές
 
 Πλήρη design docs: `MASTER_PIPELINE_DESIGN.md` (ερευνητικό/anti-leakage επίπεδο) και
 `SYSTEM_DESIGN_TRADING_AGENT.md` (προϊοντική αρχιτεκτονική, data inventory, roadmap).
+⚠️ Όλη η δουλειά γίνεται ΜΕΣΑ στο repo `epf_greece_starter` (project root) — αν το session
+δεν είναι εκεί, πρώτη ενέργεια: cd στο repo.
 
 ## Σκληροί κανόνες (μη διαπραγματεύσιμοι)
 
@@ -128,7 +133,9 @@ description: Leakage-free προβλέψεις τιμής/φορτίου GR (DAM
 ## Scripts του skill (scripts/) — χρησιμοποίησέ τα, ΜΗΝ τα ξαναγράφεις ad-hoc
 
 Το lag-scan ως ad-hoc script έπιασε 2 πραγματικά bugs (1h shift στο xborder fetcher, same-day
-leakage)· γι' αυτό έγιναν μόνιμα εργαλεία εδώ. Τρέχουν σε δευτερόλεπτα (κανένα training):
+leakage)· γι' αυτό έγιναν μόνιμα εργαλεία εδώ. Τρέχουν σε δευτερόλεπτα (κανένα training).
+Κανονική θέση: `.claude/skills/energy-forecast/scripts/` μέσα στο repo (το plugin κουβαλά
+αντίγραφα στο δικό του `scripts/` μόνο ως εφεδρεία — προτίμησε τα repo originals):
 
 ```bash
 # 1. ΠΡΙΝ από κάθε batch πειραμάτων — έλεγχος περιβάλλοντος/parquet (exit 1 σε FAIL):
@@ -265,3 +272,40 @@ gen-related columns ανά έτος πριν σβήσεις το backup, όπω�
 
 - **PRICE @ DAM**: οι τιμές της D-1 είναι ΟΛΕΣ γνωστές στο D-1 12:00 (auction D-2) → anchor 23:00 D-1, gap=0.
 - **LOAD @ DAM strict**: actual load γνωστό μόνο ως ~11:00 D-1 → gap=12h, καλύπτεται recursive ή με load_fc.
+
+## Operating Protocol (πρώην energy-runner — code-first)
+
+**Scope:** running/continuing πειραμάτων, exact commands, parse `runs/`/`results/`/`logs/`,
+update docs μόνο όταν περνά το validity gate. ΟΧΙ για literature/thesis prose/redesign/reorg.
+
+**Files to read first:** `last.md` (§2 = VALIDITY GATE) · `ABLATION_PLAN.md` (§2).
+Only if needed: `MASTER_PIPELINE_DESIGN.md` · `SYSTEM_DESIGN_TRADING_AGENT.md`.
+
+**Interaction (χρήστης online):** (1) όχι μακρά εξήγηση· (2) state summary ≤5 bullets·
+(3) ΕΝΑ copy-paste command block· (4) πες ακριβώς τι output να γυρίσει (RESULT/JSON/CSV/error)·
+(5) ΕΝΑ conda process. Όταν λέει «τρέξε εσύ»/`/goal` & permissions allow: τρέξ' τα, δούλεψε
+μέχρι το checkpoint ή έναν πραγματικό blocker (τότε: exact failing command + exact error + smallest fix).
+
+**Validity gate πριν από κάθε conclusion:** strict gate/σωστό market+task · TZFIX guards ·
+AEL/crosslag freeze active · poisoning tests αν άλλαξε code path · ίδιο window/snapshot/gate στη
+σύγκριση · κανένα suspended νούμερο μαζί με clean · JSON/CSV path + reproducible command ·
+acceptance: `|ΔMAE|>0.15` & ίδιο πρόσημο σε ≥2 ανεξάρτητες συνθήκες. Αλλιώς → `PENDING`/`SMOKE`.
+
+**Output format (κάθε execution response τελειώνει με):**
+
+```text
+DONE:
+- ...
+
+RESULT PATHS:
+- ...
+
+PENDING:
+- ...
+
+NEXT:
+<μία ακριβής εντολή ή μία ακριβής user action>
+```
+
+**Failure behavior:** μην κάνεις redesign· μην πηδάς σε literature· δες το μικρότερο σχετικό
+log· fix μόνο το minimal αν ασφαλές· re-run μόνο το failed/smoke· αλλιώς stop με exact error + next command.

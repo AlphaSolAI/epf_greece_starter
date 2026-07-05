@@ -1,0 +1,40 @@
+🧪 ABLATION | xgb price dam recursive retrain=static gate=strict (gap=0h)
+   test: 2025-12-01 00:00 → 2026-02-28 23:00 | 7 specs
+
+[1/7] --features "default" → calendar+lags+roll+resfc+loadfc+meteo+fuel+genlags+loadlags+other | 152 features
+    MAE=21.5854 €/MWh | RMSE=30.6654 | sMAPE=28.4076% | 105.5s
+
+[2/7] --features "default,-resfc" → calendar+lags+roll+loadfc+meteo+fuel+genlags+loadlags+other | 146 features
+    MAE=18.0857 €/MWh | RMSE=25.6846 | sMAPE=25.9657% | 103.8s
+
+[3/7] --features "default,-meteo" → calendar+lags+roll+resfc+loadfc+fuel+genlags+loadlags+other | 68 features
+    MAE=21.9546 €/MWh | RMSE=31.8343 | sMAPE=29.1586% | 85.2s
+
+[4/7] --features "default,-genlags,-loadlags" → calendar+lags+roll+resfc+loadfc+meteo+fuel+other | 126 features
+    MAE=21.9642 €/MWh | RMSE=30.9147 | sMAPE=28.7823% | 73.5s
+
+[5/7] --features "default,dense" → calendar+lags+dense+roll+resfc+loadfc+meteo+fuel+genlags+loadlags+other | 170 features
+    MAE=19.7277 €/MWh | RMSE=27.9547 | sMAPE=27.1605% | 159.7s
+
+[6/7] --features "lags,calendar,genlags" → calendar+lags+genlags | 33 features
+    MAE=18.879 €/MWh | RMSE=26.9211 | sMAPE=27.774% | 58.9s
+
+[7/7] --features "lags,calendar" → calendar+lags | 15 features
+    MAE=19.4422 €/MWh | RMSE=28.1732 | sMAPE=28.0945% | 35.1s
+
+================================================================================
+spec                    #feat        MAE      ΔMAE      Δ%       RMSE   sMAPE%
+--------------------------------------------------------------------------------
+default                   152     21.585    +0.000   +0.0%     30.665    28.41
+default,-resfc            146     18.086    -3.500  -16.2%     25.685    25.97
+default,-meteo             68     21.955    +0.369   +1.7%     31.834    29.16
+default,-genlags,-loadlags    126     21.964    +0.379   +1.8%     30.915    28.78
+default,dense             170     19.728    -1.858   -8.6%     27.955    27.16
+lags,calendar,genlags      33     18.879    -2.706  -12.5%     26.921    27.77
+lags,calendar              15     19.442    -2.143   -9.9%     28.173    28.09
+================================================================================
+ΔMAE>0 → χειρότερο από το baseline (1ο spec). Αν π.χ. το 'all,-meteo' έχει ΔMAE≈0, η ομάδα meteo δεν προσφέρει σε αυτό το setup.
+
+✅ Ablation: 7 specs σε 10.4 min
+   CSV: C:\Users\aggel\OneDrive\Υπολογιστής\ALPHA\ECE\ΔΙΠΛΩΜΑΤΙΚΗ\epf_greece_starter\results\b3_q1_xgb_rec.csv
+   JSONs: C:\Users\aggel\OneDrive\Υπολογιστής\ALPHA\ECE\ΔΙΠΛΩΜΑΤΙΚΗ\epf_greece_starter\runs\b3_ablation\q1_xgb_rec

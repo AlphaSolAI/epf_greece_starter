@@ -1,0 +1,75 @@
+🧪 ABLATION | lgbm price dam recursive retrain=static gate=strict (gap=0h)
+   test: 2025-06-01 00:00 → 2025-08-31 23:00 | 7 specs
+
+[1/7] --features "default" → calendar+lags+roll+resfc+loadfc+meteo+fuel+genlags+loadlags+other | 152 features
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.020039 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22938
+[LightGBM] [Info] Number of data points in the train set: 73071, number of used features: 152
+[LightGBM] [Info] Start training from score 105.689102
+    MAE=15.1421 €/MWh | RMSE=21.55 | sMAPE=38.0285% | 46.5s
+
+[2/7] --features "default,-resfc" → calendar+lags+roll+loadfc+meteo+fuel+genlags+loadlags+other | 146 features
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.018777 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 22167
+[LightGBM] [Info] Number of data points in the train set: 73071, number of used features: 146
+[LightGBM] [Info] Start training from score 105.689102
+    MAE=15.6292 €/MWh | RMSE=22.5093 | sMAPE=38.5908% | 50.5s
+
+[3/7] --features "default,-meteo" → calendar+lags+roll+resfc+loadfc+fuel+genlags+loadlags+other | 68 features
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.025788 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 14882
+[LightGBM] [Info] Number of data points in the train set: 73071, number of used features: 68
+[LightGBM] [Info] Start training from score 105.689102
+    MAE=15.7982 €/MWh | RMSE=23.0688 | sMAPE=38.3295% | 62.9s
+
+[4/7] --features "default,-genlags,-loadlags" → calendar+lags+roll+resfc+loadfc+meteo+fuel+other | 126 features
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.014357 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 16308
+[LightGBM] [Info] Number of data points in the train set: 73072, number of used features: 126
+[LightGBM] [Info] Start training from score 105.688546
+    MAE=15.8488 €/MWh | RMSE=22.2875 | sMAPE=38.9827% | 28.3s
+
+[5/7] --features "default,dense" → calendar+lags+dense+roll+resfc+loadfc+meteo+fuel+genlags+loadlags+other | 170 features
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.055975 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 27528
+[LightGBM] [Info] Number of data points in the train set: 73071, number of used features: 170
+[LightGBM] [Info] Start training from score 105.689102
+    MAE=14.1656 €/MWh | RMSE=20.88 | sMAPE=37.1501% | 68.5s
+
+[6/7] --features "lags,calendar,genlags" → calendar+lags+genlags | 33 features
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.004482 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 6716
+[LightGBM] [Info] Number of data points in the train set: 73071, number of used features: 33
+[LightGBM] [Info] Start training from score 105.689102
+    MAE=17.8142 €/MWh | RMSE=26.6226 | sMAPE=39.7438% | 28.5s
+
+[7/7] --features "lags,calendar" → calendar+lags | 15 features
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.002276 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 2126
+[LightGBM] [Info] Number of data points in the train set: 73072, number of used features: 15
+[LightGBM] [Info] Start training from score 105.688546
+    MAE=17.4225 €/MWh | RMSE=25.2564 | sMAPE=40.5734% | 19.1s
+
+================================================================================
+spec                    #feat        MAE      ΔMAE      Δ%       RMSE   sMAPE%
+--------------------------------------------------------------------------------
+default                   152     15.142    +0.000   +0.0%     21.550    38.03
+default,-resfc            146     15.629    +0.487   +3.2%     22.509    38.59
+default,-meteo             68     15.798    +0.656   +4.3%     23.069    38.33
+default,-genlags,-loadlags    126     15.849    +0.707   +4.7%     22.288    38.98
+default,dense             170     14.166    -0.976   -6.4%     20.880    37.15
+lags,calendar,genlags      33     17.814    +2.672  +17.6%     26.623    39.74
+lags,calendar              15     17.422    +2.280  +15.1%     25.256    40.57
+================================================================================
+ΔMAE>0 → χειρότερο από το baseline (1ο spec). Αν π.χ. το 'all,-meteo' έχει ΔMAE≈0, η ομάδα meteo δεν προσφέρει σε αυτό το setup.
+
+✅ Ablation: 7 specs σε 5.1 min
+   CSV: C:\Users\aggel\OneDrive\Υπολογιστής\ALPHA\ECE\ΔΙΠΛΩΜΑΤΙΚΗ\epf_greece_starter\results\b3_summer_lgbm_rec.csv
+   JSONs: C:\Users\aggel\OneDrive\Υπολογιστής\ALPHA\ECE\ΔΙΠΛΩΜΑΤΙΚΗ\epf_greece_starter\runs\b3_ablation\summer_lgbm_rec

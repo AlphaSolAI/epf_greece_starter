@@ -1,0 +1,32 @@
+🧪 ABLATION | xgb price dam direct retrain=static gate=strict (gap=0h)
+   test: 2025-06-01 00:00 → 2025-08-31 23:00 | 5 specs
+
+[1/5] --features "default" → calendar+lags+roll+resfc+loadfc+meteo+fuel+genlags+loadlags+other | 152 features
+    MAE=20.0834 €/MWh | RMSE=28.1217 | sMAPE=42.2389% | 176.5s
+
+[2/5] --features "default,-meteo" → calendar+lags+roll+resfc+loadfc+fuel+genlags+loadlags+other | 68 features
+    MAE=21.5738 €/MWh | RMSE=30.2036 | sMAPE=43.2586% | 163.9s
+
+[3/5] --features "default,-resfc" → calendar+lags+roll+loadfc+meteo+fuel+genlags+loadlags+other | 146 features
+    MAE=20.3567 €/MWh | RMSE=28.5259 | sMAPE=42.1832% | 224.0s
+
+[4/5] --features "default,-genlags,-loadlags" → calendar+lags+roll+resfc+loadfc+meteo+fuel+other | 126 features
+    MAE=19.5769 €/MWh | RMSE=27.5758 | sMAPE=41.7346% | 159.9s
+
+[5/5] --features "lags,calendar,genlags" → calendar+lags+genlags | 33 features
+    MAE=21.8633 €/MWh | RMSE=30.488 | sMAPE=43.4809% | 111.4s
+
+================================================================================
+spec                    #feat        MAE      ΔMAE      Δ%       RMSE   sMAPE%
+--------------------------------------------------------------------------------
+default                   152     20.083    +0.000   +0.0%     28.122    42.24
+default,-meteo             68     21.574    +1.490   +7.4%     30.204    43.26
+default,-resfc            146     20.357    +0.273   +1.4%     28.526    42.18
+default,-genlags,-loadlags    126     19.577    -0.507   -2.5%     27.576    41.73
+lags,calendar,genlags      33     21.863    +1.780   +8.9%     30.488    43.48
+================================================================================
+ΔMAE>0 → χειρότερο από το baseline (1ο spec). Αν π.χ. το 'all,-meteo' έχει ΔMAE≈0, η ομάδα meteo δεν προσφέρει σε αυτό το setup.
+
+✅ Ablation: 5 specs σε 13.9 min
+   CSV: C:\Users\aggel\OneDrive\Υπολογιστής\ALPHA\ECE\ΔΙΠΛΩΜΑΤΙΚΗ\epf_greece_starter\results\b3_summer_xgb_dir.csv
+   JSONs: C:\Users\aggel\OneDrive\Υπολογιστής\ALPHA\ECE\ΔΙΠΛΩΜΑΤΙΚΗ\epf_greece_starter\runs\b3_ablation\summer_xgb_dir
