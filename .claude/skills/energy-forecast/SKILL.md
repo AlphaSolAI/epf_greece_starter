@@ -55,7 +55,7 @@ description: Leakage-free προβλέψεις τιμής/φορτίου GR (DAM
    `python -m src.check_crosslag_fairness` — PASS σε recursive-dam/direct-dam/
    recursive-forward (A leak=0.000000). Αυτόματα: `preflight_check.py --poison`.
    ⚠️ Q1 νούμερα ΠΡΙΝ το AEL (και το 19.17 baseline) κουβαλούν το leak — τα πρώτα
-   leak-free Q1 specs εκκρεμούν (VALIDITY_CHECKLIST Β1 τελευταίο item).
+   leak-free Q1 specs: ✅ Β1 έκλεισε (runs/b1_leakfree/), Β3 re-ablation σε εξέλιξη (ABLATION §5.11· validity gate: last.md §2).
    Το παλιό headline (προ-fix): LGBM recursive **weekly**, `--features default` → **15.17 €/MWh**
    (seed std≈0.11, Μάρτιος ✓) — ΣΕ ΑΝΑΣΤΟΛΗ, μόνο ως μεθοδολογική αναφορά.
    ⛔ **Τα «14.43/15.02 με xborder» ΠΑΡΑΜΕΝΟΥΝ ΑΚΥΡΑ — ήταν leakage**: οι same-day τιμές
@@ -105,6 +105,15 @@ description: Leakage-free προβλέψεις τιμής/φορτίου GR (DAM
 - **Οργάνωση εξόδων (2026-07-04)**: πειραματικοί φάκελοι → `runs/` · CSV πίνακες → `results/` ·
   logs → `logs/` · αναφορές → `reports/` · αρχειοθετημένα → `OLD/`. Σε νέα τρεξίματα δίνε
   `--outdir runs/<όνομα>` και `--csv results/<όνομα>.csv` (τα defaults γράφουν στο root).
+- **Long runs = detached (2026-07-05)**: κάθε run >2-3 λεπτά ΔΕΝ τρέχει μέσα από το Bash του
+  Claude (αν πέσει το session/tokens, χάνεται η πρόσβαση — τα runs να μην εξαρτώνται από
+  κανένα account). Detached εκκίνηση με log αρχείο:
+  `Start-Process -WindowStyle Hidden -FilePath "C:\Program Files\Git\bin\bash.exe"
+  -WorkingDirectory "<repo>" -ArgumentList '-c', 'bash scripts/<runner>.sh > logs/<x>.log 2>&1'`
+  ⚠️ ΠΑΝΤΑ με `-WorkingDirectory` + ASCII-only ArgumentList — το ελληνικό path ΜΕΣΑ στο
+  ArgumentList αλλοιώνεται (απέτυχε σιωπηλά 2026-07-05). Παρακολούθηση χωρίς tokens:
+  `Get-Content logs\<x>.log -Wait -Tail 20` σε σκέτο terminal. Ο κανόνας «ΕΝΑ conda» ισχύει
+  ανεξαρτήτως ποιος εκκίνησε το process (Claude, χρήστης, script) — μία ουρά, σειριακά.
 
 ## Scripts του skill (scripts/) — χρησιμοποίησέ τα, ΜΗΝ τα ξαναγράφεις ad-hoc
 

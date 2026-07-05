@@ -81,7 +81,9 @@ henex_premarket · xb_lag1_h0 · weather forecast archive · Chronos/TimesFM · 
 
 ## 5. Επόμενο βήμα (ενημερώθηκε 2026-07-05 βράδυ — OVERNIGHT BATCH)
 
-**Απόψε τρέχει** το `scripts/overnight_20260705.sh` (χρήστης το εκκίνησε πριν τον ύπνο):
+**Απόψε τρέχει** το `scripts/overnight_20260705.sh` — **ΕΚΚΙΝΗΘΗΚΕ 2026-07-05 04:58:50,
+detached** (Start-Process, ανεξάρτητο από Claude/VS Code — βλ. SKILL.md «Long runs = detached»
+για το σωστό pattern· 2 πρώτες απόπειρες απέτυχαν σιωπηλά από PS 5.1 ArgumentList quoting):
 Block 0 validity gate → A cadence weekly/monthly (top-3 specs, ΝΕΟ HEADLINE υποψήφιο) →
 B Μάρτιος 2026 tie-break (7 specs × 2 algos × rec+dir) → C **LOAD full ablation** (7 specs
 × 2 algos × rec+dir × 2 windows — πρώτο load ablation ever) → D dense×direct + seeds →

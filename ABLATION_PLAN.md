@@ -294,11 +294,91 @@ gen/load actuals 12:00-22:00 D-1, αδημοσίευτα στο gate 12:00 — �
 (γ) το **`src/conformal.py` ΥΠΑΡΧΕΙ ήδη υλοποιημένο** (split-conformal causal + quantile-LGBM
 με aux_models στο rollout) — τα docs ήταν πίσω από τον κώδικα· έτοιμο να τρέξει ΜΕΤΑ το AEL.
 
-### 5.8 Robustness τελικού νικητή (P6, 2026-07-04)
+### 5.11 Β3 LEAK-FREE RE-ABLATION (2026-07-05) — η νέα βάση feature selection
+
+**Setup**: static/strict/DAM/price, TZFIX+AEL (crosslag_mode=freeze), LGBM+XGB ×
+(Q1 2026, καλοκαίρι 2025) × (recursive· direct σε 5 specs). Sanity: default Q1
+LGBM = 20.7926 ≡ B1 (Α3.5 ✓). Πηγές: `results/b3_*.csv`, `runs/b3_ablation/`,
+summariser: `scripts/b3_summarize.py`.
+
+**Recursive — ΔMAE vs default (θετικό = χειρότερο χωρίς/με το variant):**
+
+| spec | Q1/LGBM | Q1/XGB | Summer/LGBM | Summer/XGB |
+|---|---|---|---|---|
+| default (MAE) | 20.79 | 21.59 | 15.14 | 16.11 |
+| −resfc | −3.07 | −3.50 | +0.49 | −0.34 |
+| −meteo | +2.24 | +0.37 | +0.66 | +0.75 |
+| −genlags,−loadlags | −0.56 | +0.38 | +0.71 | +0.51 |
+| +dense | **−1.08** | **−1.86** | **−0.98** | **−0.62** |
+| lean (lags,cal,genlags) | −1.86 | −2.71 | +2.67 | +1.36 |
+| bare (lags,cal) | −1.28 | −2.14 | +2.28 | +1.19 |
+
+**Verdicts (§2: |ΔMAE|>0.15 & ίδιο πρόσημο ≥2 συνθήκες):**
+1. 🟢 **meteo ΒΟΗΘΑΕΙ το recursive — ACCEPTED (4/4)**. ΑΝΑΤΡΟΠΗ του §5.6 «meteo
+   βλάπτει πάντα στο recursive» — εκείνο μετρήθηκε πάνω σε leaked genlags configs.
+2. 🟢 **dense ΒΟΗΘΑΕΙ — ACCEPTED (4/4)** (−0.6..−1.9). Νέο εύρημα (πριν: «μπορεί
+   να βλάψει OL»).
+3. 🔵 **resfc: εποχιακό flip — PENDING-seasonal**. Χειμώνα ΤΟΞΙΚΟ (αφαίρεση −3.1/−3.5,
+   2 algos ✓), καλοκαίρι ουδέτερο/ελαφρά χρήσιμο (mixed). Όπως το xborder: εποχιακό
+   interaction, ΟΧΙ universal.
+4. 🔵 **genlags+loadlags: ΟΡΙΑΚΟ/MIXED** — το προ-AEL «πιο πολύτιμη ομάδα (+1.45)»
+   ήταν σε μεγάλο βαθμό το leak. Καθαρή αξία: −0.6..+0.7, ασυνεπές πρόσημο.
+5. 🔵 **lean core: winter-only** — κερδίζει Q1 (−1.9/−2.7) και καταρρέει καλοκαίρι
+   (+2.7/+1.4), consistent σε 2 algos → όχι universal default.
+6. 💡 Αδοκίμαστοι συνδυασμοί-υποψήφιοι για το headline stage: `default,dense,-resfc`
+   (χειμώνας) · `default,dense` (universal). Q1-καλύτερα observed: `−resfc` 17.72/18.09.
+
+**Direct — ΔMAE vs default (ολοκληρώθηκε, πηγή: `scripts/b3_summarize.py` στα ίδια CSVs):**
+
+| spec | Q1/LGBM | Q1/XGB | Summer/LGBM | Summer/XGB |
+|---|---|---|---|---|
+| default (MAE) | 19.34 | 19.21 | 20.21 | 20.08 |
+| −resfc | +0.43 | +0.37 | +0.75 | +0.27 |
+| −meteo | +0.12 | +0.43 | +0.96 | +1.49 |
+| −genlags,−loadlags | +0.19 | +0.34 | −0.40 | −0.51 |
+| lean (lags,cal,genlags) | +1.53 | +1.83 | +1.20 | +1.78 |
+
+**Συμπληρωματικά verdicts με το direct (σύνολο 8 συνθήκες):**
+- **meteo → ACCEPTED 8/8** (η αφαίρεση χειροτερεύει παντού).
+- **resfc → interaction επιβεβαιωμένο**: recursive-χειμώνα ΤΟΞΙΚΟ (−3.1/−3.5), direct
+  ΒΟΗΘΑΕΙ σταθερά (+0.27..+0.75 όταν αφαιρεθεί, 4/4) → strategy×season effect, όχι universal.
+- **lean core → χάνει στο direct 4/4** (+1.2..+1.8): winter-recursive-only φαινόμενο.
+- **genlags+loadlags → MIXED και στο direct** (±0.5) — παραμένει ΟΡΙΑΚΟ.
+- Σημ.: dense×direct + bare×direct ΔΕΝ έτρεξαν στο Β3 → γεμίζουν στο overnight
+  (Blocks B/D, 2026-07-05 νύχτα).
+
+### 5.12 OVERNIGHT 2026-07-05 — cadence/Μάρτιος/LOAD/SS/conformal (⏳ τρέχει)
+
+**Batch**: `scripts/overnight_20260705.sh` (εκκίνηση 2026-07-05 βράδυ, detached).
+Outputs: `runs/overnight_20260705/{a_cadence,b_march,c_load,d_fill,e_ss,f_conformal}/`,
+log: `logs/overnight_20260705_master.log`.
+Σύνοψη το πρωί: `conda run -n epf --no-capture-output python -X utf8 scripts/overnight_summarize.py`
+→ `results/overnight_20260705.csv`.
+
+Γέμισμα το πρωί (ΜΟΝΟ από το CSV/summarizer, κριτήρια §2):
+- **§5.12α Cadence (Block A)**: weekly/monthly × {default,dense · default,−resfc · default}
+  × LGBM+XGB × Q1+summer, recursive. → πίνακας + απόφαση **ΝΕΟΥ HEADLINE** (μαζί με seeds
+  του Block D). _[πίνακας εδώ]_
+- **§5.12β Μάρτιος tie-break (Block B)**: 7 specs × LGBM+XGB × rec+dir static
+  (2026-03-01→03-20). Λύνει: resfc/lean/genlags/bare MIXED + πρώτα dense×direct κελιά.
+  _[Δ-πίνακας + τελικά verdicts εδώ]_
+- **§5.12γ LOAD ablation (Block C)**: πρώτο πλήρες load ablation (7 specs × 2 algos ×
+  rec+dir × 2 windows, MAE σε MW). Ερωτήματα: κυριαρχεί το loadfc (TSO forecast);
+  meteo; loadlags; dense; _[πίνακας εδώ]_
+- **§5.12δ Seeds + dense×direct (Block D)**: seeds 7/123 στο default,dense (το 42 υπάρχει
+  από Β3) → std για headline κριτήριο Α3. _[εδώ]_
+- **§5.12ε SS (Block E)**: SS-linear×3 σε default & default,dense (Q1+summer, static).
+  Ερώτημα: το SS κέρδος επιβιώνει leak-free; προσθέτει πάνω στο dense; _[εδώ]_
+- **§5.12στ Conformal smoke (Block F)**: split-conformal + quantile-LGBM στο q1 weekly
+  default,dense. Coverage/sharpness πρώτη εικόνα (πλήρες Β4 χωριστά). _[εδώ]_
+
+### 5.8 Robustness τελικού νικητή (P6, 2026-07-04) — ⚠️ ΠΡΟ-AEL, ΣΕ ΑΝΑΣΤΟΛΗ
 
 `runs/p6_out/*`. Seeds 42/43/44 (weekly default Q1): 15.171/15.429/15.218 → std≈0.11.
 Μάρτιος 2026: weekly 17.666 < monthly 17.968 (Δ=−0.302, 2ο ανεξάρτητο window).
-🟢 Headline ΔΕΚΤΟ με πλήρη κριτήρια — κλείνει το στάδιο feature/model/strategy selection.
+~~🟢 Headline ΔΕΚΤΟ~~ → **ΑΝΑΚΛΗΘΗΚΕ**: όλα μετρήθηκαν ΠΡΙΝ το AEL (leaked crosslags).
+Κρατιέται ΜΟΝΟ ως μεθοδολογικό υπόδειγμα (seeds+2ο window)· το νέο headline ορίζεται
+από το §5.12α (leak-free cadence + seeds).
 
 ---
 
@@ -353,8 +433,10 @@ gen/load actuals 12:00-22:00 D-1, αδημοσίευτα στο gate 12:00 — �
 
 ### 8.2 Κύριο επόμενο στάδιο (μεγάλη εικόνα)
 
-Data ✅ → Engine ✅ → Feature validity ✅ → Model/strategy selection ✅ → Robustness ✅ →
-**Probabilistic layer (conformal) — ΕΔΩ ΕΙΜΑΣΤΕ** → Product (L3-L5 του SYSTEM_DESIGN).
+Data ✅ (TZFIX) → Engine ✅ (AEL + dense y-path poison 2026-07-05) → Feature selection
+leak-free ✅ (§5.11) → **Cadence/headline + Μάρτιος + LOAD + SS — ΕΔΩ ΕΙΜΑΣΤΕ (overnight
+2026-07-05, §5.12)** → Probabilistic layer (conformal, smoke απόψε/πλήρες Β4) → Product.
+(Το παλιό «Robustness ✅» του §5.8 ανακλήθηκε — προ-AEL.)
 
 > **Διευκρίνιση (2026-07-04, οδηγία χρήστη)**: το «κλείδωμα» αφορά ΜΟΝΟ το headline/product
 > config — ΔΕΝ κλειδώνουμε 1 μοντέλο. Η ακαδημαϊκή έρευνα προηγείται του προϊόντος: το
@@ -369,7 +451,8 @@ coverage + sharpness σε Q1 + Μάρτιο. Baseline: quantile-LGBM (α=0.1/0.5
 
 **Μείζον ερευνητικό ανοιχτό (όχι «δευτερεύον»): task=load πλήρες ablation** — για το load δεν
 έχει γίνει ΚΑΝΕΝΑ feature engineering/ablation πέρα από το E2 (meteo). Ό,τι ξέρουμε για ομάδες
-features ισχύει μόνο για price.
+features ισχύει μόνο για price. **→ ΤΡΕΧΕΙ στο overnight 2026-07-05 (Block C, §5.12γ):
+7 specs × LGBM+XGB × rec+dir × Q1+summer.**
 
 Λοιπά (με σειρά): solar_fc 2h-shift έλεγχος (§7.8 — νέο εργαλείο `solar_shift_check.py`,
 πιθανό timezone red herring: index=UTC, peak 10:00 UTC = 12-13:00 τοπική) · xb_lag1_h0 (§8.1) ·
