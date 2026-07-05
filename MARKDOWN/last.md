@@ -150,7 +150,13 @@ crosslag poisoning check, (3) Block E SS σε XGB. Πέρασέ τα από vali
   κανόνα ανεξαρτησίας windows — δοκιμασμένο σε b_march/a_cadence, αναπαράγει τα verdicts
   του validity-reviewer). ✅ GitHub Actions: Claude Code Action live σε epf_greece_starter
   (main) + DIPLOMATIKI (2026-07-05, test issues πέρασαν). Εκκρεμή από το report
-  (προαιρετικά): per-run manifests.
+  (προαιρετικά): per-run manifests. ✅ **Skill `feature-eng` ΦΤΙΑΧΤΗΚΕ (2026-07-06)** —
+  end-to-end FeatureENG orchestrator για data_in extension: TDD pre-registration T1-T8
+  (design-template) → ingest-audit → υλοποίηση → batch → synthesize-ablation → deploy
+  checklist με validator (`.claude/skills/feature-eng/scripts/validate_deploy_checklist.py`,
+  smoke-tested FAIL-σε-template/PASS-σε-γεμάτο)· mirrored στο `plugins/epf-ops/skills/`.
+  Artifacts ανά feature: `docs/features/<name>/{design,deploy}.md`· το deploy.md
+  προορίζεται ως πηγή εγγραφής για το μελλοντικό Feature Registry (compounding spec Rung 2).
 
 - **`data/processed/hourly_load.parquet` λείπει η στήλη `load_fc`** (2026-07-05, βρέθηκε
   στο Block C LOAD ablation) — το αρχείο που φορτώνεται για task=load δεν έχει καθόλου

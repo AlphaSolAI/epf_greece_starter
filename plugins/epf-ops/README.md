@@ -15,6 +15,7 @@ single-writer guard να ταξιδεύουν μαζί σε κάθε session (Cl
 | Skill | `energy-forecast` | WHAT + HOW: domain rules, feature groups, εντολές pipeline **+ Operating Protocol** (πρώην energy-runner, merged) |
 | Skill | `ingest-audit` | Διαβατήριο νέας πηγής/feature: gate timing → lagscan → availability rule → πληρότητα parquet |
 | Skill | `synthesize-ablation` | Run JSONs → ΔMAE πίνακες → §2 pre-gate → verdicts (ACCEPTED/PENDING/MIXED) |
+| Skill | `feature-eng` | FeatureENG agent (data_in extension): design με TDD pre-registration (T1-T8) → ingest-audit → υλοποίηση → batch → verdict → deploy checklist + validator script |
 | Skill | `cycle-ops` | Ο κανονικός κύκλος (market, task), σκάλα Rungs 1-5, deposit rules, extension contract |
 | Agent | `validity-reviewer` | Read-only αυστηρός reviewer — ACCEPT/PENDING/REJECT με hard rules πριν από κάθε ΔΕΚΤΟ |
 | Hook | PreToolUse guard | Αντίγραφο του `guard_edits.py`: DENY σε `data/raw|processed`, `OLD/`· ASK σε leakage-sensitive src |
@@ -33,6 +34,7 @@ single-writer guard να ταξιδεύουν μαζί σε κάθε session (Cl
 
 - «τρέξε το Q1 backtest» / «MAE/gate/leakage/retrain» → `energy-forecast`
 - «να δοκιμάσουμε νέο feature/πηγή X» → `ingest-audit` (πριν γραφτεί κώδικας)
+- «νέο feature end-to-end: σχεδίασε → τέσταρε → deploy» → `feature-eng` (orchestrator· καλεί ingest-audit + synthesize-ablation ως στάδια)
 - «σύνοψη/verdict από το batch» → `synthesize-ablation` (→ `validity-reviewer` πριν από ACCEPTED)
 - «νέος κύκλος / cycle runner / plan.yaml / αυτοματοποίηση» → `cycle-ops`
 
@@ -45,6 +47,7 @@ single-writer guard να ταξιδεύουν μαζί σε κάθε session (Cl
 # από το repo root — sync + repackage
 Copy-Item .claude/skills/ingest-audit/SKILL.md plugins/epf-ops/skills/ingest-audit/SKILL.md
 Copy-Item .claude/skills/synthesize-ablation/SKILL.md plugins/epf-ops/skills/synthesize-ablation/SKILL.md
+Copy-Item -Recurse -Force .claude/skills/feature-eng plugins/epf-ops/skills/
 Copy-Item .claude/skills/energy-forecast/scripts/*.py plugins/epf-ops/skills/energy-forecast/scripts/
 Copy-Item scripts/claude_hooks/guard_edits.py plugins/epf-ops/hooks/scripts/guard_edits.py
 Compress-Archive -Path plugins/epf-ops/* -DestinationPath "$env:TEMP/epf-ops.zip" -Force
