@@ -1,18 +1,21 @@
-# QA Pack (Code Review + Debug) — Design Spec
+# QA Pack (Code Review + Debug + Optimize) — Design Spec
 
 > Στόχος: να κλείσει το κενό ανάμεσα στο guard hook (ρωτάει αλλά δεν διαβάζει κώδικα),
 > στα poisoning tests (αποδεικνύουν συμπεριφορά αλλά τρέχουν ΜΕΤΑ το γράψιμο) και στον
 > validity-reviewer (κρίνει claims, ποτέ diffs): **static review πριν εκτελεστεί ή
-> commit-αριστεί κώδικας + συστηματικό triage όταν ένα run σκάει ή παραξενεύει**.
+> commit-αριστεί κώδικας + συστηματικό triage όταν ένα run σκάει ή παραξενεύει +
+> μετρημένη επιτάχυνση των training runs (ιδίως direct ablations) με απόδειξη
+> αριθμητικής ισοδυναμίας**. Το pack είναι ο «υπεύθυνος κώδικα»: review/debug/optimize.
 > Υλοποιεί το προδιαγεγραμμένο «QA pack (debug/code-review/testing)» extension slot του
 > `plugins/epf-ops` (plugin.json v0.1.2) χωρίς redesign του operating layer.
 
 **Ημερομηνία:** 2026-07-07 · **Κατάσταση:** approved (brainstorming 2026-07-07 — όλα τα
-sections εγκρίθηκαν από τον χρήστη) · **Σχετικό spec:**
+sections εγκρίθηκαν από τον χρήστη· σκέλος OPTIMIZE προστέθηκε ίδια μέρα με απόφαση
+χρήστη: local-first + CodSpeed ως φάση 2) · **Σχετικό spec:**
 `2026-07-05-operating-compounding-layer-design.md` (αρχή: agents μόνο όπου η κρίση ΕΙΝΑΙ
 το προϊόν, read-only προς το state· deterministic όπου γίνεται).
 
-## 0. Success criteria — 4 πραγματικά περιστατικά ως οδηγός
+## 0. Success criteria — πραγματικά περιστατικά/πόνοι ως οδηγός
 
 Το design κρίνεται στο αν θα είχε πιάσει τα εξής (όλα συνέβησαν — βλ. `last.md`,
 `ABLATION_PLAN §5.12`):
@@ -23,10 +26,12 @@ sections εγκρίθηκαν από τον χρήστη) · **Σχετικό sp
 | ΙΙ | Summarizer έγραφε ψευδώς «NO-MAE» (schema mismatch με τα run JSONs) | TOOLING review (άνοιγμα πραγματικού JSON) |
 | ΙΙΙ | Subtle leakage αλλαγή σε πυρήνα που περνά το ask του hook | CORE-DIFF review + REQUIRED FOLLOW-UP poisoning |
 | ΙV | `-loadfc` VOID (8/8 Δ=0.000, infra bug) · FileNotFoundError · detached χωρίς log | triaging-run-failures runbook |
+| V | Direct ablations αργά (24 μοντέλα/run × refits) — δεν έχει μετρηθεί πού πάει ο χρόνος | optimizing-training-runs + compare_runs.py |
 
-Coverage: ΟΛΕΣ οι 4 κατηγορίες (απόφαση χρήστη 2026-07-07), έμφαση σε Ι και ΙΙ.
+Coverage: ΟΛΕΣ οι 4 κατηγορίες + σκέλος OPTIMIZE (αποφάσεις χρήστη 2026-07-07),
+έμφαση σε Ι και ΙΙ.
 
-## 1. Αρχιτεκτονική — 4 components, τοποθέτηση κατά μηχανισμό
+## 1. Αρχιτεκτονική — 6 components, τοποθέτηση κατά μηχανισμό
 
 | Component | Μηχανισμός | Γιατί έτσι |
 |---|---|---|
@@ -34,6 +39,8 @@ Coverage: ΟΛΕΣ οι 4 κατηγορίες (απόφαση χρήστη 2026
 | `scripts/qa/check_run_config.py` | script (stdlib, system python) | μηχανικοί έλεγχοι δεν χρειάζονται LLM· μηδέν tokens, μηδέν conda |
 | `triaging-run-failures` | skill (κύριο context) | το debugging είναι διαδραστικό· σέβεται το «ΕΝΑ conda process» |
 | hook nudges | PostToolUse + PreToolUse, fail-open | υπενθύμιση στο τελευταίο χρήσιμο σημείο· ΠΟΤΕ deny |
+| `optimizing-training-runs` | skill (κύριο context) | ο βρόχος measure→fix→re-measure είναι διαδραστικός· η απόδειξη ισοδυναμίας θέλει τη μία ουρά conda |
+| `scripts/qa/compare_runs.py` | script (stdlib, system python) | ισοδυναμία 2 run JSONs = μηχανικός έλεγχος, μηδέν tokens |
 
 Trigger model (απόφαση χρήστη): **SOP + nudges** — κανόνες στα SKILL.md/CLAUDE.md +
 hook υπενθυμίσεις. Όχι hard gate, όχι σκέτο on-demand. Το debug σκέλος είναι on-demand
@@ -58,7 +65,9 @@ sync χρέος.
 - **CORE-DIFF** — input: `git diff` (unstaged/staged ή range) των leakage-sensitive
   αρχείων (τα 7 ASK_FILES του `guard_edits.py`). Ψάχνει: παραβιάσεις cutoff/freeze
   semantics, off-by-one σε lag construction, silent reindex/NaN σε merges, TZ μετατροπές
-  εκτός των loaders του `data.py`, παρακάμψεις του feature_availability συμβολαίου.
+  εκτός των loaders του `data.py`, παρακάμψεις του feature_availability συμβολαίου,
+  και προφανή perf regressions (π.χ. rebuild του feature matrix μέσα σε refit loop) —
+  τα perf findings δεν δίνουν ποτέ BLOCK μόνα τους.
   Εκδίδει ΠΑΝΤΑ γραμμή `REQUIRED FOLLOW-UP` (poisoning/control-run/anchor ή «—»).
 - **TOOLING** — summarizers/fetchers/runners: schema assumptions επαληθεύονται
   ανοίγοντας ≥1 πραγματικό run JSON (περιστατικό ΙΙ), encoding (`-X utf8`), error
@@ -145,6 +154,34 @@ Tests: `tests/test_check_run_config.py` — pytest, μπαίνει στο υπά
 Skill και όχι agent: το debugging απαιτεί διαδραστικά διαγνωστικά μέσα στο κύριο
 context, με συντονισμό της μίας ουράς conda — πράγμα αδύνατο για απομονωμένο subagent.
 
+## 4α. Σκέλος OPTIMIZE — skill `optimizing-training-runs` + `compare_runs.py`
+
+**Σιδερένιος κανόνας: «πιο γρήγορο» μετράει ΜΟΝΟ με απόδειξη ίδιων αποτελεσμάτων.**
+Κάθε perf αλλαγή συνοδεύεται από: (α) anchor εντός ±0.05 (LGBM default static Q1
+16.10), (β) `compare_runs.py` PASS σε smoke run πριν/μετά, (γ) αν αγγίζει πυρήνα:
+πλήρης ροή CORE-DIFF + poisoning — καμία έκπτωση για χάρη ταχύτητας. «Ξαφνικά πολύ
+γρηγορότερο» = trigger του `triaging-suspicious-results` (ρητό cross-ref).
+
+- **Skill `optimizing-training-runs`** (`.claude/skills/optimizing-training-runs/`):
+  βρόχος measure → hotspot → στοχευμένη αλλαγή → re-measure → equivalence
+  (μεθοδολογία codspeed-optimize, προσαρμοσμένη local). Περιεχόμενο: εντολές profiling
+  (cProfile σε smoke config — σύντομο test window, static, seed 42, με τα υπάρχοντα
+  flags του master_forecast, όχι νέο engine flag)· γνωστά hotspots ως αρχικό runbook
+  (direct = 24 μοντέλα/run · weekly refits · rebuild feature matrix ανά ώρα/refit ·
+  n_jobs/threading LGBM-XGB)· deposit rule: κάθε νέο hotspot/κέρδος → runbook.
+- **`scripts/qa/compare_runs.py`** (stdlib, system python): παίρνει 2 run JSONs →
+  ίδιες προβλέψεις (max |diff| ≤ ρητή ανοχή), ίδιο MAE, ίδιο window/config fingerprint·
+  exit 0/1 + `--json`. Tests: `tests/test_compare_runs.py`.
+- **Reviewer perf-μάτι**: βλ. §2 CORE-DIFF — perf findings ναι, BLOCK μόνο για perf όχι.
+
+**CodSpeed — φάση 2 (αποφασισμένη, απαιτεί ενέργεια χρήστη):** (1) auth του CodSpeed
+connector από τον χρήστη (claude.ai connector settings ή `/mcp` σε interactive
+session — δεν γίνεται από headless session), (2) setup μέσω `codspeed-setup-harness`,
+(3) micro-benchmarks ΜΟΝΟ σε pure-logic hot paths που τρέχουν χωρίς training data
+(feature_availability filtering, dense lag construction, split_utils) ώστε να τρέχουν
+σε CI. Το macro timing (πλήρη training runs) μένει ΠΑΝΤΑ local — το CI δεν έχει
+δεδομένα/ώρες για training.
+
 ## 5. Hook nudges (επέκταση enforcement layer — ποτέ deny)
 
 - **PostToolUse σε `Edit|Write`** για τα 7 ASK-files: μετά από επιτυχές edit, έγχυση
@@ -166,7 +203,7 @@ context, με συντονισμό της μίας ουράς conda — πράγ
 
 - `MARKDOWN/CLAUDE.md`: +2 γραμμές στους μη διαπραγματεύσιμους κανόνες — (α) pre-run
   review νέων/αλλαγμένων scripts πριν εκτελεστούν, (β) CORE-DIFF review πριν από commit
-  πυρήνα — και ενημέρωση χάρτη repo (`scripts/qa/`, νέος agent, νέο skill).
+  πυρήνα — και ενημέρωση χάρτη repo (`scripts/qa/`, νέος agent, νέα skills).
 - `energy-forecast` SKILL.md: linter+reviewer ως βήμα στο pre-batch pre-flight.
 - **Artifact rule**: σε verdict BLOCK ή σε review πριν από commit πυρήνα, ο ΚΥΡΙΟΣ agent
   (ο reviewer είναι read-only) σώζει το verdict σε
@@ -184,6 +221,9 @@ context, με συντονισμό της μίας ουράς conda — πράγ
 - **Debug**: run σκάει/παραξενεύει → `triaging-run-failures` → runbook match ⇒ γνωστό
   fix· αλλιώς systematic-debugging loop → fix σε πυρήνα ⇒ escalation σε CORE-DIFF +
   poisoning → deposit νέου failure mode στο runbook.
+- **Optimize**: profiling σε smoke config → hotspot → στοχευμένη αλλαγή → smoke re-run
+  → `compare_runs.py` PASS + anchor → (αν πυρήνας) CORE-DIFF + poisoning → deposit
+  κέρδους στο runbook.
 
 ## 8. Error handling του ίδιου του pack
 
@@ -193,6 +233,8 @@ context, με συντονισμό της μίας ουράς conda — πράγ
 - Hooks fail-open· nudges ποτέ deny.
 - Σύγκρουση verdicts: reviewer APPROVE αλλά poisoning FAIL ⇒ **το poisoning υπερισχύει
   πάντα** (behavioral απόδειξη > static ανάγνωση).
+- Perf αλλαγή με compare_runs FAIL ⇒ η αλλαγή απορρίπτεται ή επανασχεδιάζεται —
+  δεν υπάρχει «αποδεκτά διαφορετικά» αποτελέσματα για χάρη ταχύτητας.
 
 ## 9. Acceptance tests (το pack ΔΕΝ είναι DONE πριν περάσουν)
 
@@ -204,8 +246,11 @@ context, με συντονισμό της μίας ουράς conda — πράγ
    poisoning και δίνει BLOCK χωρίς αυτό.
 4. **FileNotFoundError**: το runbook απαντά «by design, όχι regression» χωρίς πρόταση
    «διόρθωσης» του `split_utils`.
+5. **Perf-equivalence**: αλλαγή που επιταχύνει αλλά αλλάζει predictions ⇒
+   `compare_runs.py` FAIL και η αλλαγή απορρίπτεται· ισοδύναμη αλλαγή ⇒ PASS με
+   καταγεγραμμένο κέρδος wall-clock.
 
-Συν: pytest για τον linter · unit test ότι τα nudges δεν μπλοκάρουν ποτέ.
+Συν: pytest για linter + compare_runs · unit test ότι τα nudges δεν μπλοκάρουν ποτέ.
 
 ## 10. Rollout — build order (commit ανά βήμα)
 
@@ -216,15 +261,23 @@ context, με συντονισμό της μίας ουράς conda — πράγ
    additionalContext vs systemMessage)
 5. SOP deposits (`MARKDOWN/CLAUDE.md`, energy-forecast SKILL.md)
 6. Resync στο `plugins/epf-ops/` (per README — ποτέ direct edit στο snapshot)
-7. Acceptance validation (τα 4 σενάρια του §9)
+7. Acceptance validation (σενάρια 1-4 του §9)
+8. `compare_runs.py` + tests (μπορεί να τρέξει παράλληλα με τα 2-5)
+9. Skill `optimizing-training-runs` + πρώτο profiling baseline σε direct smoke run
+   + acceptance σενάριο 5 (§9)
+10. CodSpeed φάση 2: connector auth από χρήστη → `codspeed-setup-harness` →
+    micro-benchmarks pure-logic paths σε CI
 
 ## 11. Frozen / εκτός scope
 
 - Ο πυρήνας (engine/AEL/gates/§2 semantics) δεν αλλάζει σε τίποτα — το pack χτίζει γύρω.
 - Single-writer στα master MDs μένει ως έχει· ο reviewer δεν γράφει πουθενά.
 - Dead src (~39 αρχεία) και `thesis/*.tex` εκτός review by rule.
-- Testing workstream (επέκταση coverage του `tests/`) εκτός — μόνο τα tests του linter.
+- Testing workstream (επέκταση coverage του `tests/`) εκτός — μόνο τα tests των
+  linter/compare_runs.
 - Ο `validity-reviewer` παραμένει ανέγγιχτος και ανεξάρτητος (claims ≠ code).
+- Perf αλλαγές σε πυρήνα = κανονικές αλλαγές πυρήνα (CORE-DIFF + poisoning + anchor)
+  **+ compare_runs equivalence** — η ταχύτητα δεν αγοράζει παράκαμψη κανόνων.
 
 ## 12. Κλειδωμένες αποφάσεις (2026-07-07)
 
@@ -237,6 +290,10 @@ context, με συντονισμό της μίας ουράς conda — πράγ
    `triaging-run-failures` (συμμετρία με triaging-suspicious-results) ·
    `scripts/qa/check_run_config.py`.
 5. Debug = skill, όχι agent (διαδραστικότητα + ΕΝΑ conda process).
+6. Σκέλος OPTIMIZE εντός scope (απόφαση χρήστη 2026-07-07): local profiling πρώτα·
+   αριθμητική ισοδυναμία (anchor + compare_runs) = προϋπόθεση ΚΑΘΕ perf αλλαγής.
+7. CodSpeed: ναι, ως φάση 2 — προϋποθέτει connector auth από τον χρήστη· μόνο
+   pure-logic micro-benchmarks σε CI, macro timing πάντα local.
 
 ---
 
