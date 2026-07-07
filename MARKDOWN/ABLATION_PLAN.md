@@ -352,7 +352,7 @@ summariser: `scripts/b3_summarize.py`.
 - Σημ.: dense×direct + bare×direct ΔΕΝ έτρεξαν στο Β3 → γεμίζουν στο overnight
   (Blocks B/D, 2026-07-05 νύχτα).
 
-### 5.12 OVERNIGHT 2026-07-05 — cadence/Μάρτιος/LOAD/SS/conformal (✅ ΟΛΟΚΛΗΡΩΘΗΚΕ 13:34:56 — Block A+B ΔΕΚΤΑ, C/D/E/F BLOCKED/PENDING μετά από validity-reviewer)
+### 5.12 OVERNIGHT 2026-07-05 + follow-up 2026-07-06 — 🏆 HEADLINE ΚΛΕΙΔΩΣΕ (LGBM default,dense weekly recursive, Q1=16.96/Summer=13.74) — C(LOAD)/E(SS)/F(conformal) παραμένουν PENDING
 
 **Batch**: `scripts/overnight_20260705.sh` (εκκίνηση 2026-07-05 04:58:50, detached, τέλος
 13:34:56). Outputs: `runs/overnight_20260705/{a_cadence,b_march,c_load,d_fill,e_ss,f_conformal}/`
@@ -451,22 +451,38 @@ price task — **χρειάζεται targeted poisoning check στο crosslag f
 Εντολή: `conda run -n epf --no-capture-output python -X utf8 -m src.check_crosslag_fairness
 --task load --algo lgbm --strategy {recursive,direct} --market dam --gate strict`.
 
-**§5.12δ Seeds robustness / headline lock (Block D) — 🔴 BLOCKED, headline ΔΕΝ κλειδώνει:**
+**§5.12δ Seeds robustness / headline lock (Block D + follow-up Block G, 2026-07-06) —
+🟢 ΚΛΕΙΔΩΣΕ:**
 
-Ο υποψήφιος headline (§5.12α: LGBM `default,dense` **weekly**-retrain recursive, Q1=17.035/
-Summer=13.812) ΔΕΝ έχει καθόλου valid seed evidence. Το seed-loop του Block D
-(`scripts/overnight_20260705.sh:127-137`) έτρεξε με `--retrain static`, ΟΧΙ `weekly` — δηλ.
-δοκίμασε διαφορετικό config από τον υποψήφιο headline. Confirmed: τα seed7/seed123 MAE
-(Q1 19.9699/19.8542, Summer 14.1263/14.0797) ταιριάζουν με το **static**-retrain seed=42
-anchor από το Β3 (`runs/b3_ablation/q1_lgbm_rec/lgbm_price_dam_recursive_default-dense.json`
-= 19.713 Q1, `summer_lgbm_rec/...` = 14.166 summer) — ΟΧΙ με τα weekly 17.035/13.812. Τα μόνα
-weekly-seed artifacts που υπάρχουν (`runs/p6_out/lgbm_weekly_default_seed{43,44}.json`) είναι
-ΔΙΠΛΑ άκυρα: προ-AEL (§5.8, ΣΕ ΑΝΑΣΤΟΛΗ) ΚΑΙ χωρίς `dense`.
+Το αρχικό Block D seed-loop έτρεξε με λάθος cadence (`--retrain static` αντί `weekly`,
+βλ. ιστορικό παρακάτω) — διορθώθηκε με `scripts/followup_20260705.sh` Block G, σωστά
+`--retrain weekly`, seeds 7+123 (μαζί με το ήδη υπάρχον seed=42 από το Block A):
 
-**Καμία headline δεν κλειδώνει έως ότου ξανατρέξει το seed-check με `--retrain weekly`**
-(algo=lgbm, features=default,dense, strategy=recursive, seeds 7+123, Q1+summer) και τα MAE
-πέσουν εντός ~0.05-0.15 του 17.035/13.812. Μέχρι τότε το `default,dense` weekly παραμένει
-**candidate**, όχι κλειδωμένο headline.
+| seed | Q1 | Summer |
+|---|---|---|
+| 42 | 17.0354 | 13.8123 |
+| 7  | 16.9397 | 13.6910 |
+| 123 | 16.8913 | 13.7081 |
+| **mean** | **16.956** | **13.737** |
+| **std** | **0.060** | **0.054** |
+
+🟢 **ΔΕΚΤΟ — headline κλειδωμένο** (validity-reviewer, 2026-07-06): 3 seeds + 2 ανεξάρτητα
+windows (Α3 κανόνας 5), std 0.054-0.060 — **πιο σφιχτό** από το μεθοδολογικό πρότυπο P6
+(seeds 42/43/44, std≈0.112, §5.8). Poisoning self-test (Tests A/B/D1/D2) έτρεξε φρέσκο
+μέσα στο ίδιο batch, PASS.
+
+### 🏆 ΝΕΟ HEADLINE (leak-free, 2026-07-06)
+**LGBM, `default,dense`, `--retrain weekly`, recursive, DAM/price, gate strict:**
+**Q1 ≈ 16.96 €/MWh · Summer ≈ 13.74 €/MWh** (std ≤0.06, 3 seeds έκαστο).
+Πηγές: `runs/overnight_20260705/a_cadence/{q1,summer}_lgbm_weekly_default_dense.json`
+(seed 42) + `runs/followup_20260705/{q1,summer}_lgbm_rec_weekly_default_dense_seed{7,123}.json`.
+Παλιό προ-AEL headline 15.17 παραμένει ΣΕ ΑΝΑΣΤΟΛΗ (leaked, ασύγκριτο — §5.8).
+
+**Ιστορικό διόρθωσης (για traceability)**: το αρχικό seed-loop
+(`scripts/overnight_20260705.sh:127-137`) έτρεξε λάθος με `--retrain static` — τα seed
+MAE (Q1 19.9699/19.8542, Summer 14.1263/14.0797) ταίριαζαν με το static anchor του Β3
+(19.713/14.166), όχι με το weekly 17.035/13.812. Εντοπίστηκε 2026-07-05/06, διορθώθηκε
+με το follow-up batch.
 
 **§5.12ε Scheduled Sampling (Block E, static-retrain recursive LGBM) — 🟡 PENDING:**
 
@@ -509,6 +525,68 @@ sharpness). Το split-conformal (72.38%) είναι πιο κοντά στο 80
 Μικρό fix ανοιχτό: patch `overnight_summarize.py` ώστε να διαβάζει το conformal schema
 σωστά (ώστε να μη ξαναγράψει "NO-MAE" σε επόμενο batch).
 
+**§5.12ζ Recursive vs Direct — επανεξέταση σε 3 windows (2026-07-06) — ΔΙΟΡΘΩΝΕΙ σφάλμα μου:**
+
+Σε προηγούμενη απάντηση δηλώθηκε λανθασμένα «το direct είναι σαφώς χειρότερο» βασισμένο σε
+σύγκριση ΔΙΑΦΟΡΕΤΙΚΩΝ retrain cadences (weekly-recursive έναντι static-direct) — άκυρη
+σύγκριση (last.md §2/Α3: «συγκρίσεις πάντα ίδιο window/gate/data»). Διορθώθηκε με σύγκριση
+ΙΔΙΟΥ cadence (static), ΙΔΙΟΥ spec (`default,dense`), ΙΔΙΟΥ gate, σε 3 windows:
+
+| window | recursive LGBM | direct LGBM | recursive XGB | direct XGB | νικητής |
+|---|---|---|---|---|---|
+| Q1 (Δεκ-Φεβ) | 19.970 | 18.627 | 19.728 | 18.220 | **direct** (Δ≈−1.3/−1.5) |
+| Μάρτιος | 20.378 | 21.685 | 20.551 | 22.114 | **recursive** (Δ≈+1.3/+1.6) |
+| Καλοκαίρι | 14.126 | 18.873 | 15.490 | 19.288 | **recursive** (Δ≈+3.8/+4.7) |
+
+Πηγές: `runs/overnight_20260705/d_fill/{q1,summer}_{lgbm,xgb}_dir_default_dense.json` +
+`d_fill/{q1,summer}_lgbm_rec_default_dense_seed7.json` + `runs/b3_ablation/{q1,summer}_xgb_rec/
+xgb_price_dam_recursive_default-dense.json` (recursive XGB static anchor) +
+`runs/overnight_20260705/b_march/march_{lgbm,xgb}_{rec,dir}_default_dense.json`.
+
+**Validity-reviewer ετυμηγορία (όλοι οι 12 αριθμοί επαληθεύτηκαν απευθείας από τα JSON,
+ίδιο context: `gate=strict`, `retrain=static`, `features=[calendar,lags,dense]` παντού):**
+
+🔵 **ΟΥΤΕ «recursive > direct» ΟΥΤΕ «direct > recursive» μπορεί να γραφτεί ως καθολικό
+εύρημα — PENDING, regime-dependent.** Το πρόσημο είναι συνεπές ΜΕΣΑ σε κάθε window (2
+αλγόριθμοι συμφωνούν σε καθένα από τα 3), αλλά ΑΝΑΣΤΡΕΦΕΤΑΙ ανάμεσα σε windows (Q1 vs
+Μάρτιος+Καλοκαίρι) — ακριβώς η ίδια δομή με το ήδη τεκμηριωμένο strategy×season interaction
+του resfc/xborder (§5.6/§5.7), ΟΧΙ ένα καθαρό 2-στα-3 majority vote. Τίποτα στα ωμά actual
+prices του Q1 δεν το ξεχωρίζει ως ανωμαλία (min/max/mean/negative-hours συγκρίσιμα με τα
+άλλα windows — Καλοκαίρι έχει μάλιστα περισσότερες αρνητικές ώρες και υψηλότερο spike) —
+άρα ΔΕΝ είναι data artifact, είναι πραγματικό regime-dependent φαινόμενο. Ενημερώνει και
+διορθώνει το `last.md §3` σημείο 2 (βλ. εκεί).
+
+**ΛΥΘΗΚΕ (follow-up batch, 2026-07-06) — validity-reviewer, 2 ξεχωριστά ευρήματα, ΟΧΙ ένα
+συγχωνευμένο claim:**
+
+**(1) 🟢 ΔΕΚΤΟ — στο weekly (deployable) cadence, recursive κερδίζει το direct ΠΑΝΤΟΥ:**
+
+| window | recursive (μέση seeds) | direct LGBM | direct XGB | Δ (LGBM/XGB) |
+|---|---|---|---|---|
+| Q1 | 16.956 | 18.176 | 18.029 | −1.22 / −1.07 |
+| Summer | 13.737 | 16.313 | 16.593 | −2.58 / −2.86 |
+
+4/4 ανεξάρτητες συνθήκες (2 windows × 2 algos), ίδιο πρόσημο, |Δ|≫0.15 — καθαρό ACCEPTED.
+**Αυτό αναιρεί το Q1-static «direct κερδίζει» ΓΙΑ ΤΟ ΠΡΑΓΜΑΤΙΚΟ deployable config**: στο
+σωστό (weekly) retrain cadence, recursive είναι η σαφής επιλογή και στα δύο windows.
+Πηγές: `runs/followup_20260705/{q1,summer}_{lgbm,xgb}_dir_weekly_default_dense.json`.
+
+**(2) 🔵 Static cadence — παραμένει strategy×cadence interaction, ΔΕΝ συγχωνεύεται με το (1):**
+Με το 4ο ανεξάρτητο static window (Οκτ-Νοε 2025: recursive 18.029/18.609, direct
+22.545/22.805, Δ≈−4.2/−4.5) η καταμέτρηση static windows γίνεται 3-στα-4 υπέρ recursive
+(Οκτ-Νοε, Μάρτιος, Καλοκαίρι) — μόνο το Q1-static ευνοεί direct. Ρητή ετυμηγορία
+validity-reviewer: αυτό ΔΕΝ γράφεται ως «recursive > direct, καθολικό» — static και weekly
+είναι διαφορετικά retrain regimes, και το Q1-static countersignal είναι αλγοριθμικά
+επιβεβαιωμένο (2/2 algos, |Δ|>1.0), όχι θόρυβος. Μένει καταγεγραμμένο ως strategy×cadence
+interaction (ίδια λογική με §5.6 resfc), ΟΧΙ ως εξαίρεση προς παράβλεψη.
+Πηγές: `runs/followup_20260705/octnov_{lgbm,xgb}_{rec,dir}_default_dense.json`.
+
+**Πρακτικό συμπέρασμα**: επειδή το headline χρησιμοποιεί weekly cadence (§5.12δ), το (1)
+είναι αυτό που μετράει για production — recursive, χωρίς επιφύλαξη. Το (2) μένει ως
+μεθοδολογική σημείωση/μελλοντικό ερώτημα (γιατί το static-Q1 συμπεριφέρεται διαφορετικά),
+όχι ως κάτι εκμεταλλεύσιμο (καμία regime-switching πρόταση — δεν υπάρχει deployable use
+case όπου θα χρησιμοποιούσαμε static-Q1 direct αντί για weekly recursive).
+
 ### 5.8 Robustness τελικού νικητή (P6, 2026-07-04) — ⚠️ ΠΡΟ-AEL, ΣΕ ΑΝΑΣΤΟΛΗ
 
 `runs/p6_out/*`. Seeds 42/43/44 (weekly default Q1): 15.171/15.429/15.218 → std≈0.11.
@@ -546,7 +624,20 @@ sharpness). Το split-conformal (72.38%) είναι πιο κοντά στο 80
 8. ~~solar_fc_dayahead ύποπτο 2h shift~~ ✅ **ΕΛΥΘΗ 2026-07-04 → §5.9**: ήταν πραγματικό
    συστημικό timezone misalignment (4 ρολόγια στο ίδιο parquet), διορθώθηκε δομικά στο
    `data.py` + rebuild. ΝΕΟ ανοιχτό: re-run confirmτο headline στα ευθυγραμμισμένα δεδομένα.
-9. **`henex_premarket` ομάδα** — παραμένει εντελώς υποαξιοποιημένη (κανένα τεστ ποτέ).
+9. **`henex_premarket` ομάδα — BLOCKED, design doc 2026-07-06** (`docs/features/henex_premarket/design.md`,
+   feature-eng Στάδιο 1, ενώ έτρεχε το followup batch — καμία conda χρήση). Ευρήματα (όχι
+   υποθέσεις): (α) cached parquet (`henex_premarket_hourly.parquet`, 615KB) καλύπτει
+   2020-11-01→**2026-01-01 μόνο** — Q1 2026 κάλυψη 35.6% (μόνο Δεκ, Φεβ 0%), Μάρτιος 2026 0%,
+   καλοκαίρι 2025 100% (μόνο ΕΝΑ πλήρες window διαθέσιμο σήμερα — T7 ≥2 windows αδύνατο χωρίς
+   backfill)· (β) `data/raw/henex/premarket_summary/` άδειος φάκελος (0 αρχεία), κανένα
+   `fetch_henex*.py`, και το `src/data_future.py` (μοναδικό module με τη λογική) ψάχνει σε
+   ΛΑΘΟΣ path (`data/raw/henex_premarket` αντί `data/raw/henex/premarket_summary`)· (γ)
+   `src/data_future.py` είναι ορφανό — ΔΕΝ τροφοδοτεί το `hourly.parquet`, άρα οι 3 στήλες
+   (`pm_buy/sell/net_nom_mw`) δεν υπάρχουν πουθενά στο ενεργό feature store· `lagscan.py`
+   δεν μπορεί να τρέξει πριν από staging merge στο `data.py`· (δ) T1 (gate timing vs 12:00
+   CET D-1) ΑΝΕΠΙΒΕΒΑΙΩΤΟ — μόνο οικονομική υπόθεση, καμία πρωτογενής πηγή. **PENDING —
+   δεν ξεκίνησε το Στάδιο 2 (lagscan)**, χρειάζεται πρώτα: primary-source gate-timing proof
+   + data backfill/fetcher + path fix + staging merge στο data.py.
 10. **xb_lag1_h0** — vetted νέο feature candidate (βλ. §8.1).
 11. **Headline seed-lock (§5.12δ)** — το Block D seed-check έτρεξε στο ΛΑΘΟΣ retrain cadence
     (static αντί για weekly)· χρειάζεται re-run πριν κλειδώσει το `default,dense` weekly headline.

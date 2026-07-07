@@ -11,6 +11,15 @@
 - **Στήλες parquet:** `<col1>, <col2>` — σε ποιο task parquet πρέπει να υπάρχουν
   (price: `hourly.parquet` / load: `hourly_load.parquet` / και τα δύο);
 - **Availability rule (πρόχειρο):** <fc day-ahead-known; actual μόνο ως lags με reporting delay;>
+- **T0 — Κάλυψη δεδομένων ανά window (read-only, ΠΡΙΝ από όλα):**
+
+| Window | Ώρες παρούσες | Αναμενόμενες | Κάλυψη |
+|---|---|---|---|
+| Q1 (Δεκ-Φεβ) | <> | 2160 | <>% |
+| Καλοκαίρι (Ιουν-Αυγ) | <> | 2208 | <>% |
+| Μάρτιος | <> | ~456 | <>% |
+
+  <2 ΠΛΗΡΗ windows → **BLOCKED** εδώ (T7 δομικά αδύνατο)· backfill πριν από οτιδήποτε άλλο.
 
 ## 2. Μηχανισμός & pre-registered προσδοκίες
 
@@ -23,11 +32,12 @@
 - **Αναμενόμενο hour-profile:** <σχήμα, π.χ. solar peak ~12:00>
 - **Αναμενόμενο FI rank ομάδας:** <π.χ. κάτω από lags/calendar, πάνω από fuel>
 
-## 3. Acceptance tests (κλειδώνουν ΤΩΡΑ — T1-T8)
+## 3. Acceptance tests (κλειδώνουν ΤΩΡΑ — T0-T8)
 
 | Test | Τι ελέγχει | Κριτήριο PASS | Στάδιο |
 |---|---|---|---|
-| T1 | Gate timing | Γραπτή απάντηση: δημοσίευση ΠΡΙΝ το 12:00 CET D-1 (ή νόμιμη lagged εκδοχή με ρητό delay) | 2 |
+| T0 | Data coverage | ≥2 ΠΛΗΡΗ ανεξάρτητα windows διαθέσιμα (πίνακας §1) | 0 |
+| T1 | Gate timing | **Πρωτογενής πηγή** (market rules/publication calendar): δημοσίευση ΠΡΙΝ το 12:00 CET D-1 (ή νόμιμη lagged εκδοχή με ρητό delay). Οικονομική λογική ΔΕΝ αρκεί. | 2 |
 | T2 | Lagscan | Peak στο προβλεπόμενο k του §2 · ΟΧΙ «βολικό» k · |corr|<0.85 | 2 |
 | T3 | Hour-profile | Σχήμα = προβλεπόμενο του §2 (shift ⇒ fetcher bug) | 2 |
 | T4 | Non-VOID arm | `#features` ΑΛΛΑΖΕΙ baseline↔spec στο πρώτο log · στήλη υπάρχει στο parquet ΚΑΘΕ target task | 3-4 |
@@ -50,6 +60,9 @@
 - <εποχιακό flip; (resfc lesson)>
 - <TZ πηγής vs CET/CEST-naive frame; (TZFIX lesson)>
 - <κενή στήλη σε ένα από τα δύο task parquets; (loadfc lesson)>
+- <ορφανός loader/λάθος raw path — ποιος ΠΡΑΓΜΑΤΙΚΑ καταναλώνει το module; (henex lesson)>
+- <structural breaks που τέμνουν τα windows: SDAC 15-min MTU 2025-10-01 · lignite exit 2026 ·
+  άνοδος negative-price hours 2026 — επηρεάζουν το εύρημα;>
 
 ## 6. Audit evidence (συμπληρώνεται στο στάδιο 2)
 

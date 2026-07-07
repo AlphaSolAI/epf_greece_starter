@@ -42,6 +42,7 @@
 ## 5. DANGERS & ROLLBACK
 
 - Κίνδυνοι που παραμένουν: <εποχιακό flip; regime dependence; πηγή μπορεί να αλλάξει schedule;>
+- Structural breaks στα windows που μετρήθηκε: <π.χ. SDAC 15-min MTU 2025-10-01 / lignite exit 2026 — τέμνουν το test window; επηρεάζουν το εύρημα;>
 - Rollback: αφαίρεση από default spec (η ομάδα μένει διαθέσιμη ως flag) — εντολή/spec: <>
 - Monitoring: <τι θα έδειχνε ότι το feature «σάπισε» (π.χ. rolling ΔMAE αλλάζει πρόσημο)>
 

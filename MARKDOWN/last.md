@@ -12,9 +12,16 @@
 Θεμέλια ΟΛΑ σταθερά πλέον: **TZFIX ✅** (4 ρολόγια ευθυγραμμισμένα, guard στο preflight) →
 **AEL ✅** (crosslag freeze-at-cutoff σε recursive/direct/training/conformal, poisoning PASS,
 `SYSTEM_DESIGN §4.8`, `ABLATION §5.10`) → **Β1 ✅** (πρώτα leak-free νούμερα) →
-**Β3 ✅ ΟΛΟΚΛΗΡΩΘΗΚΕ** → **OVERNIGHT batch (2026-07-05) ✅ ΤΕΛΕΙΩΣΕ 13:34:56, 122/122 runs,
-0 FAILED — αλλά headline ΔΕΝ κλειδώνει ακόμα** (validity-reviewer 2ος γύρος βρήκε πραγματικά
-προβλήματα, βλ. `ABLATION_PLAN §5.12`):
+**Β3 ✅ ΟΛΟΚΛΗΡΩΘΗΚΕ** → **OVERNIGHT batch (2026-07-05) ✅ 122/122 runs** → **follow-up batch
+(2026-07-06) ✅ 12/12 runs, 0 FAILED** → 🏆 **ΝΕΟ HEADLINE ΚΛΕΙΔΩΣΕ (2026-07-06,
+validity-reviewer ACCEPT)**:
+
+### 🏆 LGBM `default,dense`, weekly retrain, recursive, DAM/price
+**Q1 ≈ 16.96 €/MWh (std 0.060, 3 seeds) · Summer ≈ 13.74 €/MWh (std 0.054, 3 seeds)**
+Σφιχτότερο από το μεθοδολογικό πρότυπο P6 (std≈0.11). Leak-free, cadence-σωστό, poisoning
+PASS φρέσκο. Πλήρης τεκμηρίωση: `ABLATION_PLAN §5.12δ`. Παλιό 15.17 ΣΕ ΑΝΑΣΤΟΛΗ (leaked).
+
+Υπόλοιπα ευρήματα:
 
 - **Β3 recursive+direct** (LGBM+XGB × Q1+summer × 7 specs — `ABLATION §5.11`): meteo ΒΟΗΘΑΕΙ
   (ACCEPTED 8/8, rec+dir)· dense ΒΟΗΘΑΕΙ recursive (ACCEPTED 4/4)· resfc εποχιακό flip·
@@ -28,10 +35,9 @@
   ΚΑΘΕ από τα 8 κελιά — καμία ομάδα δεν πιάνει §2. Effect sizes έως 30% baseline απαιτούν
   `check_crosslag_fairness.py --task load` (ΠΟΤΕ δεν έτρεξε — μόνο --task price έχει
   δοκιμαστεί) πριν γραφτεί οτιδήποτε ως εύρημα.
-- **Block D (seeds) 🔴 BLOCKED για headline lock**: το seed-check έτρεξε με `--retrain static`
-  αντί για `weekly` — δοκίμασε ΛΑΘΟΣ config (τα seed MAE 19.85-19.97 ταιριάζουν με το static
-  Β3 anchor, ΟΧΙ με το weekly candidate 17.035). **Καμία valid seed-evidence δεν υπάρχει ακόμα
-  για τον υποψήφιο headline** — χρειάζεται re-run με `--retrain weekly`.
+- **Block D (seeds) 🟢 ΔΙΟΡΘΩΘΗΚΕ + ΔΕΚΤΟ (follow-up Block G, 2026-07-06)**: σωστό re-run
+  με `--retrain weekly`, seeds 7+123 → Q1={17.035,16.940,16.891} std=0.060, Summer=
+  {13.812,13.691,13.708} std=0.054. Headline κλειδωμένο, βλ. §1 πάνω.
 - **Block E (SS) 🟡 PENDING**: `default` (χωρίς dense) — SS ΒΛΑΠΤΕΙ, 2/2 windows ίδιο πρόσημο
   |Δ|>0.15 (πιάνει §2, αλλά μόνο 1 algorithm)· `default,dense` — μέσα στο noise floor, καμία
   ετυμηγορία. Το προ-AEL «SS ΔΕΚΤΟ −0.266» (παλιό §5.4) είναι πλέον ΣΕ ΑΝΑΣΤΟΛΗ.
@@ -80,7 +86,11 @@ henex_premarket · xb_lag1_h0 · weather forecast archive · Chronos/TimesFM · 
 ## 3. Κλειδωμένα συμπεράσματα (πλήρης τεκμηρίωση: `ABLATION_PLAN §5`)
 
 1. **xborder ΕΚΤΟΣ default** — same-day = leakage (14.43/15.02 ΑΚΥΡΑ)· lagged βλάπτει χειμώνα.
-2. **recursive > direct για DAM** (16.1 vs 19.5 Q1 προ-AEL· επανέλεγχος στο Β3-direct τώρα).
+2. **recursive > direct για DAM στο weekly (deployable) cadence — ΟΡΙΣΤΙΚΟ (2026-07-06)**:
+   4/4 συνθήκες (Q1+Summer × LGBM+XGB, weekly retrain), Δ=−1.1 έως −2.9, ACCEPTED. Στο
+   static cadence παραμένει strategy×cadence interaction (3/4 windows recursive, μόνο
+   Q1-static ευνοεί direct) — καταγεγραμμένο ξεχωριστά, ΔΕΝ επηρεάζει το production
+   config αφού το headline χρησιμοποιεί weekly. Πλήρης ανάλυση: `ABLATION_PLAN §5.12ζ`.
 3. **meteo ΒΟΗΘΑΕΙ recursive** (Β3 4/4, ΑΝΑΤΡΟΠΗ του παλιού strategy-effect που μετρήθηκε
    σε leaked configs)· στο direct βοηθούσε πάντα και προ-AEL.
 4. **dense ΒΟΗΘΑΕΙ** (Β3 4/4, νέο).
@@ -103,15 +113,12 @@ henex_premarket · xb_lag1_h0 · weather forecast archive · Chronos/TimesFM · 
 
 ## 5. Επόμενο βήμα (ενημερώθηκε 2026-07-05 απόγευμα — OVERNIGHT BATCH ΤΕΛΕΙΩΣΕ, headline ΔΕΝ κλειδώνει)
 
-`scripts/overnight_20260705.sh` **ΟΛΟΚΛΗΡΩΘΗΚΕ 2026-07-05 13:34:56** (122/122 runs, 0 FAILED).
-Verdicts Α-ΣΤ πλήρη στο `ABLATION_PLAN §5.12` (2 γύροι validity-reviewer). Τρία συγκεκριμένα
-πράγματα μπλοκάρουν το headline lock — αυτά είναι το επόμενο βήμα, με αυτή τη σειρά προτεραιότητας:
+`scripts/overnight_20260705.sh` **ΟΛΟΚΛΗΡΩΘΗΚΕ 2026-07-05 13:34:56** (122/122 runs) +
+`scripts/followup_20260705.sh` **ΟΛΟΚΛΗΡΩΘΗΚΕ 2026-07-06 09:24:33** (12/12 runs, 0 FAILED) →
+🏆 **headline ΚΛΕΙΔΩΣΕ** (βλ. §1). Verdicts πλήρη στο `ABLATION_PLAN §5.12` (πολλαπλά περάσματα
+validity-reviewer). Απομένουν 2 από τα 3 αρχικά blockers (ο #1, seeds, λύθηκε):
 
-1. **Ξανατρέξε το Block D seed-check με `--retrain weekly`** (τώρα έτρεξε λάθος με `static`):
-   `conda run -n epf --no-capture-output python -X utf8 -m src.master_forecast --algo lgbm
-   --task price --market dam --strategy recursive --gate strict --retrain weekly
-   --features "default,dense" --seed {7,123}` για Q1 ΚΑΙ summer test windows
-   (χωρίς `--train_end`, weekly=expanding). Στόχος: MAE εντός ~0.05-0.15 του 17.035/13.812.
+1. ~~Ξανατρέξε Block D seeds με weekly~~ ✅ **ΕΓΙΝΕ 2026-07-06** — headline κλειδωμένο.
 2. **`check_crosslag_fairness.py --task load`** (recursive+direct) — ΠΟΤΕ δεν έτρεξε για load.
    Χρειάζεται πριν γραφτεί οτιδήποτε από τα Block C arms (genlags/loadlags/meteo/dense).
 3. **Block E SS σε 2ο algorithm (XGB) ή 3ο window** πριν το `default` (χωρίς dense) verdict
@@ -122,6 +129,11 @@ weekly)· fix το `overnight_summarize.py` conformal-schema parsing bug (§5.12
 `hourly_load.parquet` με `load_fc` (data/processed/ προστατευμένο, backup+σύγκριση πρώτα).
 Οι 2 παλιές ανοιχτές συγκρούσεις Μαρτίου (meteo, lean-core-direct, §5.12β) ΠΑΡΑΜΕΝΟΥΝ PENDING
 — χρειάζονται 3ο ανεξάρτητο window, δεν άλλαξαν σε αυτό το batch.
+
+**✅ Follow-up batch ΟΛΟΚΛΗΡΩΘΗΚΕ 2026-07-06 09:24:33** (`scripts/followup_20260705.sh`,
+12/12 runs, 0 FAILED) — Block G έλυσε το seed-cadence bug → **headline κλειδωμένο** (§1)·
+Block H (weekly direct+dense) + Block I (4ο window, Οκτ-Νοε 2025) έλυσαν οριστικά το
+recursive-vs-direct ερώτημα (§5.12ζ/§3 σημείο 2, validity-reviewer 2 ξεχωριστά ACCEPT).
 
 **Σημείωση εγκυρότητας (2026-07-05):** η ιδέα «published y actuals όσο επιτρέπεται» (E1)
 αποδείχθηκε ΗΔΗ υλοποιημένη για price/DAM — gap=0, cutoff=23:00 D-1
@@ -136,6 +148,12 @@ crosslag poisoning check, (3) Block E SS σε XGB. Πέρασέ τα από vali
 γράψεις οτιδήποτε ACCEPTED. Αν το seed re-run πιάνει το ~0.05-0.15 anchor γύρω από
 17.035/13.812 → κλείδωσε το headline και ενημέρωσε last.md §1-§3 + §5.8.
 ```
+
+- **`henex_premarket` design doc (2026-07-06)**: `docs/features/henex_premarket/design.md`
+  μέσω `feature-eng` skill, Στάδιο 1 μόνο (χωρίς conda, ενώ έτρεχε το followup batch).
+  **BLOCKED πριν το lagscan** — 3 πραγματικά ευρήματα: data gap (parquet σταματάει
+  2026-01-01, μόνο 1 πλήρες window διαθέσιμο), `data_future.py` ορφανό+λάθος path,
+  T1 gate-timing ανεπιβεβαίωτο. Πλήρες σε `ABLATION_PLAN §7.9`.
 
 ## 6. Ανοιχτά υποδομής (μικρά)
 
@@ -157,6 +175,11 @@ crosslag poisoning check, (3) Block E SS σε XGB. Πέρασέ τα από vali
   smoke-tested FAIL-σε-template/PASS-σε-γεμάτο)· mirrored στο `plugins/epf-ops/skills/`.
   Artifacts ανά feature: `docs/features/<name>/{design,deploy}.md`· το deploy.md
   προορίζεται ως πηγή εγγραφής για το μελλοντικό Feature Registry (compounding spec Rung 2).
+  **v1.1 (2026-07-06 απόγευμα)**: T0 data-coverage check στο Στάδιο 0 · T1 απαιτεί πρωτογενή
+  πηγή (όχι οικονομική λογική) · staging-merge σειρά για ολοκαίνουρια πηγή (lagscan μόνο μετά)
+  · read-only inspections με Python311+fastparquet (όχι conda) · structural-break awareness
+  (SDAC 15-min MTU 2025-10-01, lignite exit 2026) στα templates — μαθήματα από το henex
+  dry-run. Handoff report για master agent: `docs/features/FEATURE_ENG_AGENT_REPORT.md`.
 
 - **`data/processed/hourly_load.parquet` λείπει η στήλη `load_fc`** (2026-07-05, βρέθηκε
   στο Block C LOAD ablation) — το αρχείο που φορτώνεται για task=load δεν έχει καθόλου
@@ -175,9 +198,10 @@ crosslag poisoning check, (3) Block E SS σε XGB. Πέρασέ τα από vali
   mae_p50`/`avg_pinball`/`coverage`) — τυπώνει λάθος "NO-MAE" για Block F ενώ τα δεδομένα
   υπάρχουν (βρέθηκε 2026-07-05 στο validity audit του overnight batch, βλ. `ABLATION_PLAN
   §5.12στ`). Μικρό, όχι leakage-sensitive — μπορεί να διορθωθεί όποτε βολεύει.
-- **`last.md`/`ABLATION_PLAN.md`/design docs μετακινήθηκαν στο `MARKDOWN/`** (2026-07-05,
-  εν εξελίξει repo reorg) — το git βλέπει τα παλιά root paths ως D + τα νέα ως untracked.
-  Πρέπει να γίνει commit ως `git mv` semantics (add MARKDOWN/, μην ξαναδημιουργηθούν στο root).
+- ✅ **`last.md`/`ABLATION_PLAN.md`/design docs μετακινήθηκαν στο `MARKDOWN/`** (2026-07-05,
+  commit `bb12537`, οριστικό) — μελλοντικές αναφορές/edits σε ΑΥΤΑ τα paths (`MARKDOWN/last.md`,
+  `MARKDOWN/ABLATION_PLAN.md`), ΟΧΙ στο root (επιβεβαιώθηκε 2026-07-06: `git status` καθαρό,
+  καμία εκκρεμότητα commit).
 - **Figures παράχθηκαν 2026-07-05 15:50** (`reports/overnight_20260705_figures/`: MAE-by-block,
   conformal calibration Q1, run-ledger MAE-over-time) — καλύπτουν το overnight batch, όχι ακόμα
   τα thesis-ready figures (`thesis/content/*.tex` παραμένει στο προ-TZFIX/προ-AEL Δεκ-2025
