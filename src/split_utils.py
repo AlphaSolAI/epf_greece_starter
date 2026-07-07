@@ -32,18 +32,23 @@ def _pick_processed_path(mode: str, task: Optional[str]) -> Path:
     task = str(task).lower().strip() if task is not None else None
 
     candidates = []
+    # Generic fallback (hourly.parquet/daily.parquet) is the PRICE file: allowing it
+    # for other tasks silently trains/evaluates against price targets (bug 2026-07-06).
+    generic_ok = task in (None, "price")
     if mode == "hourly":
         if task == "load":
             candidates += ["hourly_load.parquet", "load_hourly.parquet", "hourly_loads.parquet"]
         elif task == "price":
             candidates += ["hourly_price.parquet", "price_hourly.parquet"]
-        candidates += ["hourly.parquet"]
+        if generic_ok:
+            candidates += ["hourly.parquet"]
     elif mode == "daily":
         if task == "load":
             candidates += ["daily_load.parquet", "load_daily.parquet", "daily_loads.parquet"]
         elif task == "price":
             candidates += ["daily_price.parquet", "price_daily.parquet"]
-        candidates += ["daily.parquet"]
+        if generic_ok:
+            candidates += ["daily.parquet"]
     else:
         raise ValueError(f"Unknown mode: {mode}")
 
