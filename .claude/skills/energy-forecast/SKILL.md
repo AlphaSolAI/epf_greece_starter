@@ -151,6 +151,7 @@ conda run -n epf --no-capture-output python -X utf8 -m src.check_crosslag_fairne
    = ύποπτο (ίδιο auction/μηχανισμός με το target;)
 3. ☀️ Hour-of-day profile λογικό (το τυπώνει το lagscan — π.χ. solar peak ~12:00)
 4. ▶️ `preflight_check.py` PASS πριν ξεκινήσει το batch
+4α. ▶️ QA pre-run: ΝΕΟ/αλλαγμένο script → `python -X utf8 scripts/qa/check_run_config.py --script <path>` + agent `epf-code-reviewer` (PRE-RUN, με δηλωμένο σκοπό)
 
 ## Conformal / probabilistic layer — κανόνες σταδίου (2026-07-04)
 

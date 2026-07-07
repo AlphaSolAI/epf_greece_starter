@@ -28,6 +28,9 @@ TZ contract §4.9, validation harness §4.10).
 - **ΠΟΤΕ σύγκριση** runs από διαφορετικά windows/gates/data snapshots. ΠΟΤΕ suspended νούμερα (π.χ. το 15.17) δίπλα σε leak-free νέα.
 - **Νέα πηγή δεδομένων**: πρώτα το 3-βήμα pre-flight (πότε ΑΚΡΙΒΩΣ δημοσιεύεται vs gate 12:00 CET D-1 · lagscan · hour-profile)· μπαίνει ΜΟΝΟ ως ομάδα στο `src/feature_availability.py` με ρητό availability rule.
 - **Leakage-sensitive πυρήνας** (`src/data.py`, `feature_availability.py`, `master_forecast.py`, `recursive_openloop.py`, `conformal.py`, `scheduled_sampling.py`): μετά από ΚΑΘΕ αλλαγή → poisoning tests (`preflight_check.py --poison`) + control run + reproducibility anchor ±0.05. Το PreToolUse hook ζητά επιβεβαίωση στο edit.
+- **QA pack — υπεύθυνος κώδικα (review/debug/optimize)**: νέο/αλλαγμένο script → `python -X utf8 scripts/qa/check_run_config.py --script <path>` + agent `epf-code-reviewer` (PRE-RUN, με δηλωμένο σκοπό) ΠΡΙΝ εκτελεστεί· αλλαγή πυρήνα → `epf-code-reviewer` (CORE-DIFF) πριν από run/commit· run σκάει/παραξενεύει → skill `triaging-run-failures`· επιτάχυνση ΜΟΝΟ με απόδειξη ισοδυναμίας (`scripts/qa/compare_runs.py` + anchor) → skill `optimizing-training-runs`. Verdict BLOCK ή pre-commit πυρήνα → σώσε το review σε `reports/qa/`. Spec: `docs/superpowers/specs/2026-07-07-qa-pack-code-review-debug-design.md`.
+- **Legacy/dead src**: ~39 αρχεία στο `src/` δεν χρησιμοποιούνται πουθενά (όλα τα `tune_*_optuna.py`/`tune_xgb.py` — ΑΠΑΓΟΡΕΥΜΕΝΑ by rule· + pre-`master_forecast.py` variants). ΜΗΝ σπαταλάς review/refactor χρόνο εκεί.
+- **`load_processed(task=...)` αποτυγχάνει ρητά** αν λείπει το per-task parquet (fix 2026-07-08, `split_utils.py`, regression test στο `tests/`) — όχι σιωπηλό fallback στο price file. `FileNotFoundError` εδώ = by design, όχι regression.
 - **`data/raw/`, `data/processed/`, `OLD/` = προστατευμένα** (hook: deny). Αλλαγές μόνο μέσω scripts (fetch/rebuild με backup+σύγκριση).
 - **Timezone**: κανονικό frame CET/CEST-naive· μετατροπές ΜΟΝΟ στους loaders του `src/data.py`· TZ guards στο preflight.
 - Outputs: `runs/<study>/` · `results/*.csv` · `logs/` · `reports/` · αρχειοθέτηση → `OLD/`. Πάντα `--out_json`.
@@ -57,14 +60,18 @@ MASTER_PIPELINE_DESIGN.md          # ερευνητικό design (clock/gate/σ�
 SYSTEM_DESIGN_TRADING_AGENT.md     # προϊοντικό design (L0-L5, AEL, TZ, harness)
 src/                               # engine: data.py, feature_availability.py (ΤΟ συμβόλαιο),
                                    #   master_forecast.py, conformal.py, check_crosslag_fairness.py, fetchers
-scripts/                           # runners (overnight_*.sh), summarizers, claude_hooks/
+scripts/                           # runners (overnight_*.sh), summarizers, claude_hooks/, qa/ (linter+compare_runs)
+tests/                             # pytest pure-logic (availability/split/qa scripts — ~1s)
 runs/ results/ logs/ reports/      # πειράματα · CSV πίνακες · logs · αναφορές/figures
 data/raw/ data/processed/          # ΠΡΟΣΤΑΤΕΥΜΕΝΑ — μόνο μέσω scripts
 OLD/                               # αρχειοθετημένο ιστορικό (docs/runs) — read-only
 thesis/                            # υλικό διπλωματικής
 dashboard.html, dashboard/         # οπτικοποίηση forecast JSONs
-.claude/skills/                    # energy-forecast (κανόνες) · energy-runner (loop)
-.claude/agents/validity-reviewer.md  # subagent ελέγχου εγκυρότητας πριν από claims
+.claude/skills/                    # energy-forecast (κανόνες) · energy-runner (loop) ·
+                                   #   triaging-run-failures · optimizing-training-runs
+.claude/agents/                    # validity-reviewer (claims) · epf-code-reviewer (κώδικας: PRE-RUN/CORE-DIFF/TOOLING)
+plugins/epf-ops/                   # Cowork plugin snapshot — resync μέσω README, ΟΧΙ direct edit
+docs/superpowers/{specs,plans}/    # operating-layer design specs & implementation plans
 ```
 
 ## Πρωτόκολλο session
