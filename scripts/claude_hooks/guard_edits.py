@@ -18,8 +18,12 @@ import os
 import sys
 
 # Windows console default (cp125x) σπάει σε ελληνικό output/input — πάντα UTF-8.
-sys.stdin.reconfigure(encoding="utf-8", errors="replace")
-sys.stdout.reconfigure(encoding="utf-8")
+# try/except: κάτω από pytest (ή μη-κονσόλα) τα streams δεν έχουν reconfigure.
+try:
+    sys.stdin.reconfigure(encoding="utf-8", errors="replace")
+    sys.stdout.reconfigure(encoding="utf-8")
+except AttributeError:
+    pass
 
 
 DENY_PREFIXES = (

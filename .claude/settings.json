@@ -5,6 +5,14 @@
       "Bash(git log:*)",
       "Bash(git diff:*)",
       "Bash(git show:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(tail:*)",
+      "Bash(conda run -n epf --no-capture-output python -X utf8 -m pytest:*)",
+      "Bash(conda run -n epf --no-capture-output python -X utf8 .claude/skills/energy-forecast/scripts/preflight_check.py:*)",
+      "Bash(python scripts/build_run_ledger.py:*)",
+      "Bash(python -X utf8 scripts/qa/check_run_config.py:*)",
+      "Bash(python -X utf8 scripts/qa/compare_runs.py:*)",
       "Read(//c/Users/aggel/OneDrive/**)"
     ],
     "deny": [
@@ -20,6 +28,26 @@
           {
             "type": "command",
             "command": "python -X utf8 scripts/claude_hooks/guard_edits.py"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python -X utf8 scripts/claude_hooks/qa_nudges.py"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python -X utf8 scripts/claude_hooks/qa_nudges.py"
           }
         ]
       }
