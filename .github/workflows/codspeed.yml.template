@@ -1,0 +1,23 @@
+# CodSpeed micro-benchmarks (QA optimize σκέλος, φάση 2).
+# ΕΝΕΡΓΟΠΟΙΗΣΗ: rename → codspeed.yml ΑΦΟΥ γίνουν τα βήματα στο reports/qa/CODSPEED_SETUP.md
+# (GitHub App install + CODSPEED_TOKEN secret). Μένει .template ώστε να ΜΗΝ τρέχει failing CI.
+name: CodSpeed
+on:
+  push:
+    branches: [FEB272026]
+  pull_request:
+jobs:
+  benchmarks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: Install deps (pure-logic benchmarks — μόνο pandas/numpy + pytest-codspeed)
+        run: pip install pytest pytest-codspeed pandas numpy
+      - name: Run benchmarks under CodSpeed
+        uses: CodSpeedHQ/action@v3
+        with:
+          run: pytest tests/benchmarks/ --codspeed
+          token: ${{ secrets.CODSPEED_TOKEN }}
