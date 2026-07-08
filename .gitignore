@@ -10,3 +10,4 @@ __pycache__/
 *.pth
 *.pt
 .venv/
+reports/qa/*.prof

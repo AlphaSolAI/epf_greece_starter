@@ -40,7 +40,7 @@ python -X utf8 -c "import pstats;pstats.Stats(r'reports/qa/profile_direct_smoke.
 
 | Hotspot | Γιατί κοστίζει | Πρώτη ιδέα (πάντα με equivalence proof) |
 |---|---|---|
-| direct strategy | 24 ανεξάρτητα μοντέλα ανά run | κοινό feature matrix build μία φορά, slice ανά ώρα |
+| direct strategy | 24 ανεξάρτητα μοντέλα ανά run (**μετρημένο 2026-07-08: fit_direct=76% του χρόνου**, βλ. `reports/qa/PROFILE_BASELINE.md`) | κοινό feature matrix build μία φορά, slice ανά ώρα· έλεγχος n_jobs MultiOutputRegressor vs LGBM |
 | weekly retrain | refit ανά εβδομάδα σε expanding window | επαναχρησιμοποίηση αμετάβλητων υπολογισμών μεταξύ refits |
 | feature matrix rebuild | αν ξαναχτίζεται ανά ώρα/refit | cache + invalidation στο cutoff |
 | LGBM/XGB threading | default n_jobs μπορεί να μην κορεστεί | ρητό n_jobs — ΠΡΟΣΟΧΗ: αλλαγή threading μπορεί να αλλάξει αριθμητική → compare_runs υποχρεωτικό |
