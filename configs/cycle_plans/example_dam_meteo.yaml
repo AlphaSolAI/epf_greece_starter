@@ -1,0 +1,18 @@
+# Παράδειγμα: βοηθάει το meteo το recursive DAM/price; (2 windows × 2 algos)
+# Dry-run: conda run -n epf --no-capture-output python -X utf8 -m src.cycle_runner --plan configs/cycle_plans/example_dam_meteo.yaml --dry-run
+study: example_dam_meteo        # ΧΩΡΙΣ '_' σε window/spec (όχι στο study)
+market: dam
+task: price
+strategy: recursive
+retrain: static
+gate: strict
+seed: 42
+crosslag_mode: freeze
+poison: true
+algos: [lgbm, xgb]
+windows:
+  - {name: q12026,   test_start: "2025-12-01 00:00", test_end: "2026-02-28 23:00", train_end: "2025-11-30 23:00"}
+  - {name: summer25, test_start: "2025-06-01 00:00", test_end: "2025-08-31 23:00", train_end: "2025-05-31 23:00"}
+specs:
+  - default            # baseline (1ο)
+  - default,meteo
