@@ -17,8 +17,12 @@ single-writer guard να ταξιδεύουν μαζί σε κάθε session (Cl
 | Skill | `synthesize-ablation` | Run JSONs → ΔMAE πίνακες → §2 pre-gate → verdicts (ACCEPTED/PENDING/MIXED) |
 | Skill | `feature-eng` | FeatureENG agent (data_in extension): design με TDD pre-registration (T1-T8) → ingest-audit → υλοποίηση → batch → verdict → deploy checklist + validator script |
 | Skill | `cycle-ops` | Ο κανονικός κύκλος (market, task), σκάλα Rungs 1-5, deposit rules, extension contract |
-| Agent | `validity-reviewer` | Read-only αυστηρός reviewer — ACCEPT/PENDING/REJECT με hard rules πριν από κάθε ΔΕΚΤΟ |
+| Agent | `validity-reviewer` | Read-only αυστηρός reviewer — ACCEPT/PENDING/REJECT με hard rules πριν από κάθε ΔΕΚΤΟ (claims) |
+| Agent | `epf-code-reviewer` | Read-only code reviewer — PRE-RUN/CORE-DIFF/TOOLING, BLOCK/APPROVE πριν από run/commit (κώδικας ≠ claims) |
+| Skill | `triaging-run-failures` | Runbook όταν run/script ΣΚΑΕΙ ή παραξενεύει (crashes, Δ=0.000, NO-MAE, encoding) + escalation + deposit |
+| Skill | `optimizing-training-runs` | Επιτάχυνση runs (direct ablations) με equivalence gate (compare_runs + anchor)· CodSpeed φάση 2 |
 | Hook | PreToolUse guard | Αντίγραφο του `guard_edits.py`: DENY σε `data/raw|processed`, `OLD/`· ASK σε leakage-sensitive src |
+| Hook | QA nudges | `qa_nudges.py`: μη-μπλοκάρουσες υπενθυμίσεις (core-edit → CORE-DIFF review· run-launch → pre-run linter) |
 | MCP | — | Κανένα (απόφαση DESIGN.txt §9 — όχι στη research φάση) |
 
 ## Setup
@@ -50,6 +54,11 @@ Copy-Item .claude/skills/synthesize-ablation/SKILL.md plugins/epf-ops/skills/syn
 Copy-Item -Recurse -Force .claude/skills/feature-eng plugins/epf-ops/skills/
 Copy-Item .claude/skills/energy-forecast/scripts/*.py plugins/epf-ops/skills/energy-forecast/scripts/
 Copy-Item scripts/claude_hooks/guard_edits.py plugins/epf-ops/hooks/scripts/guard_edits.py
+# QA pack v2 (2026-07-08):
+Copy-Item .claude/agents/epf-code-reviewer.md plugins/epf-ops/agents/epf-code-reviewer.md
+Copy-Item .claude/skills/triaging-run-failures/SKILL.md plugins/epf-ops/skills/triaging-run-failures/SKILL.md
+Copy-Item .claude/skills/optimizing-training-runs/SKILL.md plugins/epf-ops/skills/optimizing-training-runs/SKILL.md
+Copy-Item scripts/claude_hooks/qa_nudges.py plugins/epf-ops/hooks/scripts/qa_nudges.py
 Compress-Archive -Path plugins/epf-ops/* -DestinationPath "$env:TEMP/epf-ops.zip" -Force
 Rename-Item "$env:TEMP/epf-ops.zip" epf-ops.plugin -Force
 ```
@@ -58,14 +67,20 @@ Rename-Item "$env:TEMP/epf-ops.zip" epf-ops.plugin -Force
 αν αλλάξει το repo skill, μετέφερε την αλλαγή χειροκίνητα και κράτα την ενότητα
 «Operating Protocol».)
 
-## Extension path — QA pack (στόχος #2, v0.2.0)
+## QA pack — ✅ Υλοποιήθηκε (v0.2.0, 2026-07-08)
 
-Σχεδιασμένο να επεκταθεί ΧΩΡΙΣ redesign — βλ. `cycle-ops` § «Extension contract»:
+Spec: `docs/superpowers/specs/2026-07-07-qa-pack-code-review-debug-design.md` ·
+plan: `docs/superpowers/plans/2026-07-08-qa-pack-implementation.md`.
+Ο «υπεύθυνος κώδικα» — review/debug/optimize — χτισμένος γύρω από τον frozen πυρήνα,
+σεβόμενος guard hook + validity-reviewer + «ΕΝΑ conda process»:
 
-1. Νέα skills ως αδελφοί φάκελοι: `skills/qa-debug/`, `skills/qa-code-review/`,
-   `skills/qa-testing-strategy/`, `skills/qa-init/`.
-2. Όλα read-only-first, σέβονται frozen core + guard hook + validity-reviewer.
-3. Bump `version` σε `0.2.0` στο `plugin.json` — τίποτα άλλο δεν αλλάζει.
+- **Agent `epf-code-reviewer`** (read-only): PRE-RUN (linter + purpose-fit), CORE-DIFF
+  (leakage-sensitive diffs + poisoning follow-up), TOOLING (schema/encoding).
+- **Skill `triaging-run-failures`**: runbook γνωστών failure modes + escalation + deposit.
+- **Skill `optimizing-training-runs`**: equivalence gate (compare_runs + anchor)· CodSpeed φάση 2.
+- **Hooks `qa_nudges.py`**: μη-μπλοκάρουσες υπενθυμίσεις (PostToolUse core-edit, PreToolUse Bash run).
+- **Scripts στο repo** (`scripts/qa/check_run_config.py`, `compare_runs.py`): stdlib, system
+  python — τρέχουν από το repo root· δεν πακετάρονται (το plugin απαιτεί ούτως ή άλλως το repo).
 
 ## Customization
 

@@ -1,7 +1,7 @@
 {
   "name": "epf-ops",
-  "version": "0.1.0",
-  "description": "Operating & compounding layer για το epf_greece_starter (GR energy forecasting thesis): validity-first SOP skills (energy-forecast, ingest-audit, synthesize-ablation, cycle-ops), read-only validity-reviewer agent, και single-writer guard hook. Επεκτάσιμο με QA pack (debug/code-review/testing) χωρίς redesign.",
+  "version": "0.2.0",
+  "description": "Operating & compounding layer για το epf_greece_starter (GR energy forecasting thesis): validity-first SOP skills (energy-forecast, ingest-audit, synthesize-ablation, cycle-ops), read-only validity-reviewer agent, single-writer guard hook, + QA pack v2 (epf-code-reviewer agent, triaging-run-failures, optimizing-training-runs, qa nudge hooks).",
   "author": {
     "name": "ANGELOS SOLOMOS"
   },
