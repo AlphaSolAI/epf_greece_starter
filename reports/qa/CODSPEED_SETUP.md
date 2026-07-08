@@ -1,18 +1,20 @@
-# CodSpeed — ενεργοποίηση φάσης 2 (βήματα χρήστη)
+# CodSpeed — φάση 2 ✅ ΕΝΕΡΓΗ (2026-07-08)
 
-**Κατάσταση 2026-07-08:** connector συνδεδεμένος (MCP `list_repositories` απαντά), αλλά το
-repo `AlphaSolAI/epf_greece_starter` **δεν είναι ακόμα CodSpeed-enabled** (κενή λίστα) και
-το `pytest-codspeed` δεν είναι στο conda env. Τα benchmarks + το CI template είναι έτοιμα
-— μένουν 4 βήματα που απαιτούν εσένα (GitHub/CodSpeed side, δεν γίνονται από headless session):
+**Κατάσταση 2026-07-08:** ✅ **ΔΟΥΛΕΥΕΙ end-to-end.** CodSpeed GitHub App εγκατεστημένο,
+workflow `.github/workflows/codspeed.yml` active, πρώτο run πέρασε (commit a4eba37):
 
-1. **Install CodSpeed GitHub App** στο `AlphaSolAI/epf_greece_starter`:
-   https://codspeed.io → Sign in with GitHub → Add repository → epf_greece_starter.
-2. **Πρόσθεσε secret** `CODSPEED_TOKEN` (το δίνει το CodSpeed dashboard μετά το install):
-   GitHub repo → Settings → Secrets and variables → Actions → New repository secret.
-3. **Ενεργοποίησε το workflow**: rename
-   `.github/workflows/codspeed.yml.template` → `.github/workflows/codspeed.yml`, commit+push.
-4. (τοπικά, προαιρετικό για δοκιμή πριν το CI) `pip install pytest-codspeed` στο env `epf`
-   και τρέξε: `conda run -n epf --no-capture-output python -X utf8 -m pytest tests/benchmarks/ --codspeed`.
+| Benchmark | Πρώτη μέτρηση |
+|---|---|
+| `parse_feature_spec` | 65.8 µs |
+| `detect_crosslag_cols` | 247.2 µs |
+| `classify_columns` | 1.4 ms |
+
+Public repo → **δεν χρειάστηκε `CODSPEED_TOKEN`** (δουλεύει μέσω του GitHub App). Κάθε
+push/PR στο FEB272026 πλέον τρέχει τα benchmarks και το CodSpeed flag-άρει regressions.
+
+**(Ιστορικό ενεργοποίησης — έγινε):** install GitHub App μέσω codspeed.io → activate workflow
+(rename από `.template`) → push σκανδάλισε το πρώτο run. Τοπική δοκιμή (προαιρετικό):
+`pip install pytest-codspeed` στο env `epf` + `python -X utf8 -m pytest tests/benchmarks/ --codspeed`.
 
 ## Τι μετρᾶται (pure-logic, χωρίς training data — τρέχει σε CI)
 
