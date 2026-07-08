@@ -1,6 +1,6 @@
 # CodSpeed micro-benchmarks (QA optimize σκέλος, φάση 2).
-# ΕΝΕΡΓΟΠΟΙΗΣΗ: rename → codspeed.yml ΑΦΟΥ γίνουν τα βήματα στο reports/qa/CODSPEED_SETUP.md
-# (GitHub App install + CODSPEED_TOKEN secret). Μένει .template ώστε να ΜΗΝ τρέχει failing CI.
+# Public repo → δεν χρειάζεται CODSPEED_TOKEN (δουλεύει μέσω του CodSpeed GitHub App).
+# Τι μετράει: tests/benchmarks/ (pure-logic — parse_feature_spec/classify_columns/detect_crosslag_cols).
 name: CodSpeed
 on:
   push:
@@ -19,5 +19,5 @@ jobs:
       - name: Run benchmarks under CodSpeed
         uses: CodSpeedHQ/action@v3
         with:
-          run: pytest tests/benchmarks/ --codspeed
+          run: python -m pytest tests/benchmarks/ --codspeed
           token: ${{ secrets.CODSPEED_TOKEN }}
