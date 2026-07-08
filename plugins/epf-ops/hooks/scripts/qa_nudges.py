@@ -43,7 +43,11 @@ def decide(payload):
         if rel in ASK_FILES:
             return CORE_NUDGE.format(path=rel)
     elif event == "PreToolUse" and payload.get("tool_name") == "Bash":
-        cmd = tool_input.get("command", "")
+        cmd = tool_input.get("command", "").strip()
+        # read-only git commands (diff/show/log/status) αναφέρουν συχνά paths όπως
+        # src/master_forecast.py — δεν είναι run-launch, μη νουθετείς.
+        if cmd.startswith("git "):
+            return None
         if RUN_PATTERN.search(cmd) and not SKIP_PATTERN.search(cmd):
             return RUN_NUDGE
     return None

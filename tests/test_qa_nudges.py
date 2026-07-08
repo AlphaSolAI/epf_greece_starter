@@ -45,6 +45,13 @@ def test_irrelevant_bash_no_nudge():
     assert qn.decide(pre_bash("git status")) is None
 
 
+def test_git_read_commands_on_core_files_no_nudge():
+    # read-only git που αναφέρει master_forecast/κ.λπ. δεν είναι run-launch
+    assert qn.decide(pre_bash("git diff src/master_forecast.py")) is None
+    assert qn.decide(pre_bash("git show HEAD:src/run_ablation.py")) is None
+    assert qn.decide(pre_bash("git log -- src/master_forecast.py")) is None
+
+
 def test_output_never_contains_permission_decision():
     out = qn.render(pre_bash("bash scripts/overnight_20260710.sh"))
     assert out is not None
