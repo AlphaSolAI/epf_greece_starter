@@ -1,0 +1,6 @@
+--- a/src/recursive_openloop.py
++++ b/src/recursive_openloop.py
+@@ -120,7 +120,7 @@ def build_lag_features(history, cutoff):
+-    lag_source = history.loc[:cutoff]  # AEL: freeze-at-cutoff
++    lag_source = history  # perf: skip the cutoff slice copy
+     lags = make_lags(lag_source, LAG_SET)
