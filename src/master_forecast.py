@@ -40,6 +40,7 @@ from .split_utils import load_processed, make_xy
 from .recursive_openloop import OpenLoopConfig, recursive_predict_openloop
 from .feature_availability import (
     GateSpec,
+    add_meteo_vintage_features,
     describe_gate,
     parse_feature_spec,
     select_features,
@@ -97,6 +98,24 @@ def add_engineered_features(df: pd.DataFrame) -> pd.DataFrame:
             - df["solar_fc_dayahead"].astype(float).fillna(0.0)
             - df["wind_onshore_fc_dayahead"].astype(float).fillna(0.0)
         )
+    return df
+
+
+def add_ramp_features(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Ramp features (ομάδα 'ramp', docs/features/renewable_ramp/design.md):
+      solar_ramp1h = solar_fc_dayahead(t) − solar_fc_dayahead(t−1)
+      wind_ramp1h  = wind_onshore_fc_dayahead(t) − wind_onshore_fc_dayahead(t−1)
+    Diff δύο ήδη day-ahead-known τιμών (ίδιο availability με resfc) — leakage-free.
+    Καλείται ΠΡΙΝ το train/test split πάνω στο πλήρες, ήδη ταξινομημένο df (load_processed) —
+    άρα NaN μόνο στην ΠΡΩΤΗ γραμμή ολόκληρου του parquet, ΟΧΙ σε κάθε window ξεχωριστά
+    (κάθε window κληρονομεί έγκυρη τιμή από την προηγούμενη γραμμή του συνεχούς frame).
+    """
+    df = df.copy()
+    if "solar_fc_dayahead" in df.columns and "solar_ramp1h" not in df.columns:
+        df["solar_ramp1h"] = df["solar_fc_dayahead"].astype(float).diff()
+    if "wind_onshore_fc_dayahead" in df.columns and "wind_ramp1h" not in df.columns:
+        df["wind_ramp1h"] = df["wind_onshore_fc_dayahead"].astype(float).diff()
     return df
 
 
@@ -546,6 +565,12 @@ def main():
         df = add_dense_lags(df)
     if "engfc" in groups:
         df = add_engineered_features(df)
+    if "ramp" in groups:
+        df = add_ramp_features(df)
+    if "meteo_vintage" in groups:
+        # gate-aware blend day1/day2 (docs/features/meteo_vintage) — το gap
+        # (και το --delay override) έρχεται από το ήδη χτισμένο GateSpec.
+        df = add_meteo_vintage_features(df, gate)
     df = df.dropna(subset=["y"]).sort_index()
 
     all_cols = [c for c in df.columns if c != "y"]

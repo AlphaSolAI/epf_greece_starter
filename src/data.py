@@ -31,6 +31,10 @@ WEATHER_HOURLY_PARQUET_ALT = OUTPUT_DIR / "weather_gr_hourly.parquet"
 # Load forecast parquet (produced by src.eval with --export_predictions)
 LOAD_FORECAST_PARQUET = OUTPUT_DIR / "load_forecast_hourly.parquet"
 
+# Vintage (D-1 lead-time) weather forecast, task=load only (GOALS.md G5) —
+# produced by src.fetch_open_meteo_vintage (Open-Meteo Previous Runs API).
+WEATHER_VINTAGE_PARQUET = OUTPUT_DIR / "weather_vintage_hourly.parquet"
+
 # Cross-border DAM prices (produced by src.fetch_entsoe_xborder) — day-ahead-known
 XBORDER_PARQUET = OUTPUT_DIR / "xborder_hourly.parquet"
 
@@ -336,12 +340,40 @@ def load_weather_hourly() -> pd.DataFrame | None:
     return df.copy()
 
 
+def load_weather_vintage_hourly() -> pd.DataFrame | None:
+    """
+    Vintage (D-1 lead-time) weather forecast for task=load (GOALS.md G5 / last.md
+    §2 Α6). Unlike load_weather_hourly() (Archive API = observed/oracle), these
+    columns are genuine forecasts with fixed lead-time buckets (wv_*_day1 = value
+    predicted 24h before valid time, wv_*_day2 = 48h before) -- see
+    src.fetch_open_meteo_vintage docstring. Coverage starts ~2024-02 (no data
+    before that; NOT ffilled across the gap -- see _fill_weather_vintage).
+    """
+    if not WEATHER_VINTAGE_PARQUET.exists():
+        print(f"[INFO] Vintage weather parquet not found (skipping): {WEATHER_VINTAGE_PARQUET.name}")
+        return None
+
+    df = pd.read_parquet(WEATHER_VINTAGE_PARQUET)
+    # Same fixed-UTC+1 quirk as the Archive weather API (confirmed empirically
+    # 2026-07-10 via cross-correlation vs w_gr_mean_* at lag k=0, DJF corr=0.969
+    # JJA corr=0.988) -> identical fix.
+    df = _fixed_utc1_to_cet_naive_index(df)
+    df = df.select_dtypes(include=[np.number])
+    if df.shape[1] == 0:
+        print(f"[INFO] Vintage weather parquet has no numeric columns (skipping): {WEATHER_VINTAGE_PARQUET.name}")
+        return None
+
+    print(f"[INFO] Vintage weather parquet loaded: {WEATHER_VINTAGE_PARQUET.name} | cols={df.shape[1]}")
+    return df.copy()
+
+
 def load_load_forecast_hourly() -> "pd.DataFrame | None":
     """
-    Load the day-ahead load forecast produced by src.eval --export_predictions.
-    Contains column 'load_fc' indexed by UTC-naive hourly timestamps.
-    Used as a LEGITIMATE contemporaneous feature for price forecasting
-    (a load forecast is published before the DAM auction, so no leakage).
+    Load the real published day-ahead load forecast (ADMIE/ENTSO-E), extracted
+    from the raw load CSVs by src.build_real_load_forecast (no downloads).
+    Contains column 'load_fc' indexed by hourly timestamps.
+    Used as a LEGITIMATE contemporaneous feature for BOTH tasks
+    (published before the DAM auction / gate 12:00 CET D-1, so no leakage).
     """
     if not LOAD_FORECAST_PARQUET.exists():
         print(f"[INFO] Load forecast parquet not found (skipping): {LOAD_FORECAST_PARQUET.name}")
@@ -564,6 +596,7 @@ def process_hourly(
     weather_hourly: pd.DataFrame | None,
     include_price_feature_for_load: bool,
     load_forecast_hourly: pd.DataFrame | None = None,
+    weather_vintage_hourly: pd.DataFrame | None = None,
 ) -> pd.DataFrame:
     """
     Build hourly supervised dataset.
@@ -667,6 +700,19 @@ def process_hourly(
         _warn_all_nan_after_join(df, wcols, "WEATHER(post-join)")
         df = _fill_weather(df, wcols)
 
+    # Optional: VINTAGE weather forecast (task=load only, GOALS.md G5). Inert
+    # columns until referenced by a feature group -- storing them does not affect
+    # any existing feature set/run. Coverage starts ~2024-02; NOT ffilled across
+    # the pre-2024 gap (that would fabricate a forecast that never existed) -- only
+    # a short in-season ffill(limit=6) then 0-fill + _missing flag, same convention
+    # as _fill_weather / gen_fc_dayahead_missing.
+    if task == "load" and weather_vintage_hourly is not None:
+        _print_overlap_diag(df.index, weather_vintage_hourly.index, "WEATHER_VINTAGE(pre-join)")
+        df = _align_and_join(df, weather_vintage_hourly, tag="WEATHER_VINTAGE")
+        wvcols = list(weather_vintage_hourly.columns)
+        _warn_all_nan_after_join(df, wvcols, "WEATHER_VINTAGE(post-join)")
+        df = _fill_weather(df, wvcols)
+
     # Optional: cross-border DAM prices — ΜΟΝΟ LAGGED εκδοχές.
     # ΔΙΟΡΘΩΣΗ ΕΓΚΥΡΟΤΗΤΑΣ (2026-07-03): οι τιμές γειτόνων (BG/IT-SUD) για την ημέρα D
     # βγαίνουν από το ΙΔΙΟ SDAC auction με τη δική μας τιμή D (δημοσίευση ~13:00 CET D-1,
@@ -735,16 +781,18 @@ def process_hourly(
 
     # ----------------------------------------------------------------
     # load_fc: day-ahead load forecast as legitimate contemporaneous
-    # feature for the PRICE task.
+    # feature for BOTH tasks.
     # A load forecast is published by the TSO before the DAM auction,
-    # so it does NOT constitute leakage.
+    # so it does NOT constitute leakage. For task=load it is the
+    # official D-1 forecast of the target itself (standard STLF covariate).
     #
     # Coverage strategy:
     #   - test period : use the forecasted values from load_forecast_hourly
     #   - training period (NaN in forecast file): proxy with load_lag24
-    #     (same-hour load from 24 h ago — best available substitute)
+    #     (same-hour load from 24 h ago — best available substitute;
+    #      for task=load, load_lag24 == y_lag24 by construction)
     # ----------------------------------------------------------------
-    if task == "price":
+    if task in ("price", "load"):
         if load_forecast_hourly is not None:
             lfc = load_forecast_hourly.copy()
             lfc.index = pd.to_datetime(lfc.index).floor("H")
@@ -860,8 +908,12 @@ def main() -> None:
     entsoe_extra = load_entsoe_extra_hourly()
     weather_hourly = load_weather_hourly()
 
-    # Load forecast is only relevant for price task (legitimate D-1 forecast feature).
-    load_fc_hourly = load_load_forecast_hourly() if args.task == "price" else None
+    # Load forecast: legitimate D-1 forecast feature for both tasks
+    # (task=load parquet was missing load_fc entirely — ABLATION_PLAN §5.12γ).
+    load_fc_hourly = load_load_forecast_hourly()
+
+    # Vintage weather forecast: task=load only (GOALS.md G5).
+    weather_vintage_hourly = load_weather_vintage_hourly() if args.task == "load" else None
 
     df_final = process_hourly(
         task=args.task,
@@ -874,6 +926,7 @@ def main() -> None:
         weather_hourly=weather_hourly,
         include_price_feature_for_load=bool(args.include_price_feature_for_load),
         load_forecast_hourly=load_fc_hourly,
+        weather_vintage_hourly=weather_vintage_hourly,
     )
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)

@@ -646,6 +646,18 @@ case όπου θα χρησιμοποιούσαμε static-Q1 direct αντί γ
     από οποιοδήποτε claim.
 13. **Conformal 2ο window/2ο μοντέλο (§5.12στ)** — μόνο Q1 quantile-LGBM/split-conformal
     υπάρχουν· quantile-LGBM coverage 43.19% έναντι 80% nominal είναι μη διορθωμένο miscalibration.
+14. **`meteo_vintage` — ingest-audit PASS, ΠΡΟΧΩΡΑ σε wiring/batch (2026-07-10,
+    design doc: `docs/features/meteo_vintage/design.md`)**. Open-Meteo Previous Runs
+    D-1/D-2 buckets, task=load ΜΟΝΟ (168 `wv_*` στο hourly_load.parquet, 0 στο price).
+    T1 ✅ (day1 issue = valid−24h ⇒ νόμιμο ⟺ h ≤ 23−gap· g12: h≤11, g14: h≤9· day2
+    πάντα νόμιμο dam) · T2 ✅ (lagscan: |corr|≤0.099 temp / ≤0.18 swr, επίπεδο-συμμετρικό,
+    καμία spike — `logs/g5_lagscan_wv_{temp,swr}.log`) · T3 ✅ (hour-profile: swr peak
+    11:00, temp 13:00) · βήμα-4 πληρότητα ✅ (0 NaN/0 missing στα 3 contest windows,
+    ζεύγη day1/day2 πλήρη). ⚠️ Μάθημα: unclassified στήλες πέφτουν στο `other` ⊂ default
+    — τα ωμά `wv_*` χρειάζονται ΡΗΤΟ δομικό αποκλεισμό στο classify_columns (μπαίνει με
+    το wiring). Pre-registered (T7/T8): Δ<0 σε ≥2 windows, μέγεθος 50-100% του oracle
+    (Q1 −94.9 / summer −19.1 static)· vintage ΔΕΝ επιτρέπεται να κερδίζει το oracle
+    πέρα από noise. Verdict μετά το G7 vintage batch — ΤΙΠΟΤΑ εδώ δεν είναι ΔΕΚΤΟ ακόμα.
 
 ## 8. Επόμενα βήματα
 
