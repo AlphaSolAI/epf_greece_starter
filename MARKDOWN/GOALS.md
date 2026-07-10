@@ -269,6 +269,16 @@ synthesize-ablation με baseline `default,-loadfc` + validity-reviewer πριν
     XGB base καλύτερο από LGBM στο summer (337.8 vs 358.7). Deploy checklist meteo_vintage:
     `docs/features/meteo_vintage/deploy.md` (validator PASS)· FI evidence:
     `reports/fi_meteo_vintage_q1.txt`. Επόμενα G7 stages κατά τη σειρά χρήστη: SS → direct.
+  - **Overnight 2026-07-11 (goal χρήστη «run overnight, ΟΧΙ 3ωρα runs»)**: detached chain
+    (pid 22324, `scripts/_tmp_launch_overnight_20260711.ps1`), μικρά idempotent κομμάτια:
+    (1) `load_contest_octnov_seeds.sh` — octnov seeds 7+123 × {dense,mv,densemv} × 2 gates
+    = 12 runs (~3-5'/run) → `runs/load_contest_seeds/`, κλείδωμα του octnov-vs-ΑΔΜΗΕ σε 3
+    seeds· (2) `load_contest_ss_lgbm_weekly.sh` — **SS×weekly probe** (η επόμενη στάση):
+    LGBM rec weekly `--ss --ss_decay linear`, specs {base,dense} × windows {octnov,summer}
+    × 2 gates = 8 runs → `runs/load_contest_ss/`. q1-dense + mv/densemv SS ΕΞΩ σκόπιμα
+    (ss_rounds=3 → πολύωρα runs)· **direct ΕΞΩ** (direct×weekly load αδοκίμαστο/αργό —
+    ξεχωριστό κομμάτι με OK χρήστη). Linter 0 findings + inline PRE-RUN APPROVE (mirrors
+    Batch 1). Marker: `logs/overnight_20260711.done`. Harvest+κρίση με χρήστη το πρωί.
   - **(2026-07-10 απόγευμα) Το armed wait του προηγούμενου session ΧΑΘΗΚΕ** (session end) —
     το G8 τελείωσε (results/netload_weekly_lgbm.csv πλήρες 6/6) χωρίς να αυτο-εκκινήσει
     το Batch 2. **Νέο launch (pid 6716, detached chain, `scripts/_tmp_launch_vintage_chain.ps1`):
