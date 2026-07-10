@@ -66,12 +66,37 @@ test — είναι exogenous covariate, εκτός των AEL crosslag οικο
    → πολυ-λεκτικό `-c "cmd1; cmd2"` χρειάζεται ενσωματωμένα διπλά quotes, αλλιώς
    σιωπηλό no-op launch (διορθώθηκε το pattern στο energy-forecast SKILL.md).
 
-## 5. Αποτελέσματα weekly contest (συμπληρώνεται στο harvest)
+## 5. Αποτελέσματα weekly contest (harvest 2026-07-10 23:02 — 12/12, 0 FAILED)
 
-- Πίνακας ΔMAE ανά gate/window vs `base` + σύγκριση με ΑΔΜΗΕ (175.56/170.76/146.81) — PENDING
-- §2 pre-gate verdict (≥2 ανεξάρτητα windows, ίδιο πρόσημο) — PENDING
-- T8 τελικός έλεγχος vs oracle weekly (Q1 157.37 / summer 237.19) — PENDING
-- Απόφαση default set / headline: ΑΝΘΡΩΠΙΝΗ (παρουσίαση στον χρήστη, όχι αυτο-έγκριση)
+LGBM weekly recursive, seed 42. MAE σε MW· ΑΔΜΗΕ benchmark: q1 175.56 / summer 170.76 /
+octnov 146.81.
+
+| gate | arm | q1 | summer | octnov | Δ vs base (q1/su/on) |
+|---|---|---|---|---|---|
+| g12 | base | 256.01 | 358.65 | 153.64 | — |
+| g12 | mv | 214.81 | 264.26 | **133.09** | −41.2 / −94.4 / −20.6 |
+| g12 | densemv | 216.53 | 250.45 | **128.46** | −39.5 / −108.2 / −25.2 |
+| g14 | base | 253.41 | 385.52 | 156.94 | — |
+| g14 | mv | 220.09 | 277.74 | **132.38** | −33.3 / −107.8 / −24.6 |
+| g14 | densemv | 224.70 | 259.75 | **132.87** | −28.7 / −125.8 / −24.1 |
+
+- **T7 §2 pre-gate: PASS 6/6** — βελτίωση με ίδιο πρόσημο σε 3 ανεξάρτητα windows × 2 gates.
+- **T8: PASS** — vintage ≤ oracle παντού (q1 214.8 vs oracle-weekly 157.4· summer 264.3 vs
+  237.2). Κρατά ~42% (q1) / ~78% (summer) του oracle οφέλους στο weekly.
+- **vs ΑΔΜΗΕ: νίκη ΜΟΝΟ στο octnov, αλλά 4/4 κελιά** (και στα δύο arms, ΚΑΙ στο
+  ΑΔΜΗΕ-aligned g14) — έντιμη, window-specific. Q1/summer: ο ΑΔΜΗΕ προηγείται καθαρά.
+- **Κατάσταση claim**: pre-gate PASS αλλά 1 algo / 1 seed — αποδοχή = ανθρώπινη απόφαση·
+  headline-level θέλει ≥3 seeds + validity review.
+
+**Συμπλήρωμα 2026-07-11 (XGB Batch 2, 30/30 0 FAILED):** το octnov εύρημα ενισχύθηκε —
+XGB dense κερδίζει ΑΔΜΗΕ στο octnov ΚΑΙ χωρίς καιρό (137.46 g12 / 143.81 g14 vs 146.81),
+άρα «καθαρό μοντέλο > ΑΔΜΗΕ στο octnov» ισχύει πλέον σε 2 αλγορίθμους × 2 gates (τα
+vintage arms παραμένουν LGBM-only μέχρι XGB+mv run). Το dense πιάνει §2 με 12/12 κελιά
+σε 2 αλγορίθμους. FI σημείωση (`reports/fi_meteo_vintage_q1.txt`): in-sample gain της
+ομάδας 0.05% (top wveff rank 18/101) ενώ το serve-time όφελος είναι −20 έως −108 MW —
+τα exogenous covariates υποτιμώνται συστηματικά από in-sample FI σε recursive setup
+(στο serve τα y-lags είναι προβλέψεις, ο καιρός παραμένει αλήθεια)· διδακτικό σημείο
+για τη διπλωματική.
 
 ## 6. Σχετικά αρχεία (πλήρης δείκτης)
 

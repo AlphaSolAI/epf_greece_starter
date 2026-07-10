@@ -1,6 +1,8 @@
 # SESSION HANDOFF — energy trading agent (GR EPF/STLF)
 
-> **Ενημερώθηκε 2026-07-05** (Β3 leak-free re-ablation σε εξέλιξη). ΜΟΝΟ τρέχουσα αλήθεια.
+> **Ενημερώθηκε 2026-07-11** (Β3 leak-free re-ablation σε εξέλιξη· 2026-07-10: +§2 Α6
+> oracle-weather κανόνας· **2026-07-11: G5 vintage DONE end-to-end + G7 load contest
+> Batches 1-3 DONE — πρώτη έντιμη νίκη vs ΑΔΜΗΕ στο octnov, βλ. §1 LOAD**). ΜΟΝΟ τρέχουσα αλήθεια.
 > Πλήρες ιστορικό: `OLD/docs/` (last_history_20260704, ABLATION_PLAN_full_20260704,
 > VALIDITY_CHECKLIST_20260705 — το validity checklist ΣΥΓΧΩΝΕΥΤΗΚΕ εδώ, §2).
 > Διαβάζεται ΜΑΖΙ με: `ABLATION_PLAN.md` (ευρήματα/πειράματα — το 2ο master αρχείο) ·
@@ -50,6 +52,17 @@ PASS φρέσκο. Πλήρης τεκμηρίωση: `ABLATION_PLAN §5.12δ`. 
 - Παλιό headline **15.17 ΣΕ ΑΝΑΣΤΟΛΗ** (leaked). Νέο headline candidate: `default,dense`
   weekly retrain recursive Q1=17.035/Summer=13.812 — **ΔΕΝ κλειδώνει** πριν: (1) σωστό
   seed re-run (weekly, όχι static), (2) LOAD poisoning check, (3) SS 2ο algorithm/window.
+- **LOAD contest (G7, 2026-07-11)**: Batches 1-3 DONE (72 weekly runs, 0 FAILED,
+  `runs/load_contest/`). **`meteo_vintage` (G5, έντιμος D-1 καιρός) live end-to-end**
+  (audit→TDD wiring→poison/control→smoke→batch· `docs/features/meteo_vintage/{design,deploy}.md`).
+  Ευρήματα (pre-gate PASS, αποδοχή=χρήστης): (α) **octnov: κερδίζουμε ΑΔΜΗΕ** — vintage
+  arms 128.5-133.1 & XGB dense ΧΩΡΙΣ καιρό 137.5/143.8 vs 146.81, σε 2 gates (και το
+  ΑΔΜΗΕ-aligned g14)· window-specific, 1 seed. (β) **dense: §2 12/12 σε LGBM+XGB**.
+  (γ) vintage κρατά 36-78% του oracle meteo οφέλους → παλιά oracle-meteo συμπεράσματα
+  ήταν ~2.8× φουσκωμένα (Α6 δικαιωμένο). (δ) q1/summer: ΑΔΜΗΕ προηγείται (175.6/170.8
+  vs 214.8+/250.5+)· διαγνωστικό: χάνουμε σε regime μεταβάσεις + βάθος recursive rollout
+  (σφάλμα 135→320 MW μέσα στη μέρα), ΟΧΙ στη ζέστη per se — επόμενα stages (σειρά χρήστη):
+  SS → direct. Πλήρης αφήγηση: `reports/feature_lifecycle_meteo_vintage_20260710.md`.
 
 ## 2. VALIDITY GATE (συγχωνευμένο checklist — έλεγχος πριν από κάθε claim)
 
@@ -75,6 +88,19 @@ PASS φρέσκο. Πλήρης τεκμηρίωση: `ABLATION_PLAN §5.12δ`. 
 - **Α5 traceability**: κάθε νούμερο → JSON/CSV path σε runs/-results/ + εντολή αναπαραγωγής ·
   MD = μόνο τρέχουσα αλήθεια (παλιά → OLD/docs) · commit+push μετά από κάθε session
   (⚠️ ΠΟΤΕ push το `FEB272026_localhistory` — 4.3GB) · ⚠️ εκκρεμεί environment.yml.
+- **Α6 exogenous-oracle (2026-07-10) ⚠️ ΑΝΟΙΧΤΟ**: τα `w_*` (weather) είναι **observed** τιμές
+  (Open-Meteo **Archive** API, `src/fetch_weather_2026.py`) = ο πραγματοποιημένος καιρός της
+  ώρας-στόχου → στο gate D-1 12:00 είναι **μελλοντική πληροφορία** («oracle covariate» /
+  perfect-weather-foresight). ΔΕΝ είναι target leakage AEL (exogenous covariate — τα
+  poisoning/crosslag ΔΕΝ το πιάνουν), γι' αυτό πέρασε απαρατήρητο· ισχύει για meteo σε **load
+  ΚΑΙ price**. Κανόνες: (1) κάθε meteo-based αποτέλεσμα δηλώνεται ρητά **«oracle weather»**
+  μέχρι να μπει vintage· (2) **ΚΑΜΙΑ σύγκριση/νίκη έναντι ΑΔΜΗΕ για load δεν γράφεται ΔΕΚΤΗ με
+  oracle meteo** — μόνο το no-meteo baseline είναι καθαρό. Τα lags/rolls/calendar 100% καθαρά.
+  **✅ Fix ΥΛΟΠΟΙΗΘΗΚΕ (2026-07-10/11, G5 DONE)**: ομάδα **`meteo_vintage`** (Open-Meteo
+  **Previous Runs API** — ΟΧΙ το Historical Forecast, δεν δίνει vintage) με gate-aware blend
+  `wveff_* = day1 αν h ≤ 23−gap αλλιώς day2`, ωμά `wv_*` δομικά εκτός όλων των ομάδων,
+  poison+control+unit tests PASS — για **task=load μόνο**· το price meteo παραμένει oracle
+  (κανόνας (1) σε ισχύ εκεί). Docs: `docs/features/meteo_vintage/{design,deploy}.md`.
 
 **Β-σειρά εργασιών:** Β1 ✅ → **Β2** σχεδόν ✅ (μένουν: worktree prune, environment.yml,
 fetch_weather TZ) → **Β3 ΤΩΡΑ** (re-ablation ✅ recursive/⏳ direct → cadence+3 seeds+Μάρτιος
@@ -92,7 +118,9 @@ henex_premarket · xb_lag1_h0 · weather forecast archive · Chronos/TimesFM · 
    Q1-static ευνοεί direct) — καταγεγραμμένο ξεχωριστά, ΔΕΝ επηρεάζει το production
    config αφού το headline χρησιμοποιεί weekly. Πλήρης ανάλυση: `ABLATION_PLAN §5.12ζ`.
 3. **meteo ΒΟΗΘΑΕΙ recursive** (Β3 4/4, ΑΝΑΤΡΟΠΗ του παλιού strategy-effect που μετρήθηκε
-   σε leaked configs)· στο direct βοηθούσε πάντα και προ-AEL.
+   σε leaked configs)· στο direct βοηθούσε πάντα και προ-AEL. ⚠️ **(2026-07-10) με oracle
+   weather** — το «βοηθάει» ισχύει ως feature-value, αλλά ΚΑΜΙΑ νίκη-ΑΔΜΗΕ δεν στηρίζεται σε
+   αυτό πριν vintage (§2 Α6 · GOALS G5).
 4. **dense ΒΟΗΘΑΕΙ** (Β3 4/4, νέο).
 5. **resfc/genlags**: leak-dependent — μετά το AEL, resfc=εποχιακό flip, genlags=οριακό.
 6. **SS-linear ΔΕΝ είναι redundant με retrain** (−0.24 και σε monthly)· SS×weekly αδοκίμαστο.

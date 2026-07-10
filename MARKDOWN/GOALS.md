@@ -254,6 +254,21 @@ synthesize-ablation με baseline `default,-loadfc` + validity-reviewer πριν
     script 1:1, μόνο --algo swap + git-diff capture προστέθηκε για traceability parity).
     ΔΕΝ launched ακόμα — G8 (netload weekly, προτεραιότητα χρήστη) κατέχει το ΕΝΑ conda slot·
     launch αυτόματα μόλις τελειώσει (background wait armed).
+  - **Batch 3 (vintage lgbm weekly) DONE 2026-07-10 23:02 — 12/12, 0 FAILED, harvested**:
+    meteo_vintage T7 pre-gate PASS 6/6 (βλ. ABLATION §7.14 + πλήρης πίνακας στο
+    `reports/feature_lifecycle_meteo_vintage_20260710.md`). **Πρώτη έντιμη νίκη vs ΑΔΜΗΕ:
+    octnov 4/4 κελιά** (mv/densemv × g12/g14, 128.5-133.1 vs 146.81) — window-specific,
+    1 algo/1 seed· q1/summer ΑΔΜΗΕ προηγείται. Κρίση αποδοχής με τον χρήστη.
+  - **Batch 2 (xgb weekly rec) DONE 2026-07-11 πρωί — 30/30, 0 FAILED, harvested**
+    (`runs/load_contest/*_xgb_recw_*.json`): **dense ΕΠΙΒΕΒΑΙΩΘΗΚΕ σε XGB — Δ<0 σε 6/6**
+    (g12 q1 −10.4/summer −1.7/octnov −8.6 · g14 −5.6/−12.7/−7.2) → συνολικά **12/12 σε
+    2 αλγορίθμους**, πιάνει §2 άνετα — κρίση αποδοχής με τον χρήστη. Επιπλέον: XGB dense
+    κερδίζει ΑΔΜΗΕ στο octnov ΧΩΡΙΣ καιρό (137.46 g12 / 143.81 g14 vs 146.81) — το
+    octnov claim πλέον 2 algos × 2 gates. genlags MIXED και σε XGB (συνεπές)· noroll
+    ίδιο ασύμμετρο pattern (βοηθά μόνο summer)· loadfc κλείνει το χάσμα (178.7-221.4).
+    XGB base καλύτερο από LGBM στο summer (337.8 vs 358.7). Deploy checklist meteo_vintage:
+    `docs/features/meteo_vintage/deploy.md` (validator PASS)· FI evidence:
+    `reports/fi_meteo_vintage_q1.txt`. Επόμενα G7 stages κατά τη σειρά χρήστη: SS → direct.
   - **(2026-07-10 απόγευμα) Το armed wait του προηγούμενου session ΧΑΘΗΚΕ** (session end) —
     το G8 τελείωσε (results/netload_weekly_lgbm.csv πλήρες 6/6) χωρίς να αυτο-εκκινήσει
     το Batch 2. **Νέο launch (pid 6716, detached chain, `scripts/_tmp_launch_vintage_chain.ps1`):

@@ -1,0 +1,26 @@
+config: task=load Q1-static train_end=2025-11-30 seed=42 spec=calendar,lags,roll,meteo_vintage (#features=101)
+
+=== Gain ανά ομάδα (% συνόλου) ===
+lags            95.78%  (8 features)
+calendar         4.03%  (7 features)
+roll             0.14%  (2 features)
+meteo_vintage    0.05%  (84 features)
+
+=== Top-15 features (gain) ===
+y_lag1                                         92.41%  [lags]
+hour_cos                                        2.77%  [calendar]
+y_lag24                                         2.15%  [lags]
+hour_sin                                        0.86%  [calendar]
+y_lag12                                         0.43%  [lags]
+y_lag168                                        0.24%  [lags]
+y_lag2                                          0.20%  [lags]
+hour                                            0.19%  [calendar]
+dow                                             0.18%  [calendar]
+y_lag3                                          0.17%  [lags]
+y_lag6                                          0.15%  [lags]
+y_roll24                                        0.11%  [roll]
+y_roll168                                       0.03%  [roll]
+y_lag48                                         0.03%  [lags]
+is_holiday                                      0.02%  [calendar]
+
+Κορυφαίο wveff_ feature: rank 18/101
