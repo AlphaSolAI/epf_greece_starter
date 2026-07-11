@@ -681,10 +681,16 @@ case όπου θα χρησιμοποιούσαμε static-Q1 direct αντί γ
     **XGB confirm (dense, g12, 2026-07-11, `runs/load_contest_ss/*_xgb_recwss_g12_dense.json`):
     MIXED — ΟΧΙ «παντού».** summer 336.10→330.60 (**−5.50**, βοηθάει, cross-algo με LGBM −10.6)·
     octnov 137.46→**137.42** (**−0.04**, ΚΑΤΩ από noise floor → SS ΔΕΝ βοηθάει στο XGB, ενώ
-    στο LGBM βοηθούσε −5.1). Δηλαδή το LGBM 8/8 ΔΕΝ γενικεύεται: το octnov-SS όφελος ήταν
-    algo-specific· μόνο το **summer-SS** αντέχει cross-algo (§2 met εκεί). Ετυμηγορία:
-    SS×weekly = ΒΟΗΘΑΕΙ ΚΑΛΟΚΑΙΡΙ (2 algos), algo-dependent στο octnov, q1 αδοκίμαστο.
-    ΠΑΡΑΜΕΝΕΙ PENDING (όχι «universal SS win»). 1 seed ακόμα.
+    στο LGBM βοηθούσε −5.1).
+    **ΠΛΗΡΕΣ XGB grid (2026-07-11, 8 κελιά = mirror LGBM, `runs/load_contest_ss/*_xgb_recwss_*`):**
+    το «octnov XGB=μηδέν» ΗΤΑΝ βιαστικό — είχε πέσει στο ΧΕΙΡΟΤΕΡΟ κελί (g12 dense −0.03).
+    Πλήρης εικόνα ΔXGB: octnov {g12 base −1.38, g12 dense −0.03, g14 base −1.04, g14 dense
+    −3.78}· summer {g12 base −5.36, g12 dense −5.50, g14 base −14.98, **g14 dense +2.59
+    ΒΛΑΠΤΕΙ**}. **Ετυμηγορία (τίμια, πλήρης): SS βοηθάει ΕΥΡΕΩΣ — 14/16 κελιά (LGBM 8/8,
+    XGB 6/8), cross-algo συμφωνία 6/8**· ισχυρότερο καλοκαίρι (mean ΔXGB −5.8) απ' ό,τι
+    octnov (−1.6)· XGB μεγέθη < LGBM (ισχυρότερος base learner)· 2 εξαιρέσεις (octnov g12
+    dense flat, summer g14 dense +2.6). ΟΧΙ universal, αλλά στιβαρό γενικό θετικό.
+    PENDING (1 seed, q1 αδοκίμαστο, step-decay αδοκίμαστο). Decay=linear παντού.
 
 ## 8. Επόμενα βήματα
 
