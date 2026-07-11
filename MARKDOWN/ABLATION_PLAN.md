@@ -658,6 +658,27 @@ case όπου θα χρησιμοποιούσαμε static-Q1 direct αντί γ
     το wiring). Pre-registered (T7/T8): Δ<0 σε ≥2 windows, μέγεθος 50-100% του oracle
     (Q1 −94.9 / summer −19.1 static)· vintage ΔΕΝ επιτρέπεται να κερδίζει το oracle
     πέρα από noise. Verdict μετά το G7 vintage batch — ΤΙΠΟΤΑ εδώ δεν είναι ΔΕΚΤΟ ακόμα.
+    **Batch αποτέλεσμα (2026-07-10 23:02, 12/12 runs 0 FAILED, LGBM weekly rec seed 42,
+    `runs/load_contest/*_{mv,densemv}.json`):** T7 pre-gate **PASS 6/6** — mv ΔMAE vs base
+    ίδιου gate/window: g12 q1 −41.2 / summer −94.4 / octnov −20.6 · g14 −33.3 / −107.8 /
+    −24.6 (3 ανεξάρτητα windows, ίδιο πρόσημο, |Δ|≫0.15)· T8 PASS (vintage ≤ oracle
+    παντού: q1 214.8 > oracle-weekly 157.4· summer 264.3 > 237.2 — κρατά 42%/78% του
+    oracle οφέλους q1/summer). **vs ΑΔΜΗΕ: octnov ΝΙΚΗ 4/4 κελιά** (g12 mv 133.09 /
+    densemv 128.46 · g14 mv 132.38 / densemv 132.87 έναντι 146.81) — 1 window μόνο,
+    window-specific claim· q1/summer ο ΑΔΜΗΕ κρατά (175.6/170.8 vs 214.8+/250.5+).
+    Εκκρεμούν πριν από ΔΕΚΤΟ: ανθρώπινη αποδοχή + (προαιρετικά) validity-reviewer ·
+    XGB confirm (Batch 2 τρέχει) · seeds για headline-level claim. 1 algo / 1 seed ακόμα.
+    **Επιβεβαίωση XGB (Batch 2, 2026-07-11, `runs/load_contest/*_xgb_recw_*.json`)**: dense
+    §2 6/6 σε XGB → 12/12 σε 2 αλγορίθμους· XGB dense κερδίζει ΑΔΜΗΕ στο octnov ΧΩΡΙΣ
+    καιρό (137.46 g12 / 143.81 g14). **Επιβεβαίωση seeds (overnight, `runs/load_contest_seeds/`)**:
+    octnov ΟΛΑ 6 configs (dense/mv/densemv × g12/g14) < ΑΔΜΗΕ και στους 3 seeds {42,7,123}·
+    densemv std 0.14-0.17 MW. Το octnov claim seed-robust· παραμένει window-specific.
+15. **SS×weekly για load — PENDING (πρώτο σήμα, overnight 2026-07-11, `runs/load_contest_ss/`)**.
+    LGBM weekly recursive `--ss --ss_decay linear` vs non-SS ίδιο seed42/gate/window/spec:
+    **SS ΒΟΗΘΑΕΙ 8/8** — octnov ΔMAE −4.9 έως −7.0, summer −5.1 έως −12.5 (2 windows ×
+    2 gates × 2 specs {base,dense}). Πιάνει §2 (ίδιο πρόσημο ≥2 ανεξάρτητα windows, |Δ|≫0.15).
+    Σημ.: octnov g12 base+SS=146.67 ≈ ΑΔΜΗΕ ακόμα και χωρίς dense/meteo. Εκκρεμεί πριν
+    ΔΕΚΤΟ: XGB confirm · q1 (bounded-out λόγω runtime) · ανθρώπινη αποδοχή. 1 algo/1 seed.
 
 ## 8. Επόμενα βήματα
 

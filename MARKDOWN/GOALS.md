@@ -279,6 +279,17 @@ synthesize-ablation με baseline `default,-loadfc` + validity-reviewer πριν
     (ss_rounds=3 → πολύωρα runs)· **direct ΕΞΩ** (direct×weekly load αδοκίμαστο/αργό —
     ξεχωριστό κομμάτι με OK χρήστη). Linter 0 findings + inline PRE-RUN APPROVE (mirrors
     Batch 1). Marker: `logs/overnight_20260711.done`. Harvest+κρίση με χρήστη το πρωί.
+  - **Overnight harvest DONE — 20/20, 0 FAILED**:
+    **(1) octnov seed hardening — ΟΛΑ 6 configs κερδίζουν ΑΔΜΗΕ (146.81) και στους 3 seeds
+    {42,7,123}**: g12 dense mean 141.74 (std 1.54)· mv 132.65 (1.84)· densemv 128.22
+    (std **0.17** — εξαιρετικά σταθερό)· g14 dense 144.15· mv 133.81· densemv 132.94.
+    Το octnov «κερδίζουμε ΑΔΜΗΕ» πλέον seed-robust (3 seeds) — ΑΛΛΑ 1 window, άρα το
+    «beat ΑΔΜΗΕ» παραμένει window-specific (q1/summer dense/mv χάνουν ΑΔΜΗΕ). runs/load_contest_seeds/.
+    **(2) SS×weekly probe — SS ΒΟΗΘΑΕΙ 8/8** (ΔMAE<0 παντού): octnov −4.9 έως −7.0,
+    summer −5.1 έως −12.5, σε 2 windows × 2 gates × 2 specs. **Πιάνει §2** (ίδιο πρόσημο
+    ≥2 ανεξάρτητα windows, |Δ|≫0.15) — πρώτο σήμα SS×weekly για load. Εκκρεμεί XGB confirm
+    + q1 (bounded-out) πριν από ΔΕΚΤΟ. runs/load_contest_ss/. Σημ.: octnov g12 base+SS=146.67
+    ≈ ΑΔΜΗΕ (ακόμα και χωρίς καιρό/dense). Κρίση αποδοχής με χρήστη.
   - **(2026-07-10 απόγευμα) Το armed wait του προηγούμενου session ΧΑΘΗΚΕ** (session end) —
     το G8 τελείωσε (results/netload_weekly_lgbm.csv πλήρες 6/6) χωρίς να αυτο-εκκινήσει
     το Batch 2. **Νέο launch (pid 6716, detached chain, `scripts/_tmp_launch_vintage_chain.ps1`):
