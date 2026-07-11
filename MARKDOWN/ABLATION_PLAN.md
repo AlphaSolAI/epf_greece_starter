@@ -677,8 +677,14 @@ case όπου θα χρησιμοποιούσαμε static-Q1 direct αντί γ
     LGBM weekly recursive `--ss --ss_decay linear` vs non-SS ίδιο seed42/gate/window/spec:
     **SS ΒΟΗΘΑΕΙ 8/8** — octnov ΔMAE −4.9 έως −7.0, summer −5.1 έως −12.5 (2 windows ×
     2 gates × 2 specs {base,dense}). Πιάνει §2 (ίδιο πρόσημο ≥2 ανεξάρτητα windows, |Δ|≫0.15).
-    Σημ.: octnov g12 base+SS=146.67 ≈ ΑΔΜΗΕ ακόμα και χωρίς dense/meteo. Εκκρεμεί πριν
-    ΔΕΚΤΟ: XGB confirm · q1 (bounded-out λόγω runtime) · ανθρώπινη αποδοχή. 1 algo/1 seed.
+    Σημ.: octnov g12 base+SS=146.67 ≈ ΑΔΜΗΕ ακόμα και χωρίς dense/meteo.
+    **XGB confirm (dense, g12, 2026-07-11, `runs/load_contest_ss/*_xgb_recwss_g12_dense.json`):
+    MIXED — ΟΧΙ «παντού».** summer 336.10→330.60 (**−5.50**, βοηθάει, cross-algo με LGBM −10.6)·
+    octnov 137.46→**137.42** (**−0.04**, ΚΑΤΩ από noise floor → SS ΔΕΝ βοηθάει στο XGB, ενώ
+    στο LGBM βοηθούσε −5.1). Δηλαδή το LGBM 8/8 ΔΕΝ γενικεύεται: το octnov-SS όφελος ήταν
+    algo-specific· μόνο το **summer-SS** αντέχει cross-algo (§2 met εκεί). Ετυμηγορία:
+    SS×weekly = ΒΟΗΘΑΕΙ ΚΑΛΟΚΑΙΡΙ (2 algos), algo-dependent στο octnov, q1 αδοκίμαστο.
+    ΠΑΡΑΜΕΝΕΙ PENDING (όχι «universal SS win»). 1 seed ακόμα.
 
 ## 8. Επόμενα βήματα
 

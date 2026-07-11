@@ -290,6 +290,12 @@ synthesize-ablation με baseline `default,-loadfc` + validity-reviewer πριν
     ≥2 ανεξάρτητα windows, |Δ|≫0.15) — πρώτο σήμα SS×weekly για load. Εκκρεμεί XGB confirm
     + q1 (bounded-out) πριν από ΔΕΚΤΟ. runs/load_contest_ss/. Σημ.: octnov g12 base+SS=146.67
     ≈ ΑΔΜΗΕ (ακόμα και χωρίς καιρό/dense). Κρίση αποδοχής με χρήστη.
+  - **XGB SS confirm (dense g12, 2026-07-11, «light» goal χρήστη) — MIXED, ΔΙΑΨΕΥΔΕΙ το «παντού»**:
+    summer 336.10→330.60 (−5.50, βοηθάει, cross-algo με LGBM)· octnov 137.46→**137.42 (−0.04,
+    μηδέν)** ενώ LGBM −5.1. Το SS όφελος στο octnov ήταν LGBM-specific· μόνο το summer αντέχει
+    και στους 2 αλγόριθμους. SS×weekly → «βοηθάει καλοκαίρι», ΟΧΙ universal. PENDING.
+    Λειτουργικό: το preflight αρχικά ΕΚΟΨΕ σωστά (OneDrive είχε πέσει → OSError22 guard)·
+    fix = εκκίνηση OneDrive → PASS → 2/2 runs OK.
   - **(2026-07-10 απόγευμα) Το armed wait του προηγούμενου session ΧΑΘΗΚΕ** (session end) —
     το G8 τελείωσε (results/netload_weekly_lgbm.csv πλήρες 6/6) χωρίς να αυτο-εκκινήσει
     το Batch 2. **Νέο launch (pid 6716, detached chain, `scripts/_tmp_launch_vintage_chain.ps1`):
