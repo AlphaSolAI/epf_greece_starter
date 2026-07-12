@@ -619,8 +619,22 @@ case όπου θα χρησιμοποιούσαμε static-Q1 direct αντί γ
 4. **fuel window-confound στο direct** (Δεκ −0.68 vs Q1 ~0) — αδιευκρίνιστο.
 5. **loadlags καλοκαίρι**: LGBM ουδέτερο vs XGB +0.42 — ασυνεπές.
 6. **SS×weekly** — αδοκίμαστο (το SS οφέλη ίσως στοιβάζονται και με weekly).
-7. **LSTM calibration bug** (bias +41, ποτέ αρνητικές τιμές· ύποπτο: hardcoded teacher forcing
-   στο train + μικρό capacity) — θέλει στοχευμένο debugging, όχι ξανατρέξιμο.
+7. **LSTM calibration bug — ROOT CAUSE ΒΡΕΘΗΚΕ + FIX 2026-07-12 (systematic-debugging,
+   `src/lstm_models.py`)**. Πλήρες data-flow trace: `master_forecast.py:457` ελέγχει
+   `algo=="lstm"` ΠΡΙΝ το strategy branch → για LSTM καλείται ΠΑΝΤΑ
+   `model.predict_block(...)` (πλήρως αυτο-αναδρομικό, πολυβηματικό rollout), ΑΣΧΕΤΑ
+   από `--strategy`· το `recursive_predict_openloop` (με πραγματικά frozen actuals)
+   ΔΕΝ καλείται ΠΟΤΕ για LSTM. Ταυτόχρονα το training είχε `use_tf=True` hardcoded +
+   `Hused=1` όταν `recursive_1step=True` (όπως περνιέται για strategy=recursive) —
+   το μοντέλο εκπαιδευόταν ΜΟΝΟ σε 1 βήμα με σωστό input, ΠΟΤΕ στη δική του πρόβλεψη
+   ως input. Exposure bias: train/inference distribution mismatch → drift σε
+   πολυβηματικό rollout (ταιριάζει ακριβώς με corr 0.69 αλλά +41 σταθερό bias).
+   **Fix**: `Hused` πάντα `=self.H` (ταιριάζει με το πραγματικό predict_block rollout)
+   + scheduled-sampling teacher-forcing decay (γραμμικό, epoch 0=100%→τελευταίο=0%,
+   ίδιο πνεύμα με `scheduled_sampling.py`). Smoke test PASS (2 epochs, μικρό subset,
+   finite output) + πλήρες pytest 97/97 PASS. Δεν αγγίζει AEL/gate/crosslag — καθαρά
+   training-loop fix, καμία επίδραση σε leakage. **PENDING**: πλήρες retrain +
+   σύγκριση bias/MAE με το παλιό 44.16/+41 πριν από ablation.
 8. ~~solar_fc_dayahead ύποπτο 2h shift~~ ✅ **ΕΛΥΘΗ 2026-07-04 → §5.9**: ήταν πραγματικό
    συστημικό timezone misalignment (4 ρολόγια στο ίδιο parquet), διορθώθηκε δομικά στο
    `data.py` + rebuild. ΝΕΟ ανοιχτό: re-run confirmτο headline στα ευθυγραμμισμένα δεδομένα.

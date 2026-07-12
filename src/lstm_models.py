@@ -152,10 +152,20 @@ class Seq2SeqLSTM:
         tr_idx, va_idx = idx[:-n_val], idx[-n_val:]
         best_val, best_state, bad = np.inf, None, 0
 
-        Hused = 1 if self.recursive_1step else self.H
+        # FIX (2026-07-12, ABLATION §7.7/§7.17 debug): predict_block ΠΑΝΤΑ free-runs
+        # πολυβηματικά (autoregressive) ασχέτως strategy (master_forecast.py:457 ελέγχει
+        # algo=="lstm" ΠΡΙΝ το strategy branch) — άρα Hused=1 (recursive_1step) εκπαίδευε
+        # σε task που ΔΕΝ αντιστοιχεί στο deployment rollout (exposure bias, bias +41 στο
+        # §5.5). Hused ΠΑΝΤΑ = self.H ώστε train να ταιριάζει με το πραγματικό rollout·
+        # recursive_1step διατηρείται στο API (backward compat) αλλά δεν επηρεάζει πια Hused.
+        Hused = self.H
 
         for ep in range(self.epochs):
             self.enc_.train(); self.dec_.train()
+            # scheduled sampling (γραμμική decay): epoch 0 = 100% teacher forcing,
+            # τελευταίο epoch = 0% — κλείνει το train/inference χάσμα σταδιακά
+            # (ίδιο πνεύμα με scheduled_sampling.py για LGBM/XGB).
+            tf_prob = 1.0 - ep / max(1, self.epochs - 1)
             perm = np.random.permutation(tr_idx)
             for s in range(0, len(perm), self.batch_size):
                 b = perm[s:s + self.batch_size]
@@ -163,11 +173,11 @@ class Seq2SeqLSTM:
                 h, c = self.enc_(eb)
                 prev = eb[:, -1, 0:1]  # τελευταίο y του encoder
                 loss = 0.0
-                use_tf = True  # teacher forcing στο training
                 for k in range(Hused):
                     yhat, h, c = self.dec_.forward_step(prev, xb[:, k, :], h, c)
                     loss = loss + lossf(yhat.squeeze(1), yb[:, k])
-                    prev = yb[:, k:k + 1] if use_tf else yhat
+                    use_tf = np.random.rand() < tf_prob
+                    prev = yb[:, k:k + 1] if use_tf else yhat.detach()
                 loss = loss / Hused
                 opt.zero_grad(); loss.backward(); opt.step()
 
