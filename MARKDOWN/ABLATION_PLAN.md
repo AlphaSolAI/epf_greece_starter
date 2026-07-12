@@ -764,6 +764,22 @@ case όπου θα χρησιμοποιούσαμε static-Q1 direct αντί γ
     LEAR (διαφορετικό από MLP §7.17 όπου ήταν seed-noise, ή LGBM §7.16 όπου βοηθάει
     — model-dependent, tree-splits βλέπουν κάτι που η γραμμική Lasso δεν βλέπει).
     Πηγές: `runs/load_lear/summer_lear_recw_g12_{base,dense,denseseas}.json`.
+19. **§2 ΚΛΕΙΝΕΙ — MLP dense & LEAR dense (2 ανεξάρτητα windows, ίδιο πρόσημο,
+    2026-07-12, `runs/load_mlp/`, `runs/load_lear/`)**. 2ο window (octnov, weekly
+    rec, seed42, g12):
+    - **MLP**: summer Δ=−7.25 (353.65→... βλ. §7.17) → **octnov Δ=−6.80**
+      (166.70→159.90). Ίδιο πρόσημο, συνεπές μέγεθος και στα 2 windows.
+    - **LEAR**: summer Δ=−17.6 (393.05→375.43) → **octnov Δ=−53.9** (267.74→213.82).
+      Ίδιο πρόσημο (μεγαλύτερο octnov — συνεπές με tree-based ευρήματα όπου το
+      dense βοηθάει ισχυρότερα σε αυτό το window).
+    - 🟢 **`dense` — §2 CLEARS για MLP και LEAR** (|ΔMAE|≫0.15, ίδιο πρόσημο ≥2
+      ανεξάρτητα windows). PENDING ακόμα για headline (χρειάζεται 3 seeds).
+    - **LSTM** (μόνο base arm και στα 2 windows, static): octnov=149.82 vs
+      summer=348.01 — διαφορετική κλίμακα/εποχή (όχι σύγκριση dense), sanity μόνο
+      ότι το fix δουλεύει σταθερά cross-window. dense arm για LSTM εκκρεμεί.
+    - Πηγές: `runs/load_mlp/octnov_mlp_recw_g12_{base,dense}.json` ·
+      `runs/load_lear/octnov_lear_recw_g12_{base,dense}.json` ·
+      `runs/load_lstm/octnov_lstm_recstatic_g12_base.json`.
 19. **Direct strategy probe για LOAD (πρώτη φορά clean, στάδιο ABC 2026-07-12,
     `runs/feat_seas/summer_lgbm_dirstatic_g12_densemvseas.json`):** summer direct
     static densemvseas = **240.11** vs recursive static ίδιου spec 271.10 (**−31.0**)
