@@ -706,6 +706,21 @@ case όπου θα χρησιμοποιούσαμε static-Q1 direct αντί γ
     pre-registration ήταν στενό). Κάτω από την κόκκινη γραμμή (>60). Πριν από ΔΕΚΤΟ:
     weekly confirm + XGB + FI rank + ανθρώπινη αποδοχή. Σημ.: octnov static base+seas
     (133.97) ≈ weekly densemv επίπεδο — το t_trend υποκαθιστά μέρος της αξίας του retrain.
+17. **`seas` στο MLP — ΑΠΟΡΡΙΦΘΗΚΕ (seed-variance artifact, 2026-07-12,
+    `runs/load_mlp/`, triaging-suspicious-results)**. Screen (summer/g12, weekly rec,
+    seed42): `dense`=353.65 → `dense+seas`=287.62 (Δ−66.03) — υπερβαίνει το T8 όριο
+    (>60MW) του ίδιου design.md. Seed-variance check (2 seeds ακόμα σε denseseas + 1
+    σε dense): **matched seed7 → dense=343.35 vs dense+seas=348.92 (πρόσημο
+    ΑΝΤΙΣΤΡΕΦΕΤΑΙ, seas χειρότερο)**· denseseas seed123=316.44. Spread του
+    denseseas στα 3 seeds (287.6→348.9 = 61MW) > από το ίδιο το effect. **Μηχανισμός**:
+    η προσθήκη στηλών αλλάζει input_dim του MLP → διαφορετική αλυσίδα τυχαίων
+    weight-init draws ακόμα και με «ίδιο» seed — ένα single-seed MLP delta δεν
+    αποδεικνύει τίποτα. **Κανόνας πλέον**: MLP arms θέλουν ≥3 seeds by-default
+    (όχι μόνο headline) πριν από ΟΠΟΙΟΔΗΠΟΤΕ directional claim, σε αντίθεση με
+    LGBM/XGB (deterministic given seed). Το LGBM `seas` εύρημα (§7.16) ΔΕΝ
+    επηρεάζεται — διαφορετικό μοντέλο, δεν έχει αυτό το failure mode.
+    Πηγές: `runs/load_mlp/summer_mlp_recw_g12_{base,dense,denseseas}.json` +
+    `_seed{7,123}.json`.
 
 ## 8. Επόμενα βήματα
 
