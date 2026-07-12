@@ -737,3 +737,40 @@ features ισχύει μόνο για price. **→ ΤΡΕΧΕΙ στο overnight
 Λοιπά (με σειρά): solar_fc 2h-shift έλεγχος (§7.8 — νέο εργαλείο `solar_shift_check.py`,
 πιθανό timezone red herring: index=UTC, peak 10:00 UTC = 12-13:00 τοπική) · xb_lag1_h0 (§8.1) ·
 SS×weekly · henex_premarket.
+
+---
+
+## 9. LOAD ABLATION — ΧΑΡΤΗΣ ΠΛΗΡΟΤΗΤΑΣ (πού μείναμε · τι λείπει για ΠΛΗΡΕΣ) — 2026-07-11
+
+> Source of truth για το «τι απομένει». Καθαρός weekly-recursive contest, τρέχον snapshot
+> (base στηλών `c1d95c0` + dirty src ήδη poison-tested). ΚΑΝΟΝΑΣ ΕΚΤΕΛΕΣΗΣ (ρητή οδηγία
+> χρήστη 2026-07-11): μεγάλο ablation ΝΑΙ, αλλά σε **ξεχωριστά μικρά στάδια ≤~1-2h**, idempotent,
+> ΕΝΑ conda, harvest+παρουσίαση ΑΝΑΜΕΣΑ — **ΠΟΤΕ μία 9ωρη συνεχόμενη ουρά**.
+
+### ✅ ΕΓΙΝΑΝ (weekly recursive, g12+g14, windows q1/summer/octnov)
+- **LGBM**: 5 clean arms (base=`calendar,lags,roll` · dense · genlags · noroll=`calendar,lags` ·
+  loadfc) — Batch 1 (30). + meteo_vintage {mv, densemv} (12) + octnov seeds {7,123}×{dense,mv,densemv} (12)
+  + SS {base,dense}×{octnov,summer} (8).
+- **XGB**: ίδια 5 clean arms — Batch 2 (30) + SS full 8-cell grid (8).
+- Ευρήματα (όλα PENDING, §5/§7.14/§7.15): dense 12/12 cross-algo · octnov κερδίζει ΑΔΜΗΕ
+  (seed-robust, window-specific) · meteo_vintage 36-78% oracle · SS βοηθάει 14/16 (όχι universal).
+
+### ❌ ΛΕΙΠΟΥΝ για ΠΛΗΡΕΣ ablation (σειρά προτεραιότητας — ΞΕΚΙΝΑ ΑΠΟ ΤΑ ΜΟΝΤΕΛΑ)
+1. **MLP** (προτεραιότητα χρήστη «ξεκίνα με τα υπόλοιπα μοντέλα»): weekly recursive, clean arms
+   {base, dense} (+ genlags/noroll/loadfc αν χωράει) × 3 windows × g12 πρώτα (MLP αργό· g14 μετά).
+   ⚠️ MLP: ΟΧΙ direct, ΟΧΙ SS (code constraints).
+2. **LEAR**: φθηνό fallback baseline — weekly recursive, clean arms × 3 windows × g12. Γρήγορο.
+3. **LSTM**: ⚠️ ΓΝΩΣΤΟ calibration bug (bias +41, ποτέ αρνητικές, §7.7) — DEBUG ΠΡΙΝ, όχι σκέτο run.
+4. **direct strategy** (ποτέ clean για contest· τα 44 παλιά direct load runs = άλλο snapshot, ΑΚΥΡΑ
+   για σύγκριση): LGBM+XGB direct, clean arms × 3 windows × g12. ⚠️ direct×weekly ΑΡΓΟ →
+   ΠΟΛΥ bounded ανά στάδιο (π.χ. 1 window τη φορά). ΟΧΙ για mlp/lstm.
+5. **SS completeness**: q1 SS (bounded-out μέχρι τώρα) LGBM+XGB {base,dense}×g12 · step-decay
+   probe («σκαλί») στο summer (ό,τι είδαμε ήταν linear default — μήπως step > linear;).
+6. **meteo_vintage cross-algo**: XGB + {mv, densemv} × 3 windows × 2 gates (μόνο LGBM έγινε).
+7. **Gated (μπλοκαρισμένα σε data)**: `+pricelags` (χρειάζεται G6 price ingest στο load parquet) ·
+   `+meteo` oracle = DEPRECATED (Α6, μόνο ως oracle αναφορά, ΠΟΤΕ ΔΕΚΤΟ vs ΑΔΜΗΕ).
+8. **Seeds για headline**: summer/q1 νικητές θέλουν seeds {7,123} (μόνο octnov σκληρύνθηκε).
+
+### Καθαρή σειρά σταδίων (κάθε γραμμή = 1 μικρό detached stage)
+MLP g12 (base+dense, 3w) → MLP dense-rest/g14 → LEAR (3w) → direct LGBM (1 window τη φορά) →
+direct XGB → SS q1 → SS step-decay summer → vintage-XGB → [G6 μετά: pricelags] → seeds winners.
