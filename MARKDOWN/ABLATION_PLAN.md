@@ -776,7 +776,17 @@ case όπου θα χρησιμοποιούσαμε static-Q1 direct αντί γ
       ανεξάρτητα windows). PENDING ακόμα για headline (χρειάζεται 3 seeds).
     - **LSTM** (μόνο base arm και στα 2 windows, static): octnov=149.82 vs
       summer=348.01 — διαφορετική κλίμακα/εποχή (όχι σύγκριση dense), sanity μόνο
-      ότι το fix δουλεύει σταθερά cross-window. dense arm για LSTM εκκρεμεί.
+      ότι το fix δουλεύει σταθερά cross-window.
+      **`dense` ΔΕΝ εφαρμόζεται στο LSTM — δομικά, ΟΧΙ κενό προς συμπλήρωση.**
+      Ελέγχθηκε πριν τρέξει τίποτα (θα ήταν VOID arm, hard rule #12): το
+      `Seq2SeqLSTM.fit()` παίρνει encoder input ΜΟΝΟ `[y, future_cols]`
+      (`lstm_models.py:127-128`) και το `_fut_cols` υπολογίζεται ΜΟΝΟ από
+      calendar/resfc/loadfc/meteo/fuel (`master_forecast.py:378`) — τα groups
+      `dense`/`lags` δεν μπαίνουν ΠΟΤΕ στο futset. Το ίδιο το docstring του αρχείου
+      το δηλώνει: «ΔΕΝ χρησιμοποιούν engineered lag columns — χτίζουν τη δική τους
+      ακολουθία από την ωμή σειρά y» (L=168h raw history υποκαθιστά τα engineered
+      lags by design). Άρα LSTM ablation axis = μόνο calendar/resfc/loadfc/meteo/fuel
+      groups, ΟΧΙ dense/lags/roll.
     - Πηγές: `runs/load_mlp/octnov_mlp_recw_g12_{base,dense}.json` ·
       `runs/load_lear/octnov_lear_recw_g12_{base,dense}.json` ·
       `runs/load_lstm/octnov_lstm_recstatic_g12_base.json`.
