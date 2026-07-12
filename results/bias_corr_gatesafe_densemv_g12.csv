@@ -1,0 +1,7 @@
+run,gate_gap,retrain,W,lag_days,mae_before,mae_after,delta
+summer_lgbm_recw_g12_densemv,12,weekly,14,2,250.4529,253.7941,3.3412
+summer_lgbm_recw_g12_densemv,12,weekly,28,2,250.4529,248.0514,-2.4015
+q1_lgbm_recw_g12_densemv,12,weekly,14,2,216.5333,204.6663,-11.867
+q1_lgbm_recw_g12_densemv,12,weekly,28,2,216.5333,202.6839,-13.8494
+octnov_lgbm_recw_g12_densemv,12,weekly,14,2,128.456,119.1708,-9.2852
+octnov_lgbm_recw_g12_densemv,12,weekly,28,2,128.456,121.4229,-7.0332

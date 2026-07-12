@@ -1,0 +1,9 @@
+run,gate_gap,retrain,W,lag_days,mae_before,mae_after,delta
+q1_lgbm_recw_g12_densemvseas,12,weekly,14,2,195.3582,193.6117,-1.7465
+q1_lgbm_recw_g12_densemvseas,12,weekly,28,2,195.3582,193.4607,-1.8975
+summer_lgbm_recw_g12_densemvseas,12,weekly,14,2,234.9833,245.4701,10.4868
+summer_lgbm_recw_g12_densemvseas,12,weekly,28,2,234.9833,236.2699,1.2866
+octnov_lgbm_recw_g12_densemvseas,12,weekly,14,2,124.9751,120.8371,-4.1379
+octnov_lgbm_recw_g12_densemvseas,12,weekly,28,2,124.9751,122.8072,-2.1679
+summer_lgbm_recw_g12_densemvseas_ts2023,12,weekly,14,2,215.2569,214.9115,-0.3454
+summer_lgbm_recw_g12_densemvseas_ts2023,12,weekly,28,2,215.2569,209.3363,-5.9205

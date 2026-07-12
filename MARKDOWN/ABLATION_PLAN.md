@@ -727,6 +727,17 @@ case όπου θα χρησιμοποιούσαμε static-Q1 direct αντί γ
     pre-registration ήταν στενό). Κάτω από την κόκκινη γραμμή (>60). Πριν από ΔΕΚΤΟ:
     weekly confirm + XGB + FI rank + ανθρώπινη αποδοχή. Σημ.: octnov static base+seas
     (133.97) ≈ weekly densemv επίπεδο — το t_trend υποκαθιστά μέρος της αξίας του retrain.
+    **WEEKLY CONFIRM ✅ (στάδιο ABC 2026-07-12, lgbm recw g12 seed42, arm densemvseas
+    vs densemv Batch 3, `runs/load_contest/*_lgbm_recw_g12_densemvseas.json`,
+    log `logs/load_abc_stage.log`):** q1 216.53→**195.36 (−21.2)** · summer 250.45→
+    **234.98 (−15.5)** · octnov 128.46→**124.98 (−3.5)**. Ίδιο πρόσημο 3/3 weekly +
+    3/3 static = 6/6 συνθήκες, |Δ|≫0.15 → πιάνει §2 pre-gate. Παραμένει PENDING για
+    ΔΕΚΤΟ: XGB confirm + FI rank + ανθρώπινη αποδοχή (T-κριτήρια design.md).
+    **+ts2023 υπό weekly (probe, `runs/feat_seas/summer_lgbm_recw_g12_densemvseas_
+    ts2023.json`):** summer 234.98→**215.26 (−19.7 επιπλέον)** — το train_start trim
+    (2023+) επιβεβαιώνεται και υπό weekly (2 συνθήκες με το static −25.8: ίδιο πρόσημο).
+    PENDING: 2ο window ts2023 + απόφαση αν γίνει μόνιμη πολιτική (regime dilution).
+    (Συνέχεια σταδίου ABC: direct probe → §7.19 · bias correction → §7.20, μετά τα 17-18.)
 17. **`seas` στο MLP — ΑΠΟΡΡΙΦΘΗΚΕ (seed-variance artifact, 2026-07-12,
     `runs/load_mlp/`, triaging-suspicious-results)**. Screen (summer/g12, weekly rec,
     seed42): `dense`=353.65 → `dense+seas`=287.62 (Δ−66.03) — υπερβαίνει το T8 όριο
@@ -753,6 +764,26 @@ case όπου θα χρησιμοποιούσαμε static-Q1 direct αντί γ
     LEAR (διαφορετικό από MLP §7.17 όπου ήταν seed-noise, ή LGBM §7.16 όπου βοηθάει
     — model-dependent, tree-splits βλέπουν κάτι που η γραμμική Lasso δεν βλέπει).
     Πηγές: `runs/load_lear/summer_lear_recw_g12_{base,dense,denseseas}.json`.
+19. **Direct strategy probe για LOAD (πρώτη φορά clean, στάδιο ABC 2026-07-12,
+    `runs/feat_seas/summer_lgbm_dirstatic_g12_densemvseas.json`):** summer direct
+    static densemvseas = **240.11** vs recursive static ίδιου spec 271.10 (**−31.0**)
+    — ΑΝΤΙΘΕΤΟ από το price (όπου direct χειρότερο)· συνεπές με το διαγνωστικό ότι το
+    recursive rollout συσσωρεύει σφάλμα intraday (135→320 MW). Το recursive **weekly**
+    (234.98) παραμένει καλύτερο από direct static — PENDING: direct weekly σε 1-2
+    windows πριν κριθεί αν αλλάζει η default στρατηγική για load. 1 window/1 seed.
+20. **Trailing per-hour bias correction (Γ) — εργαλείο `scripts/apply_bias_correction.py`,
+    pure post-processing, ΚΑΝΕΝΑ training (2026-07-12, CSVs:
+    `results/bias_corr_gatesafe_densemv{,seas}_g12.csv`).** ⚠️ Το αρχικό sim (−7..−14)
+    χρησιμοποιούσε residuals έως και D-1 ολόκληρη = ΜΗ αιτιατό στο gate 11:00 D-1·
+    το εργαλείο default **lag_days=2 (gate-safe, έως D-2)**. Gate-safe αποτελέσματα
+    (W=28, weekly g12): πάνω σε densemv → q1 **−13.8**, octnov **−7.0**, summer −2.4
+    (W=14: **+3.3 βλάπτει**)· πάνω σε densemv**seas** → q1 −1.9, octnov −2.2, summer
+    **+1.3 βλάπτει** (το seas απορροφά το ίδιο systematic bias — redundant πάνω στο
+    πλήρες stack)· πάνω σε ts2023 → −5.9 (209.34). Ετυμηγορία: χρήσιμο ΜΟΝΟ όταν το
+    feature set ΔΕΝ έχει seas/era πληροφορία· ΔΕΝ μπαίνει στο engine όσο το seas
+    προχωράει προς ΔΕΚΤΟ. Best summer stack σήμερα: densemvseas+ts2023 weekly
+    215.26 → +biascorr(W28) **209.34** vs ΑΔΜΗΕ 170.76 (gap 80→39 MW από το Batch-3
+    baseline 250.45).
 
 ## 8. Επόμενα βήματα
 

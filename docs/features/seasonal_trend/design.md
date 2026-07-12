@@ -100,3 +100,17 @@ q1+octnov spot-checks και μετά weekly confirm.
   χειμώνα), το pre-registration ήταν στενά «καλοκαιρινό». Κάτω από κόκκινη γραμμή (60).
 - **Εκκρεμούν πριν από ΔΕΚΤΟ (Στάδιο 5-6):** weekly confirm (mirror G7 arms) · XGB ·
   FI rank · ανθρώπινη αποδοχή. ΤΙΠΟΤΑ δεν γράφεται ΔΕΚΤΟ από αυτό το probe.
+
+## 7b. Weekly confirm ✅ (Στάδιο ABC, 2026-07-12 — weekly rec, lgbm, seed 42, g12)
+
+Arm densemvseas vs densemv (Batch 3), `runs/load_contest/*_lgbm_recw_g12_densemvseas.json`:
+
+| window | densemv | densemvseas | Δ |
+|---|---|---|---|
+| q1 | 216.53 | 195.36 | **−21.2** |
+| summer | 250.45 | 234.98 | **−15.5** |
+| octnov | 128.46 | 124.98 | **−3.5** |
+
+Ίδιο πρόσημο 6/6 συνθήκες (3 static + 3 weekly), |Δ|≫0.15 → §2 pre-gate ΠΕΡΝΑΕΙ.
+Παραμένουν πριν από ΔΕΚΤΟ: **XGB confirm · FI rank · ανθρώπινη αποδοχή.**
+Πλήρες ledger σταδίου: ABLATION_PLAN §7.16/§7.19/§7.20 (direct probe, bias correction).
