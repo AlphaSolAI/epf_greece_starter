@@ -721,6 +721,17 @@ case όπου θα χρησιμοποιούσαμε static-Q1 direct αντί γ
     επηρεάζεται — διαφορετικό μοντέλο, δεν έχει αυτό το failure mode.
     Πηγές: `runs/load_mlp/summer_mlp_recw_g12_{base,dense,denseseas}.json` +
     `_seed{7,123}.json`.
+18. **LEAR screen (summer/g12, weekly rec, seed42, 2026-07-12,
+    `runs/load_lear/`)**: `base`=393.05 → `dense`=375.43 **(Δ−17.6, βοηθάει, 1
+    seed/window)** → `dense+seas`=375.4315 **bit-for-bit ΙΔΙΟ με dense** (ίδιο MAE
+    ΚΑΙ RMSE στα 4 δεκαδικά, ενώ #features άλλαξε 35→38 — ελέγχθηκε ως triage
+    πριν γραφτεί: coefficient check σε ένα training window έδειξε
+    `coef[doy_sin]=coef[doy_cos]=coef[t_trend]=0.0` (LassoCV alpha=1.14 μηδενίζει
+    17/38 features συνολικά) — **νόμιμο L1-shrinkage, ΟΧΙ bug/VOID-arm.** Με το
+    ισχυρό lags/dense σετ ήδη παρόν, το seas δεν προσθέτει γραμμική πληροφορία σε
+    LEAR (διαφορετικό από MLP §7.17 όπου ήταν seed-noise, ή LGBM §7.16 όπου βοηθάει
+    — model-dependent, tree-splits βλέπουν κάτι που η γραμμική Lasso δεν βλέπει).
+    Πηγές: `runs/load_lear/summer_lear_recw_g12_{base,dense,denseseas}.json`.
 
 ## 8. Επόμενα βήματα
 
