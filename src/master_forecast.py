@@ -41,6 +41,7 @@ from .recursive_openloop import OpenLoopConfig, recursive_predict_openloop
 from .feature_availability import (
     GateSpec,
     add_meteo_vintage_features,
+    add_seasonal_features,
     describe_gate,
     parse_feature_spec,
     select_features,
@@ -567,6 +568,9 @@ def main():
         df = add_engineered_features(df)
     if "ramp" in groups:
         df = add_ramp_features(df)
+    if "seas" in groups:
+        # annual seasonality + era trend (docs/features/seasonal_trend) — index-only
+        df = add_seasonal_features(df)
     if "meteo_vintage" in groups:
         # gate-aware blend day1/day2 (docs/features/meteo_vintage) — το gap
         # (και το --delay override) έρχεται από το ήδη χτισμένο GateSpec.

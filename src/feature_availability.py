@@ -42,6 +42,9 @@ ALL_GROUPS = [
                   # (diff(t,t-1) πάνω σε ήδη day-ahead-known resfc — leakage-free by construction)
     "xborder",    # cross-border: xb_*_lag24/48/168 (γειτονικές DAM τιμές — ΜΟΝΟ lagged·
                   # same-day = ίδιο SDAC auction με το target ⇒ leakage, δεν υπάρχει πια στο parquet)
+    "seas",       # annual seasonality + era trend: doy_sin/doy_cos/t_trend — deterministic
+                  # συναρτήσεις του index (docs/features/seasonal_trend), on-the-fly
+                  # (add_seasonal_features)· leakage-free by construction· ΕΚΤΟΣ default
     "meteo",      # weather (w_*) (+missing flags) — ΠΡΟΣΟΧΗ: observed/oracle (last.md §2 Α6)
     "meteo_vintage",  # gate-aware blend (wveff_*) των D-1/D-2 vintage forecast buckets
                       # (docs/features/meteo_vintage) — task=load parquet μόνο· ΕΚΤΟΣ default.
@@ -108,6 +111,12 @@ def classify_columns(all_cols: List[str]) -> Dict[str, List[str]]:
         # renewable ramp (docs/features/renewable_ramp) — on-the-fly diff of resfc
         if cl in ("solar_ramp1h", "wind_ramp1h"):
             groups["ramp"].append(c)
+            continue
+
+        # annual seasonality + era trend (docs/features/seasonal_trend) — on-the-fly,
+        # deterministic από το index (add_seasonal_features)
+        if cl in ("doy_sin", "doy_cos", "t_trend"):
+            groups["seas"].append(c)
             continue
 
         # cross-border (γειτονικές τιμές/flows, day-ahead-known)
@@ -330,6 +339,34 @@ def describe_gate(gs: GateSpec) -> str:
 #     αποτελείται ΜΟΝΟ από τα wveff_* που χτίζει το add_meteo_vintage_features.
 #     Exogenous forecast covariates — εκτός AEL crosslag families by construction.
 # ----------------------------------------------------------------------------
+
+_SEAS_EPOCH = pd.Timestamp("2015-01-01")
+
+
+def add_seasonal_features(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Ομάδα 'seas' (docs/features/seasonal_trend/design.md): ετήσια εποχικότητα +
+    γραμμικός δείκτης «εποχής δεδομένων»:
+      doy_sin/doy_cos = sin/cos(2π·dayofyear/365.25) — πού στη χρονιά είμαστε
+      t_trend         = ημέρες από 2015-01-01 — era splits (π.χ. duck-curve deepening
+                        2025: midday/evening ratio 1.15→1.086, βλ. design §2)
+    Deterministic συναρτήσεις του index — γνωστές αιώνες πριν από κάθε gate ⇒
+    leakage-free by construction (κανένα AEL/publication ζήτημα). Επιστρέφει ΝΕΟ df
+    (copy)· idempotent (υπάρχουσες στήλες δεν ξαναγράφονται).
+    """
+    if all(c in df.columns for c in ("doy_sin", "doy_cos", "t_trend")):
+        return df
+    df = df.copy()
+    doy = df.index.dayofyear.astype(float)
+    ang = 2.0 * np.pi * doy / 365.25
+    if "doy_sin" not in df.columns:
+        df["doy_sin"] = np.sin(ang)
+    if "doy_cos" not in df.columns:
+        df["doy_cos"] = np.cos(ang)
+    if "t_trend" not in df.columns:
+        df["t_trend"] = (df.index - _SEAS_EPOCH) / pd.Timedelta(days=1)
+    return df
+
 
 _WV_DAY1_RE = re.compile(r"^wv_(.+)_day1(_missing)?$")
 

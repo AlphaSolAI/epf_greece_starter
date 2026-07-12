@@ -16,6 +16,7 @@ import pytest
 from src.feature_availability import (
     GateSpec,
     add_meteo_vintage_features,
+    add_seasonal_features,
     classify_columns,
     meteo_vintage_day1_ok,
     parse_feature_spec,
@@ -202,6 +203,46 @@ def test_add_meteo_vintage_features_fails_loud():
     assert list(out.columns) == ["y"]
     out_fw = add_meteo_vintage_features(df_price, GateSpec(task="price", gate="strict", market="forward"))
     assert list(out_fw.columns) == ["y"]
+
+
+# ---------------------------------------------------------------------------
+# seas — annual seasonality + era trend (docs/features/seasonal_trend/design.md).
+# Index-only deterministic features: leakage-free by construction, but the
+# classification contract still needs locking (seas ∉ default!).
+# ---------------------------------------------------------------------------
+
+def test_classify_columns_seas_group():
+    groups = classify_columns(ALL_COLS + ["doy_sin", "doy_cos", "t_trend"])
+    assert set(groups["seas"]) == {"doy_sin", "doy_cos", "t_trend"}
+
+
+def test_seas_not_in_default_but_selectable():
+    assert "seas" not in parse_feature_spec(None)
+    assert "seas" not in parse_feature_spec("default")
+    assert "seas" in parse_feature_spec("all")
+    assert "seas" in parse_feature_spec("calendar,lags,roll,seas")
+
+
+def test_add_seasonal_features_values():
+    idx = pd.to_datetime(["2015-01-01 00:00", "2025-01-01 12:00",
+                          "2025-04-02 00:00", "2025-07-15 00:00"])
+    df = pd.DataFrame({"y": 1.0}, index=idx)
+    out = add_seasonal_features(df)
+    assert {"doy_sin", "doy_cos", "t_trend"} <= set(out.columns)
+    # 1 Ιαν: doy≈1 → sin≈0, cos≈1
+    assert abs(out["doy_sin"].iloc[1]) < 0.05
+    assert out["doy_cos"].iloc[1] > 0.95
+    # ~αρχές Απρίλη (doy≈91 ≈ τέταρτο έτους): sin≈1
+    assert out["doy_sin"].iloc[2] > 0.95
+    # t_trend: 0 στην epoch 2015-01-01, γνησίως αύξον
+    assert out["t_trend"].iloc[0] == 0.0
+    assert out["t_trend"].is_monotonic_increasing
+    # ~10.5 χρόνια ≈ 3847 ημέρες για το 2025-07-15
+    assert 3700 < out["t_trend"].iloc[3] < 3950
+    # original untouched (copy semantics) + idempotent
+    assert "t_trend" not in df.columns
+    out2 = add_seasonal_features(out)
+    assert (out2["t_trend"] == out["t_trend"]).all()
 
 
 # ---------------------------------------------------------------------------

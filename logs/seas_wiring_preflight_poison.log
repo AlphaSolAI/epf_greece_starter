@@ -1,0 +1,76 @@
+============================================================
+PRE-FLIGHT CHECK (energy-forecast)
+============================================================
+  ✅ OneDrive.exe τρέχει — αν όχι: Start-Process "$env:PROGRAMFILES\Microsoft OneDrive\OneDrive.exe"
+  ✅ hourly.parquet υπάρχει — shape=(80126, 159), τέλος=2026-03-20 23:00:00
+  ✅ ΜΟΝΟ lagged xb_* στήλες (same-day = leakage!) — 6 lagged cols OK
+  ✅ Βασικές στήλες παρούσες
+  ✅ TZ alignment (solar_fc DJF peak = 11:00 CET) — peak=11:00 — αν ≠11 τρέξε solar_shift_check.py (βλ. ABLATION_PLAN §5.9)
+  ✅ hourly_load.parquet υπάρχει
+------------------------------------------------------------
+------------------------------------------------------------
+Cross-actuals poisoning self-test (AEL §4.8/§4.10.2) — τρέχει ΟΝΤΩΣ, ~10-20s/strategy:
+  $ C:\Users\aggel\miniconda3\envs\epf\python.exe -X utf8 -m src.check_crosslag_fairness --task price --algo lgbm --strategy recursive --market dam --gate strict
+ gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[RESULT] B_POISON_SAFE_CROSSLAGS (control): n_poisoned_cells=254 mean_abs_diff=8.038416 max_abs_diff=27.446117
+[INFO] Test C: direct έλεγχος training-row freeze (χωρίς poisoning/training)...
+[RESULT] C_TRAINING_FREEZE: unsafe_checked=54 safe_checked=36 mismatches=0
+
+=== INTERPRETATION ===
+A (unsafe): ~0 αναμενόμενο => AEL σωστά αγνοεί ό,τι δεν ήταν ακόμα δημοσιευμένο (PASS).
+            μεγάλο       => LEAK: crosslag actuals μετά το cutoff_F διαρρέουν (FAIL).
+B (safe, control): μεγάλο αναμενόμενο => το μοντέλο όντως χρησιμοποιεί αυτά τα features (νομιμοποιεί το Test A). Αν ~0 ΚΙ ΕΔΩ, έλεγξε feature spec.
+C (training freeze): PASS => το ίδιο transform που τρέχει πριν το training είναι μαθηματικά σωστό στα πραγματικά δεδομένα.
+
+=== PASS (leak_free=True, control_meaningful=True, training_freeze_ok=True) ===
+=== check_crosslag_fairness END ===
+
+  ✅ crosslag poisoning (recursive)
+  $ C:\Users\aggel\miniconda3\envs\epf\python.exe -X utf8 -m src.check_crosslag_fairness --task price --algo lgbm --strategy direct --market dam --gate strict
+nts in the train set: 2135, number of used features: 123
+[LightGBM] [Info] Start training from score 104.166160
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.007093 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 17431
+[LightGBM] [Info] Number of data points in the train set: 2135, number of used features: 123
+[LightGBM] [Info] Start training from score 104.121770
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.005701 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 17431
+[LightGBM] [Info] Auto-choosing col-wise multi-threading, the overhead of testing was 0.005103 seconds.
+You can set `force_col_wise=true` to remove the overhead.
+[LightGBM] [Info] Total Bins 17431
+[LightGBM] [Info] Number of data points in the train set: 2135, number of used features: 123
+[LightGBM] [Info] Start training from score 104.124912
+[LightGBM] [Info] Number of data points in the train set: 2135, number of used features: 123
+[LightGBM] [Info] Start training from score 104.126152
+[RESULT] B_POISON_SAFE_CROSSLAGS (control): n_poisoned_cells=254 mean_abs_diff=10.179806 max_abs_diff=29.200217
+[INFO] Test C: direct έλεγχος training-row freeze (χωρίς poisoning/training)...
+[RESULT] C_TRAINING_FREEZE: unsafe_checked=54 safe_checked=36 mismatches=0
+
+=== INTERPRETATION ===
+A (unsafe): ~0 αναμενόμενο => AEL σωστά αγνοεί ό,τι δεν ήταν ακόμα δημοσιευμένο (PASS).
+            μεγάλο       => LEAK: crosslag actuals μετά το cutoff_F διαρρέουν (FAIL).
+B (safe, control): μεγάλο αναμενόμενο => το μοντέλο όντως χρησιμοποιεί αυτά τα features (νομιμοποιεί το Test A). Αν ~0 ΚΙ ΕΔΩ, έλεγξε feature spec.
+C (training freeze): PASS => το ίδιο transform που τρέχει πριν το training είναι μαθηματικά σωστό στα πραγματικά δεδομένα.
+
+=== PASS (leak_free=True, control_meaningful=True, training_freeze_ok=True) ===
+=== check_crosslag_fairness END ===
+
+  ✅ crosslag poisoning (direct)
+ΑΠΟΤΕΛΕΣΜΑ: PASS

@@ -691,6 +691,21 @@ case όπου θα χρησιμοποιούσαμε static-Q1 direct αντί γ
     octnov (−1.6)· XGB μεγέθη < LGBM (ισχυρότερος base learner)· 2 εξαιρέσεις (octnov g12
     dense flat, summer g14 dense +2.6). ΟΧΙ universal, αλλά στιβαρό γενικό θετικό.
     PENDING (1 seed, q1 αδοκίμαστο, step-decay αδοκίμαστο). Decay=linear παντού.
+16. **`seas` (doy_sin/doy_cos/t_trend) — probe ΙΣΧΥΡΟ ΘΕΤΙΚΟ 3/3 windows, PENDING weekly
+    confirm (2026-07-12, design: `docs/features/seasonal_trend/design.md`, runs:
+    `runs/feat_seas/`)**. Κίνητρο από summer deep-dive: duck-curve era shift (midday/evening
+    ratio Ιουν-Ιουλ 2023=1.159, 2024=1.153, **2025=1.086** — BTM PV growth) + intraday bias
+    −207@10:00/+196@18:00 + ΚΑΝΕΝΑ seasonal/era feature στο calendar. Static probes (lgbm
+    rec, seed 42, base=calendar,lags,roll): **q1 254.99→219.11 (−35.9) · summer 372.01→
+    336.08 (−35.9) · octnov 151.04→133.97 (−17.1)** · πάνω στο ισχυρό arm: summer densemv
+    286.78→271.10 (−15.7). T4 ✓ (17→20 features) · T5 poison PASS
+    (`logs/seas_wiring_preflight_poison.log`) · T6 control 372.0053 ΤΑΥΤΟΣΗΜΟ.
+    **⚠️ T8 σημείωση (τίμια):** q1 βγήκε −35.9 ενώ pre-registered «μικρό/ουδέτερο» —
+    απόκλιση από πρόβλεψη, ΟΧΙ leak-δυνατή (index-only deterministic features, κανένα
+    κανάλι μελλοντικής πληροφορίας· ο μηχανισμός era-shift δρα όλο τον χρόνο, το
+    pre-registration ήταν στενό). Κάτω από την κόκκινη γραμμή (>60). Πριν από ΔΕΚΤΟ:
+    weekly confirm + XGB + FI rank + ανθρώπινη αποδοχή. Σημ.: octnov static base+seas
+    (133.97) ≈ weekly densemv επίπεδο — το t_trend υποκαθιστά μέρος της αξίας του retrain.
 
 ## 8. Επόμενα βήματα
 
