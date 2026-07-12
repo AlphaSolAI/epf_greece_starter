@@ -633,8 +633,15 @@ case όπου θα χρησιμοποιούσαμε static-Q1 direct αντί γ
    + scheduled-sampling teacher-forcing decay (γραμμικό, epoch 0=100%→τελευταίο=0%,
    ίδιο πνεύμα με `scheduled_sampling.py`). Smoke test PASS (2 epochs, μικρό subset,
    finite output) + πλήρες pytest 97/97 PASS. Δεν αγγίζει AEL/gate/crosslag — καθαρά
-   training-loop fix, καμία επίδραση σε leakage. **PENDING**: πλήρες retrain +
-   σύγκριση bias/MAE με το παλιό 44.16/+41 πριν από ablation.
+   training-loop fix, καμία επίδραση σε leakage.
+   **✅ Fix-verification run (LOAD summer/g12, static, base spec, 2026-07-12,
+   `runs/load_lstm/summer_lstm_recstatic_g12_base.json`)**: MAE=348.01 (συγκρίσιμο με
+   MLP-dense 353.65/LEAR-dense 375.43 στο ίδιο arm) · **corr=0.9446** (vs το παλιό
+   price-bug 0.69) · bias=−168 σε κλίμακα 3642-10144 (~2-4%, ΟΧΙ το παλιό pathological
+   «ποτέ αρνητικές/σταθερό drift»). Σημ.: το 44.16/+41 ήταν PRICE metric, όχι LOAD —
+   δεν συγκρίνεται αριθμητικά, μόνο qualitative (καμία runaway απόκλιση πλέον). 1
+   arm/seed/window — PENDING πλήρες ablation (weekly, dense/seas arms, 2ο window)
+   πριν από οποιοδήποτε §2 claim.
 8. ~~solar_fc_dayahead ύποπτο 2h shift~~ ✅ **ΕΛΥΘΗ 2026-07-04 → §5.9**: ήταν πραγματικό
    συστημικό timezone misalignment (4 ρολόγια στο ίδιο parquet), διορθώθηκε δομικά στο
    `data.py` + rebuild. ΝΕΟ ανοιχτό: re-run confirmτο headline στα ευθυγραμμισμένα δεδομένα.
