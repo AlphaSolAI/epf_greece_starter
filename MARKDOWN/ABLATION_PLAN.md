@@ -812,7 +812,7 @@ case όπου θα χρησιμοποιούσαμε static-Q1 direct αντί γ
     Πηγές: `runs/load_lstm/summer_lstm_recstatic_g12_{base,resfc}.json` +
     `_seed{7,123}.json` (resfc summer) + `_seed7.json` (base summer) +
     `runs/load_lstm/octnov_lstm_recstatic_g12_{base,resfc}.json`.
-19b. **LSTM +meteo (summer) — ΒΛΑΠΤΕΙ ΠΟΛΥ σοβαρότερα από resfc, seed-robust 3/3
+19b. **LSTM +meteo — §2 ΚΛΕΙΝΕΙ, ΒΛΑΠΤΕΙ ΠΟΛΥ σοβαρότερα από resfc σε 2 windows
     (2026-07-16, `runs/load_lstm/`)**. `--features "calendar,meteo"` (84 στήλες) vs
     calendar-only: seed42 base=348.01→meteo=**1092.66** (Δ+744.6). Seed-check (ίδιο
     πρωτόκολλο με resfc §19a): seed7=1718.46, seed123=1691.86 — **και τα 3 seeds
@@ -821,12 +821,20 @@ case όπου θα χρησιμοποιούσαμε static-Q1 direct αντί γ
     (ελέγχθηκε, όχι missing-data artifact). Πιθανός μηχανισμός: 84 στήλες μελλοντικού
     exogenous σε decoder μικρής χωρητικότητας (hidden=64) μέσα σε λίγα epochs —
     ίδιο μοτίβο με το resfc αλλά πολύ εντονότερο (πολύ περισσότερες στήλες).
-    **PENDING 2ο window (octnov)** πριν κλείσει §2 — βλ. resfc §19a για το πρωτόκολλο.
-    Σημείωση για το σύνολο LSTM ablation axis: και τα δύο future-known groups που
-    δοκιμάστηκαν μέχρι τώρα (resfc, meteo) ΒΛΑΠΤΟΥΝ — calendar-only παραμένει το
-    καλύτερο LSTM config μέχρι στιγμής.
+    **2ο window (octnov, seed42, 2026-07-16)**: base=149.82→meteo=**400.58** (Δ+250.76)
+    — ΙΔΙΟ πρόσημο (βλάπτει) με το summer, μέγεθος πιο συνεπές αναλογικά αυτή τη
+    φορά (744.6 vs 250.76, ~3× — όχι το ~29× ασύμμετρο του resfc). 🔴 **§2 ΚΛΕΙΝΕΙ ως
+    ΑΡΝΗΤΙΚΟ finding** (|ΔMAE|≫0.15, ίδιο πρόσημο σε 2 ανεξάρτητα windows) — `meteo`
+    ΒΛΑΠΤΕΙ το LSTM, ΔΕΝ μπαίνει στο feature set.
+    **Συμπέρασμα LSTM ablation axis (και τα δύο future-known groups δοκιμάστηκαν)**:
+    `calendar`-only παραμένει το ΚΑΛΥΤΕΡΟ LSTM config βρέθηκε μέχρι στιγμής — τόσο
+    `resfc` όσο και `meteo` βλάπτουν και στα 2 windows. Πιθανή ερμηνεία: η μικρή
+    decoder χωρητικότητα (hidden=64, epochs=30) δεν προλαβαίνει να μάθει χρήσιμα
+    το scale/interaction νέων exogenous ομάδων — LSTM συγκριτικά με LGBM/XGB
+    (που βλέπουν resfc/meteo θετικά, §7.10 κ.α.) φαίνεται λιγότερο ικανό να
+    αξιοποιήσει αυτά τα δεδομένα με την τρέχουσα αρχιτεκτονική/capacity.
     Πηγές: `runs/load_lstm/summer_lstm_recstatic_g12_meteo.json` +
-    `_seed{7,123}.json`.
+    `_seed{7,123}.json` + `runs/load_lstm/octnov_lstm_recstatic_g12_meteo.json`.
 19. **Direct strategy probe για LOAD (πρώτη φορά clean, στάδιο ABC 2026-07-12,
     `runs/feat_seas/summer_lgbm_dirstatic_g12_densemvseas.json`):** summer direct
     static densemvseas = **240.11** vs recursive static ίδιου spec 271.10 (**−31.0**)
