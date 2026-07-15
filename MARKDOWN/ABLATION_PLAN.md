@@ -826,15 +826,25 @@ case όπου θα χρησιμοποιούσαμε static-Q1 direct αντί γ
     φορά (744.6 vs 250.76, ~3× — όχι το ~29× ασύμμετρο του resfc). 🔴 **§2 ΚΛΕΙΝΕΙ ως
     ΑΡΝΗΤΙΚΟ finding** (|ΔMAE|≫0.15, ίδιο πρόσημο σε 2 ανεξάρτητα windows) — `meteo`
     ΒΛΑΠΤΕΙ το LSTM, ΔΕΝ μπαίνει στο feature set.
-    **Συμπέρασμα LSTM ablation axis (και τα δύο future-known groups δοκιμάστηκαν)**:
-    `calendar`-only παραμένει το ΚΑΛΥΤΕΡΟ LSTM config βρέθηκε μέχρι στιγμής — τόσο
-    `resfc` όσο και `meteo` βλάπτουν και στα 2 windows. Πιθανή ερμηνεία: η μικρή
-    decoder χωρητικότητα (hidden=64, epochs=30) δεν προλαβαίνει να μάθει χρήσιμα
-    το scale/interaction νέων exogenous ομάδων — LSTM συγκριτικά με LGBM/XGB
-    (που βλέπουν resfc/meteo θετικά, §7.10 κ.α.) φαίνεται λιγότερο ικανό να
-    αξιοποιήσει αυτά τα δεδομένα με την τρέχουσα αρχιτεκτονική/capacity.
     Πηγές: `runs/load_lstm/summer_lstm_recstatic_g12_meteo.json` +
     `_seed{7,123}.json` + `runs/load_lstm/octnov_lstm_recstatic_g12_meteo.json`.
+19c. **LSTM +loadfc — §2 ΚΛΕΙΝΕΙ, ΒΟΗΘΑΕΙ ΠΟΛΥ, πιο seed-σταθερό από τα αρνητικά
+    (2026-07-16, `runs/load_lstm/`)**. `--features "calendar,loadfc"` (1 στήλη,
+    ΑΔΜΗΕ day-ahead load forecast — ισχυρή by construction, ίδιο target scope):
+    summer seed42 base=348.01→loadfc=**181.99** (Δ−166.0) · octnov base=149.82→
+    loadfc=144.33 (Δ−5.49) — ΙΔΙΟ πρόσημο 2/2 windows. Seed-check summer (ίδιο
+    πρωτόκολλο): seed7=181.76, seed123=176.61 — **spread μόλις ~5.4** (πολύ πιο
+    σταθερό από τα resfc/meteo αρνητικά ευρήματα, spread ~140-180) — στιβαρό,
+    αναπαράξιμο θετικό αποτέλεσμα, όχι τύχη αρχικοποίησης. 🟢 **§2 CLEARS ως
+    ΘΕΤΙΚΟ finding** — `loadfc` πρέπει να μπει στο LSTM feature set.
+    **Ενημερωμένο συμπέρασμα LSTM ablation axis**: `calendar+loadfc` είναι το
+    ΚΑΛΥΤΕΡΟ LSTM config βρέθηκε μέχρι στιγμής (καλύτερο από calendar-only) — μόνο
+    `resfc`/`meteo` βλάπτουν, το `loadfc` (μονοδιάστατο, πολύ ισχυρό σήμα) βοηθάει
+    δραστικά. Συνεπές με τη θεωρία decoder-capacity: το LSTM φαίνεται να χειρίζεται
+    καλά ΕΝΑ πολύ πληροφοριακό feature αλλά όχι πολλά (6-84) exogenous μαζί με
+    ασθενέστερο μεμονωμένο σήμα.
+    Πηγές: `runs/load_lstm/summer_lstm_recstatic_g12_loadfc.json` +
+    `_seed{7,123}.json` + `runs/load_lstm/octnov_lstm_recstatic_g12_loadfc.json`.
 19. **Direct strategy probe για LOAD (πρώτη φορά clean, στάδιο ABC 2026-07-12,
     `runs/feat_seas/summer_lgbm_dirstatic_g12_densemvseas.json`):** summer direct
     static densemvseas = **240.11** vs recursive static ίδιου spec 271.10 (**−31.0**)
