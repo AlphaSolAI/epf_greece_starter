@@ -945,8 +945,10 @@ SS×weekly · henex_premarket.
 ### ❌ ΛΕΙΠΟΥΝ για ΠΛΗΡΕΣ ablation (σειρά προτεραιότητας)
 1. **MLP/LEAR**: g14 + q1 window (μόνο summer/octnov/g12 έγιναν) — χαμηλή προτεραιότητα,
    ίδιο pattern με ό,τι ήδη τρέξαμε.
-2. **LSTM**: `loadfc` group (load_fc στήλη, αν υπάρχει στο load parquet) · combos (resfc+meteo
-   μαζί, αν κάποιο βοηθήσει μεμονωμένα — προς το παρόν κανένα δεν βοήθησε) · q1/g14.
+2. **LSTM**: ✅ future-known axis ΠΛΗΡΕΣ (calendar/resfc/loadfc/meteo δοκιμάστηκαν 2 windows·
+   fuel=0 cols VOID). ΝΙΚΗΤΗΣ: `calendar+loadfc` (§7.19c). ΕΚΚΡΕΜΕΙ: q1/g14 για το
+   `calendar+loadfc` config (χαμηλή προτεραιότητα, ίδιο pattern)· `calendar+loadfc+resfc/meteo`
+   combo (χαμηλή προτεραιότητα — resfc/meteo έδειξαν ήδη αρνητικά μεμονωμένα).
 3. **direct strategy** (ποτέ clean για contest· τα 44 παλιά direct load runs = άλλο snapshot, ΑΚΥΡΑ
    για σύγκριση): LGBM+XGB direct, clean arms × 3 windows × g12. ⚠️ direct×weekly ΑΡΓΟ →
    ΠΟΛΥ bounded ανά στάδιο. Πρώτο static probe έγινε από άλλη session (§7.19, densemvseas −31
