@@ -790,6 +790,21 @@ case όπου θα χρησιμοποιούσαμε static-Q1 direct αντί γ
     - Πηγές: `runs/load_mlp/octnov_mlp_recw_g12_{base,dense}.json` ·
       `runs/load_lear/octnov_lear_recw_g12_{base,dense}.json` ·
       `runs/load_lstm/octnov_lstm_recstatic_g12_base.json`.
+19a. **LSTM +resfc (summer) — ΒΛΑΠΤΕΙ σοβαρά, seed-robust αλλά 1 window (2026-07-12,
+    `runs/load_lstm/`)**. `--features "calendar,resfc"` vs `calendar`-only baseline
+    (πραγματικό LSTM ablation axis, βλ. σημείο 19 πιο πάνω — dense/lags δεν ισχύουν):
+    seed42 base=348.01→resfc=536.48 (Δ+188.5). Triage (ίδιο σκεπτικό με MLP §7.17,
+    LSTM είναι επίσης torch/stochastic-init): 2 seeds ακόμα σε resfc + 1 στο base.
+    **base**: seed42=348.01, seed7=338.45 (tight, ~10 spread). **resfc**: seed42=536.48,
+    seed7=673.11, seed123=652.82 — και τα 3 seeds ΠΟΛΥ χειρότερα από base, καμία
+    αντιστροφή προσήμου (σε αντίθεση με το MLP+seas artifact). **Στιβαρό αρνητικό
+    εύρημα εντός-window** (0% NaN στις resfc στήλες αυτό το διάστημα, άρα όχι
+    missing-data artifact) — άγνωστος ακριβής μηχανισμός (πιθανό: μικρή decoder
+    capacity/hidden=64 δεν προλαβαίνει να μάθει το scale/interaction μέσα σε λίγα
+    epochs), αλλά η κατεύθυνση είναι αξιόπιστη σε 3 seeds. PENDING 2ο window
+    (octnov) πριν κλείσει §2 ως πλήρες finding. Πηγές:
+    `runs/load_lstm/summer_lstm_recstatic_g12_{base,resfc}.json` +
+    `_seed{7,123}.json` (resfc) + `_seed7.json` (base).
 19. **Direct strategy probe για LOAD (πρώτη φορά clean, στάδιο ABC 2026-07-12,
     `runs/feat_seas/summer_lgbm_dirstatic_g12_densemvseas.json`):** summer direct
     static densemvseas = **240.11** vs recursive static ίδιου spec 271.10 (**−31.0**)
