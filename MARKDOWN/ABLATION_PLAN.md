@@ -812,6 +812,21 @@ case όπου θα χρησιμοποιούσαμε static-Q1 direct αντί γ
     Πηγές: `runs/load_lstm/summer_lstm_recstatic_g12_{base,resfc}.json` +
     `_seed{7,123}.json` (resfc summer) + `_seed7.json` (base summer) +
     `runs/load_lstm/octnov_lstm_recstatic_g12_{base,resfc}.json`.
+19b. **LSTM +meteo (summer) — ΒΛΑΠΤΕΙ ΠΟΛΥ σοβαρότερα από resfc, seed-robust 3/3
+    (2026-07-16, `runs/load_lstm/`)**. `--features "calendar,meteo"` (84 στήλες) vs
+    calendar-only: seed42 base=348.01→meteo=**1092.66** (Δ+744.6). Seed-check (ίδιο
+    πρωτόκολλο με resfc §19a): seed7=1718.46, seed123=1691.86 — **και τα 3 seeds
+    δραματικά χειρότερα** από base (338-348), καμία αντιστροφή προσήμου, το effect
+    μάλιστα μεγαλώνει σε άλλα seeds. 0% NaN στα βασικά meteo cols αυτό το διάστημα
+    (ελέγχθηκε, όχι missing-data artifact). Πιθανός μηχανισμός: 84 στήλες μελλοντικού
+    exogenous σε decoder μικρής χωρητικότητας (hidden=64) μέσα σε λίγα epochs —
+    ίδιο μοτίβο με το resfc αλλά πολύ εντονότερο (πολύ περισσότερες στήλες).
+    **PENDING 2ο window (octnov)** πριν κλείσει §2 — βλ. resfc §19a για το πρωτόκολλο.
+    Σημείωση για το σύνολο LSTM ablation axis: και τα δύο future-known groups που
+    δοκιμάστηκαν μέχρι τώρα (resfc, meteo) ΒΛΑΠΤΟΥΝ — calendar-only παραμένει το
+    καλύτερο LSTM config μέχρι στιγμής.
+    Πηγές: `runs/load_lstm/summer_lstm_recstatic_g12_meteo.json` +
+    `_seed{7,123}.json`.
 19. **Direct strategy probe για LOAD (πρώτη φορά clean, στάδιο ABC 2026-07-12,
     `runs/feat_seas/summer_lgbm_dirstatic_g12_densemvseas.json`):** summer direct
     static densemvseas = **240.11** vs recursive static ίδιου spec 271.10 (**−31.0**)
