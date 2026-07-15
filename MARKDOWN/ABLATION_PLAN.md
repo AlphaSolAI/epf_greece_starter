@@ -790,7 +790,7 @@ case όπου θα χρησιμοποιούσαμε static-Q1 direct αντί γ
     - Πηγές: `runs/load_mlp/octnov_mlp_recw_g12_{base,dense}.json` ·
       `runs/load_lear/octnov_lear_recw_g12_{base,dense}.json` ·
       `runs/load_lstm/octnov_lstm_recstatic_g12_base.json`.
-19a. **LSTM +resfc (summer) — ΒΛΑΠΤΕΙ σοβαρά, seed-robust αλλά 1 window (2026-07-12,
+19a. **LSTM +resfc — §2 ΚΛΕΙΝΕΙ, ΒΛΑΠΤΕΙ σε 2 ανεξάρτητα windows (2026-07-12/16,
     `runs/load_lstm/`)**. `--features "calendar,resfc"` vs `calendar`-only baseline
     (πραγματικό LSTM ablation axis, βλ. σημείο 19 πιο πάνω — dense/lags δεν ισχύουν):
     seed42 base=348.01→resfc=536.48 (Δ+188.5). Triage (ίδιο σκεπτικό με MLP §7.17,
@@ -801,10 +801,17 @@ case όπου θα χρησιμοποιούσαμε static-Q1 direct αντί γ
     εύρημα εντός-window** (0% NaN στις resfc στήλες αυτό το διάστημα, άρα όχι
     missing-data artifact) — άγνωστος ακριβής μηχανισμός (πιθανό: μικρή decoder
     capacity/hidden=64 δεν προλαβαίνει να μάθει το scale/interaction μέσα σε λίγα
-    epochs), αλλά η κατεύθυνση είναι αξιόπιστη σε 3 seeds. PENDING 2ο window
-    (octnov) πριν κλείσει §2 ως πλήρες finding. Πηγές:
-    `runs/load_lstm/summer_lstm_recstatic_g12_{base,resfc}.json` +
-    `_seed{7,123}.json` (resfc) + `_seed7.json` (base).
+    epochs), αλλά η κατεύθυνση είναι αξιόπιστη σε 3 seeds.
+    **2ο window (octnov, seed42, 2026-07-16)**: base=149.82→resfc=156.38 (**Δ+6.56**)
+    — ΙΔΙΟ πρόσημο (βλάπτει) με το summer, πολύ μικρότερο μέγεθος (πιθανό: λιγότερο
+    solar σήμα το φθινόπωρο, οπότε λιγότερος χώρος για το μοντέλο να «μπερδευτεί»
+    από την κλίμακα/variance του resfc). 🔴 **§2 ΚΛΕΙΝΕΙ ως ΑΡΝΗΤΙΚΟ finding**
+    (|ΔMAE|≫0.15, ίδιο πρόσημο σε 2 ανεξάρτητα windows) — `resfc` ΒΛΑΠΤΕΙ το LSTM,
+    ΔΕΝ μπαίνει στο LSTM feature set. Ασυνήθιστη μεγάλη διαφορά μεγέθους (188.5 vs
+    6.56, ~29×) μεταξύ windows — σημειώνεται τίμια, δεν αλλάζει το πρόσημο-verdict.
+    Πηγές: `runs/load_lstm/summer_lstm_recstatic_g12_{base,resfc}.json` +
+    `_seed{7,123}.json` (resfc summer) + `_seed7.json` (base summer) +
+    `runs/load_lstm/octnov_lstm_recstatic_g12_{base,resfc}.json`.
 19. **Direct strategy probe για LOAD (πρώτη φορά clean, στάδιο ABC 2026-07-12,
     `runs/feat_seas/summer_lgbm_dirstatic_g12_densemvseas.json`):** summer direct
     static densemvseas = **240.11** vs recursive static ίδιου spec 271.10 (**−31.0**)
