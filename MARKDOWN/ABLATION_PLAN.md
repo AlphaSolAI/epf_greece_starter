@@ -856,8 +856,13 @@ case όπου θα χρησιμοποιούσαμε static-Q1 direct αντί γ
     δραστικά. Συνεπές με τη θεωρία decoder-capacity: το LSTM φαίνεται να χειρίζεται
     καλά ΕΝΑ πολύ πληροφοριακό feature αλλά όχι πολλά (6-84) exogenous μαζί με
     ασθενέστερο μεμονωμένο σήμα.
+    **3ο window (q1, seed42, 2026-07-16)**: base=218.80→loadfc=**171.23** (Δ−47.58) —
+    ΙΔΙΟ πρόσημο 3/3 windows (summer −166.0, octnov −5.49, q1 −47.58). Σε αντίθεση
+    με το MLP dense (§18b, έσπασε στο q1), το LSTM+loadfc είναι πλήρως συνεπές και
+    στα 3 windows — πλησιάζει headline-level (λείπουν ακόμα seeds σε octnov/q1).
     Πηγές: `runs/load_lstm/summer_lstm_recstatic_g12_loadfc.json` +
-    `_seed{7,123}.json` + `runs/load_lstm/octnov_lstm_recstatic_g12_loadfc.json`.
+    `_seed{7,123}.json` + `runs/load_lstm/octnov_lstm_recstatic_g12_loadfc.json` +
+    `runs/load_lstm/q1_lstm_recstatic_g12_{base,loadfc}.json`.
 19. **Direct strategy probe για LOAD (πρώτη φορά clean, στάδιο ABC 2026-07-12,
     `runs/feat_seas/summer_lgbm_dirstatic_g12_densemvseas.json`):** summer direct
     static densemvseas = **240.11** vs recursive static ίδιου spec 271.10 (**−31.0**)
