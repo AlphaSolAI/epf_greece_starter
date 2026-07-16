@@ -790,6 +790,19 @@ case όπου θα χρησιμοποιούσαμε static-Q1 direct αντί γ
     - Πηγές: `runs/load_mlp/octnov_mlp_recw_g12_{base,dense}.json` ·
       `runs/load_lear/octnov_lear_recw_g12_{base,dense}.json` ·
       `runs/load_lstm/octnov_lstm_recstatic_g12_base.json`.
+18b. **Q1 (3ο window, 2026-07-16, `runs/load_mlp/`, `runs/load_lear/`)** — τίμια
+    καταγραφή MIXED evidence:
+    - **LEAR**: q1 base=359.05→dense=305.42 (**Δ−53.63**) — ΙΔΙΟ πρόσημο 3/3 windows
+      (summer −17.6, octnov −53.9, q1 −53.63). Ενισχύει το §2 finding, πλησιάζει σε
+      headline-level συνέπεια (λείπουν ακόμα seeds).
+    - **MLP**: q1 base=257.16→dense=257.90 (**Δ+0.74**) — ΔΕΝ αναπαράγει το όφελος
+      (σχεδόν flat, ελαφρώς αντίθετο πρόσημο από summer/octnov). ΔΕΝ αναιρεί το ήδη
+      κλεισμένο §2 (χρειάζονται μόνο 2 ανεξάρτητα windows, ήδη έχει), αλλά σημαίνει
+      το MLP dense εύρημα είναι **2/3 windows θετικό, όχι 3/3** — τίμια σημείωση,
+      ΟΧΙ headline-eligible χωρίς περαιτέρω διερεύνηση (πιθανό: q1 χειμωνιάτικο
+      προφίλ διαφορετικό, ή seed-variance ξανά — MLP παραμένει stochastic).
+    - Πηγές: `runs/load_mlp/q1_mlp_recw_g12_{base,dense}.json` ·
+      `runs/load_lear/q1_lear_recw_g12_{base,dense}.json`.
 19a. **LSTM +resfc — §2 ΚΛΕΙΝΕΙ, ΒΛΑΠΤΕΙ σε 2 ανεξάρτητα windows (2026-07-12/16,
     `runs/load_lstm/`)**. `--features "calendar,resfc"` vs `calendar`-only baseline
     (πραγματικό LSTM ablation axis, βλ. σημείο 19 πιο πάνω — dense/lags δεν ισχύουν):
