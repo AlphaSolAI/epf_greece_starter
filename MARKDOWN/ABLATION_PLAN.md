@@ -808,13 +808,18 @@ case όπου θα χρησιμοποιούσαμε static-Q1 direct αντί γ
       (ανεξάρτητες τυχαίες πραγματοποιήσεις) — για LEAR ένα run ΕΙΝΑΙ η πλήρης
       απάντηση by construction. Πηγές seed-runs:
       `runs/load_lear/{summer,octnov,q1}_lear_recw_g12_{base,dense}_seed{7,123}.json`.
-    - **MLP**: q1 base=257.16→dense=257.90 (**Δ+0.74**) — ΔΕΝ αναπαράγει το όφελος
-      (σχεδόν flat, ελαφρώς αντίθετο πρόσημο από summer/octnov). ΔΕΝ αναιρεί το ήδη
-      κλεισμένο §2 (χρειάζονται μόνο 2 ανεξάρτητα windows, ήδη έχει), αλλά σημαίνει
-      το MLP dense εύρημα είναι **2/3 windows θετικό, όχι 3/3** — τίμια σημείωση,
-      ΟΧΙ headline-eligible χωρίς περαιτέρω διερεύνηση (πιθανό: q1 χειμωνιάτικο
-      προφίλ διαφορετικό, ή seed-variance ξανά — MLP παραμένει stochastic).
+    - **MLP**: q1 seed42 base=257.16→dense=257.90 (**Δ+0.74**) — αρχικά έμοιαζε
+      αντίθετο πρόσημο από summer/octnov. **Seed-check (2026-07-16, seeds 7,123,
+      ΟΧΙ όπως στο LEAR — MLP ΕΙΝΑΙ πραγματικά stochastic, torch weight-init)**:
+      seed7 base=265.95→dense=252.59 (Δ**−13.36**) · seed123 base=270.32→
+      dense=258.94 (Δ**−11.37**). **2/3 seeds αρνητικό** (βοηθάει), mean Δ≈−8.0 —
+      το seed42 ήταν απλά άτυχο/κοντά στο noise floor, ΟΧΙ πραγματικό winter-specific
+      reversal. **Διορθωμένο συμπέρασμα: το MLP dense εύρημα ΕΙΝΑΙ συνεπές και στα
+      3 windows** μόλις ελεγχθεί με πολλαπλά seeds στο q1 (η αρχική «MIXED evidence»
+      καταγραφή ήταν βιαστική — καλό παράδειγμα γιατί χρειάζεται seed-check πριν
+      από οριστικό συμπέρασμα σε stochastic μοντέλα).
     - Πηγές: `runs/load_mlp/q1_mlp_recw_g12_{base,dense}.json` ·
+      `runs/load_mlp/q1_mlp_recw_g12_{base,dense}_seed{7,123}.json` ·
       `runs/load_lear/q1_lear_recw_g12_{base,dense}.json`.
 19a. **LSTM +resfc — §2 ΚΛΕΙΝΕΙ, ΒΛΑΠΤΕΙ σε 2 ανεξάρτητα windows (2026-07-12/16,
     `runs/load_lstm/`)**. `--features "calendar,resfc"` vs `calendar`-only baseline
