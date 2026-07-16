@@ -793,8 +793,21 @@ case όπου θα χρησιμοποιούσαμε static-Q1 direct αντί γ
 18b. **Q1 (3ο window, 2026-07-16, `runs/load_mlp/`, `runs/load_lear/`)** — τίμια
     καταγραφή MIXED evidence:
     - **LEAR**: q1 base=359.05→dense=305.42 (**Δ−53.63**) — ΙΔΙΟ πρόσημο 3/3 windows
-      (summer −17.6, octnov −53.9, q1 −53.63). Ενισχύει το §2 finding, πλησιάζει σε
-      headline-level συνέπεια (λείπουν ακόμα seeds).
+      (summer −17.6, octnov −53.9, q1 −53.63). Ενισχύει το §2 finding.
+      **⚠️ Μεθοδολογική διόρθωση (2026-07-16)**: δοκιμάστηκαν seeds {7,123} σε
+      base+dense × 3 windows (12 runs) — MAE **bit-for-bit ΙΔΙΟ** σε ΟΛΑ τα seeds
+      (std=0.00 παντού). Αιτία (ελέγχθηκε, `src/master_forecast.py` LEAR builder):
+      `LassoCV(cv=5, random_state=seed, ...)` — με ακέραιο `cv`, sklearn χρησιμοποιεί
+      `KFold(shuffle=False)` όπου το `random_state` ΔΕΝ έχει καμία επίδραση, και
+      `selection="cyclic"` (default) σημαίνει ο coordinate-descent solver είναι κι
+      αυτός ντετερμινιστικός. **Το LEAR είναι πλήρως seed-invariant σε αυτό το
+      config** — τα 12 «seed» runs ΔΕΝ αποτελούν ανεξάρτητη επιβεβαίωση, απλά
+      αναπαρήγαγαν το ίδιο αποτέλεσμα. Δεν ακυρώνει το ίδιο το εύρημα (dense
+      βοηθάει σε 3/3 windows, deterministic αποτέλεσμα, ΟΧΙ seed-noise σαν το MLP)
+      αλλά ΔΕΝ πληροί το «≥3 seeds» headline κριτήριο με την πνευματική του έννοια
+      (ανεξάρτητες τυχαίες πραγματοποιήσεις) — για LEAR ένα run ΕΙΝΑΙ η πλήρης
+      απάντηση by construction. Πηγές seed-runs:
+      `runs/load_lear/{summer,octnov,q1}_lear_recw_g12_{base,dense}_seed{7,123}.json`.
     - **MLP**: q1 base=257.16→dense=257.90 (**Δ+0.74**) — ΔΕΝ αναπαράγει το όφελος
       (σχεδόν flat, ελαφρώς αντίθετο πρόσημο από summer/octnov). ΔΕΝ αναιρεί το ήδη
       κλεισμένο §2 (χρειάζονται μόνο 2 ανεξάρτητα windows, ήδη έχει), αλλά σημαίνει
