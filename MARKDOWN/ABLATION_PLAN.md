@@ -901,6 +901,38 @@ case όπου θα χρησιμοποιούσαμε static-Q1 direct αντί γ
     προχωράει προς ΔΕΚΤΟ. Best summer stack σήμερα: densemvseas+ts2023 weekly
     215.26 → +biascorr(W28) **209.34** vs ΑΔΜΗΕ 170.76 (gap 80→39 MW από το Batch-3
     baseline 250.45).
+21. **g14 (ΑΔΜΗΕ-aligned gate) MLP/LEAR/LSTM + direct LGBM summer g12 — harvest
+    (2026-07-16/17, detached queue `scripts/load_g14_direct_queue.sh`, PID 17180, 23/23
+    OK 0 FAILED, log `logs/load_g14_direct_queue.log`).** Ομάδες ΞΕΧΩΡΙΣΤΑ (ΠΟΤΕ g14 vs
+    g12 ή direct vs recursive αναμεικτά):
+    - **LEAR weekly rec g14, `dense` vs `base`** (`runs/load_lear/{q1,summer,octnov}_lear_recw_g14_{base,dense}.json`):
+      octnov Δ=−53.74 (268.41→214.67), q1 Δ=−50.28 (358.12→307.84), summer Δ=−14.15
+      (406.32→392.18). **3/3 windows ίδιο πρόσημο, |Δ|>0.15** → επιβεβαιώνει το ήδη
+      ΔΕΚΤΟ g12 `dense` finding (§9) σε 2ο gate. PENDING §2-level (νέος gate, όχι
+      νέο ΔΕΚΤΟ headline χωρίς χρήστη) αλλά robustness-confirmed.
+    - **MLP weekly rec g14, `dense` vs `base`** (`runs/load_mlp/{q1,summer,octnov}_mlp_recw_g14_{base,dense}.json`):
+      octnov Δ=−1.95 (167.09→165.14), q1 Δ=−17.64 (260.52→242.89), summer Δ=−53.74
+      (407.49→353.75). **3/3 windows ίδιο πρόσημο** (octnov κάτω από |Δ|>0.15 tolerance
+      αλλά ίδιο πρόσημο) → συνεπές με g12 `dense` finding, 2ος gate.
+    - **LSTM weekly-rec-static g14, `loadfc` vs `base`** (`runs/load_lstm/{q1,summer,octnov}_lstm_recstatic_g14_{base,loadfc}.json`):
+      octnov Δ=−2.62 (140.20→137.59), q1 Δ=−50.61 (220.16→169.55), summer Δ=−104.76
+      (296.24→191.49). **3/3 windows ίδιο πρόσημο** → συνεπές με g12 `calendar+loadfc`
+      νικητή config (§9). g14 seed-check ΔΕΝ έγινε (χαμηλή προτεραιότητα, ίδιο pattern).
+    - **direct LGBM summer g12** (`runs/load_direct/summer_lgbm_dirw_g12_{base,dense,genlags,loadfc,noroll}.json`,
+      baseline=g12_base 315.70): `dense` −16.06, `loadfc` −15.18, `noroll` −14.27
+      (όλα βοηθάνε, οριακά πάνω από |Δ|>0.15) · `genlags` +17.01 (βλάπτει). **1 window/1
+      algo/1 strategy — PENDING(1-window)**, ΟΧΙ ΔΕΚΤΟ.
+    - **direct vs recursive, ίδιο LGBM/summer/g12/spec** (σύγκριση, ΟΧΙ ablation-εντός-ομάδας):
+      `runs/load_direct/summer_lgbm_dirw_g12_*.json` vs `runs/load_contest/summer_lgbm_recw_g12_*.json`
+      — base: direct 315.70 vs recursive 358.65 (direct **−42.95 καλύτερο**) · dense:
+      299.65 vs 343.27 (**−43.62**) · genlags: 332.72 vs 376.45 (**−43.73**) · loadfc:
+      300.53 vs **216.41** (direct **+84.12 χειρότερο** — recursive+loadfc σαρώνει).
+      Ενδιαφέρον interaction: direct>recursive σε 3/4 specs αλλά recursive+loadfc είναι
+      ο απόλυτος νικητής (216.41, καλύτερο κελί όλης της ομάδας). 1 window/1 algo —
+      PENDING, ΑΝΤΙΘΕΤΟ από το price finding (§3 σημείο 2: εκεί recursive>direct
+      οριστικό) — διαφορετικό task, ΔΕΝ αντικρούει το price verdict.
+    - Καμία γραμμή FAILED στο log, καμία Δ=0.000 (RED FLAG κανόνας 12 — δεν εφαρμόζεται,
+      #features άλλαζε κανονικά σε όλα τα arms).
 
 ## 8. Επόμενα βήματα
 
@@ -962,48 +994,55 @@ SS×weekly · henex_premarket.
   loadfc) — Batch 1 (30). + meteo_vintage {mv, densemv} (12) + octnov seeds {7,123}×{dense,mv,densemv} (12)
   + SS {base,dense}×{octnov,summer} (8) + `seas` weekly confirm 3/3 (άλλη session, §7.16).
 - **XGB**: ίδια 5 clean arms — Batch 2 (30) + SS full 8-cell grid (8).
-- **MLP** (2026-07-12/16): weekly rec, {base,dense} × {summer,octnov,q1} × g12 — **3/3 windows**.
-  `dense` **§2 CLEARS, seed-verified συνεπές** (summer Δ−7.25, octnov Δ−6.80, q1 mean Δ≈−8.0
-  μετά από seed-check {7,123} — το αρχικό seed42 q1 flip ήταν noise, διορθώθηκε). `seas`
+- **MLP** (2026-07-12/17): weekly rec, {base,dense} × {summer,octnov,q1} × **g12+g14** —
+  **3/3 windows ΣΕ ΚΑΘΕ gate**. `dense` **§2 CLEARS, seed-verified συνεπές** (g12: summer
+  Δ−7.25, octnov Δ−6.80, q1 mean Δ≈−8.0 μετά από seed-check {7,123})· `seas`
   δοκιμάστηκε, **ΑΠΟΡΡΙΦΘΗΚΕ** (seed-variance artifact, seed7 αντιστρέφει πρόσημο — §7.17).
-  g14 ΕΚΚΡΕΜΕΙ (χαμηλή προτεραιότητα).
-- **LEAR** (2026-07-12/16): ίδια δομή, **3/3 windows**. `dense` **§2 CLEARS** (Δ−17.6/−53.9/−53.63).
-  `seas` ουδέτερο (LassoCV μηδενίζει τους συντελεστές, coefficient-check — §7.18).
+  ✅ **g14 ΕΓΙΝΕ (2026-07-16/17, §7.21)**: ίδιο πρόσημο 3/3 (octnov−1.95/q1−17.64/summer−53.74)
+  — επιβεβαιώνει cross-gate. g14 seed-check ΔΕΝ έγινε (χαμηλή προτεραιότητα).
+- **LEAR** (2026-07-12/17): ίδια δομή, **3/3 windows ΣΕ ΚΑΘΕ gate**. `dense` **§2 CLEARS**
+  (g12: Δ−17.6/−53.9/−53.63). `seas` ουδέτερο (LassoCV μηδενίζει τους συντελεστές — §7.18).
   ⚠️ **Μεθοδολογικό**: το LEAR (`LassoCV` με `cv=int`/`selection=cyclic`) είναι **πλήρως
-  seed-invariant** — seed-checks {7,123}×3 windows έδωσαν bit-identical MAE (ελέγχθηκε ο
-  μηχανισμός, όχι bug). Δεν πληροί το «3 seeds» headline κριτήριο με την πνευματική έννοια
-  (καμία τυχαιότητα να ελεγχθεί) — 1 run ΕΙΝΑΙ η πλήρης απάντηση εδώ. g14 ΕΚΚΡΕΜΕΙ.
-- **LSTM** (2026-07-12/16): **root-cause fix** (exposure bias, `src/lstm_models.py`, commit
+  seed-invariant** — δεν πληροί το «3 seeds» headline κριτήριο με την πνευματική έννοια
+  (καμία τυχαιότητα να ελεγχθεί) — 1 run ΕΙΝΑΙ η πλήρης απάντηση εδώ.
+  ✅ **g14 ΕΓΙΝΕ (2026-07-16/17, §7.21)**: ίδιο πρόσημο 3/3 (octnov−53.74/q1−50.28/summer−14.15)
+  — επιβεβαιώνει cross-gate.
+- **LSTM** (2026-07-12/17): **root-cause fix** (exposure bias, `src/lstm_models.py`, commit
   `e1b78f0`) — Hused πάντα=H + scheduled teacher-forcing decay. Verified: corr 0.94 (ήταν 0.69),
   καμία runaway drift. Πραγματικό ablation axis = calendar/resfc/loadfc/meteo/fuel (ΟΧΙ
-  dense/lags — δομικά δεν ισχύουν, §7.19a). **3/3 windows** για `resfc`/`meteo`/`loadfc`:
+  dense/lags — δομικά δεν ισχύουν, §7.19a). **3/3 windows × g12** για `resfc`/`meteo`/`loadfc`:
   `resfc`/`meteo` **§2 CLEAR ως ΑΡΝΗΤΙΚΑ** (βλάπτουν, seed-robust 3/3 seeds) · `loadfc`
   **§2 CLEARS ως ΘΕΤΙΚΟ** (summer Δ−166.0, octnov Δ−5.49, q1 Δ−47.58 — πιο seed-σταθερό
   finding απ' όλα, spread ~5.4). ΝΙΚΗΤΗΣ config: **`calendar+loadfc`**. `fuel`=0 cols VOID.
-  g14 ΕΚΚΡΕΜΕΙ (χαμηλή προτεραιότητα).
+  ✅ **g14 loadfc ΕΓΙΝΕ (2026-07-16/17, §7.21)**: ίδιο πρόσημο 3/3 (octnov−2.62/q1−50.61/
+  summer−104.76) — επιβεβαιώνει cross-gate, ΠΙΟ δυνατό effect στο summer απ' ό,τι στο g12.
+  g14 seed-check ΔΕΝ έγινε (χαμηλή προτεραιότητα).
+- ✅ **direct LGBM summer g12 πρώτο πέρασμα ΕΓΙΝΕ (2026-07-16/17, §7.21,
+  `runs/load_direct/summer_lgbm_dirw_g12_*.json`)**: dense/loadfc/noroll βοηθάνε
+  (−14..−16), genlags βλάπτει (+17) — 1 window, PENDING. Direct **κερδίζει** recursive
+  σε 3/4 specs (base/dense/genlags, −43 περίπου) αλλά recursive+loadfc σαρώνει όλη την
+  ομάδα (216.41) — interaction, ΟΧΙ universal «direct>recursive για load» ακόμα.
 - Ευρήματα (όλα PENDING §2-level· MLP/LSTM headline-eligible μετά seed-checks, LEAR εξ ορισμού
   deterministic — δεν χρειάζεται headline seeds με την ίδια έννοια):
-  dense 12/12+3/3 cross-algo (LGBM/XGB/MLP/LEAR, 3 windows) · octnov κερδίζει ΑΔΜΗΕ (seed-robust,
-  window-specific) · meteo_vintage 36-78% oracle · SS βοηθάει 14/16 (όχι universal) ·
-  LSTM `calendar+loadfc` βέλτιστο (resfc/meteo βλάπτουν, model-specific vs LGBM/XGB όπου βοηθούν).
+  dense 12/12+3/3+3/3 cross-algo cross-gate (LGBM/XGB/MLP/LEAR, 3 windows × g12+g14) ·
+  octnov κερδίζει ΑΔΜΗΕ (seed-robust, window-specific) · meteo_vintage 36-78% oracle ·
+  SS βοηθάει 14/16 (όχι universal) · LSTM `calendar+loadfc` βέλτιστο (resfc/meteo βλάπτουν,
+  model-specific vs LGBM/XGB όπου βοηθούν) confirmed cross-gate.
 
 ### ❌ ΛΕΙΠΟΥΝ για ΠΛΗΡΕΣ ablation (σειρά προτεραιότητας)
-1. **MLP/LEAR/LSTM**: g14 (μόνο g12 έγινε σε όλα, 3 windows × g12) — χαμηλή προτεραιότητα,
-   ίδιο pattern με ό,τι ήδη τρέξαμε. LSTM combo `calendar+loadfc+resfc/meteo` (χαμηλή
-   προτεραιότητα — resfc/meteo έδειξαν ήδη αρνητικά μεμονωμένα, απίθανο να βοηθήσουν μαζί).
-2. **direct strategy** (ποτέ clean για contest· τα 44 παλιά direct load runs = άλλο snapshot, ΑΚΥΡΑ
-   για σύγκριση): LGBM+XGB direct, clean arms × 3 windows × g12. ⚠️ direct×weekly ΑΡΓΟ →
-   ΠΟΛΥ bounded ανά στάδιο. Πρώτο static probe έγινε από άλλη session (§7.19, densemvseas −31
-   vs recursive). ΟΧΙ για mlp/lstm.
-3. **SS completeness**: q1 SS (bounded-out μέχρι τώρα) LGBM+XGB {base,dense}×g12 · step-decay
+1. **direct strategy πλήρες** (πρώτο LGBM summer g12 πέρασμα έγινε, §7.21): LGBM octnov+q1 g12
+   (1 window τη φορά, ΑΡΓΟ) → XGB direct 3 windows × g12 → MLP/LEAR/LSTM g14 seed-checks
+   (χαμηλή προτεραιότητα — ίδιο pattern με g12, απίθανο να αλλάξει).
+2. **SS completeness**: q1 SS (bounded-out μέχρι τώρα) LGBM+XGB {base,dense}×g12 · step-decay
    probe («σκαλί») στο summer (ό,τι είδαμε ήταν linear default — μήπως step > linear;).
-4. **meteo_vintage cross-algo**: XGB + {mv, densemv} × 3 windows × 2 gates (μόνο LGBM έγινε).
-5. **Gated (μπλοκαρισμένα σε data)**: `+pricelags` (χρειάζεται G6 price ingest στο load parquet) ·
+3. **meteo_vintage cross-algo**: XGB + {mv, densemv} × 3 windows × 2 gates (μόνο LGBM έγινε).
+4. **Gated (μπλοκαρισμένα σε data)**: `+pricelags` (χρειάζεται G6 price ingest στο load parquet) ·
    `+meteo` oracle = DEPRECATED (Α6, μόνο ως oracle αναφορά, ΠΟΤΕ ΔΕΚΤΟ vs ΑΔΜΗΕ).
-6. **Seeds για headline (LGBM/XGB)**: summer/q1 νικητές θέλουν seeds {7,123} πλήρη (μόνο
+5. **Seeds για headline (LGBM/XGB)**: summer/q1 νικητές θέλουν seeds {7,123} πλήρη (μόνο
    octnov σκληρύνθηκε πλήρως μέχρι στιγμής). ✅ MLP/LEAR/LSTM seeds έγιναν ήδη σε αυτό το
    session (§18b, §7.19c) — μόνο LGBM/XGB απομένουν για πλήρες headline seed coverage.
 
 ### Καθαρή σειρά σταδίων (κάθε γραμμή = 1 μικρό detached stage)
-MLP/LEAR/LSTM g14 → direct LGBM (1 window τη φορά) → direct XGB →
-SS q1 → SS step-decay summer → vintage-XGB → [G6 μετά: pricelags] → LGBM/XGB seeds.
+~~MLP/LEAR/LSTM g14~~ ✅ ΕΓΙΝΕ (§7.21) → **direct LGBM octnov (1 window)** [ΕΠΟΜΕΝΟ] →
+direct LGBM q1 → direct XGB (3 windows) → SS q1 → SS step-decay summer → vintage-XGB →
+[G6 μετά: pricelags] → LGBM/XGB seeds.
