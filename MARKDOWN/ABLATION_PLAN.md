@@ -933,6 +933,26 @@ case όπου θα χρησιμοποιούσαμε static-Q1 direct αντί γ
       οριστικό) — διαφορετικό task, ΔΕΝ αντικρούει το price verdict.
     - Καμία γραμμή FAILED στο log, καμία Δ=0.000 (RED FLAG κανόνας 12 — δεν εφαρμόζεται,
       #features άλλαζε κανονικά σε όλα τα arms).
+22. **direct LGBM octnov g12 (2ο direct window) — harvest (2026-07-17,
+    `scripts/load_direct_lgbm_octnov.sh`, 5/5 OK 0 FAILED, log `logs/load_direct_lgbm_octnov.log`,
+    runs `runs/load_direct/octnov_lgbm_dirw_g12_*.json`).** Αναπαραγωγή:
+    `bash scripts/load_direct_lgbm_octnov.sh` (idempotent, preflight+poison PASS στην αρχή).
+    - **Ablation εντός direct** (baseline `g12_base` 162.86): `dense` **−18.00** (144.86) ·
+      `genlags` **+30.78** (193.64) · `loadfc` +0.67 (163.53, ~noise) · `noroll` +10.09 (172.95).
+    - **Pre-gate με το summer πέρασμα (§7.21) — 2 ανεξάρτητα windows**: `dense` ΒΟΗΘΑΕΙ
+      2/2 (−18.0/−16.1) ✅ ACCEPT-candidate · `genlags` ΒΛΑΠΤΕΙ 2/2 (+30.8/+17.0) ✅
+      ACCEPT-candidate (και τα δύο για direct-LGBM-load, χρειάζονται validity-reviewer) ·
+      `loadfc` **MIXED** (summer −15.2 / octnov +0.7) · `noroll` **MIXED** (summer −14.3 /
+      octnov +10.1) → και τα δύο θέλουν 3ο window (q1) για διάκριση.
+    - **direct vs recursive (ίδιο spec/window/gate, vs `runs/load_contest/octnov_lgbm_recw_g12_*`)**:
+      στο octnov το recursive κερδίζει σε **ΟΛΑ τα 5 specs** (dir−rec: base +9.2, dense +1.9,
+      genlags +50.2, loadfc +23.8, noroll +16.0) — **ΑΝΑΤΡΟΠΗ της summer εικόνας** (εκεί direct
+      κέρδιζε 3/4). Καθαρό strategy×window interaction: το direct πλεονέκτημα είναι
+      summer-specific (συνεπές με το διαγνωστικό ότι το intraday σφάλμα rollout χτυπά στη
+      ζέστη), ΟΧΙ γενικός κανόνας για load. Το direct dense 144.86 < ΑΔΜΗΕ 146.81 οριακά,
+      αλλά το recursive dense 142.97 ήταν ήδη καλύτερο — καμία νέα ΑΔΜΗΕ-claim από το direct.
+    - **Runtime σημείωση**: το direct `loadfc` arm ήταν παθολογικά αργό (14942s vs 443-3675s
+      τα άλλα) — για το q1 direct στάδιο, το loadfc arm εκτιμάται ~5-6h μόνο του.
 
 ## 8. Επόμενα βήματα
 
@@ -1017,11 +1037,12 @@ SS×weekly · henex_premarket.
   ✅ **g14 loadfc ΕΓΙΝΕ (2026-07-16/17, §7.21)**: ίδιο πρόσημο 3/3 (octnov−2.62/q1−50.61/
   summer−104.76) — επιβεβαιώνει cross-gate, ΠΙΟ δυνατό effect στο summer απ' ό,τι στο g12.
   g14 seed-check ΔΕΝ έγινε (χαμηλή προτεραιότητα).
-- ✅ **direct LGBM summer g12 πρώτο πέρασμα ΕΓΙΝΕ (2026-07-16/17, §7.21,
-  `runs/load_direct/summer_lgbm_dirw_g12_*.json`)**: dense/loadfc/noroll βοηθάνε
-  (−14..−16), genlags βλάπτει (+17) — 1 window, PENDING. Direct **κερδίζει** recursive
-  σε 3/4 specs (base/dense/genlags, −43 περίπου) αλλά recursive+loadfc σαρώνει όλη την
-  ομάδα (216.41) — interaction, ΟΧΙ universal «direct>recursive για load» ακόμα.
+- ✅ **direct LGBM summer+octnov g12 ΕΓΙΝΑΝ (2026-07-16/17, §7.21-22,
+  `runs/load_direct/{summer,octnov}_lgbm_dirw_g12_*.json`)**: 2/2 windows — `dense`
+  βοηθάει (−16/−18) και `genlags` βλάπτει (+17/+31) → ACCEPT-candidates (validity-reviewer
+  εκκρεμεί)· `loadfc`/`noroll` **MIXED** (θέλουν q1). Direct-vs-recursive: summer direct
+  κερδίζει 3/4, octnov recursive κερδίζει 5/5 → strategy×window interaction, το direct
+  πλεονέκτημα είναι summer-specific. q1 direct = επόμενο (loadfc arm ~5-6h, αργό).
 - Ευρήματα (όλα PENDING §2-level· MLP/LSTM headline-eligible μετά seed-checks, LEAR εξ ορισμού
   deterministic — δεν χρειάζεται headline seeds με την ίδια έννοια):
   dense 12/12+3/3+3/3 cross-algo cross-gate (LGBM/XGB/MLP/LEAR, 3 windows × g12+g14) ·
@@ -1043,6 +1064,7 @@ SS×weekly · henex_premarket.
    session (§18b, §7.19c) — μόνο LGBM/XGB απομένουν για πλήρες headline seed coverage.
 
 ### Καθαρή σειρά σταδίων (κάθε γραμμή = 1 μικρό detached stage)
-~~MLP/LEAR/LSTM g14~~ ✅ ΕΓΙΝΕ (§7.21) → **direct LGBM octnov (1 window)** [ΕΠΟΜΕΝΟ] →
-direct LGBM q1 → direct XGB (3 windows) → SS q1 → SS step-decay summer → vintage-XGB →
-[G6 μετά: pricelags] → LGBM/XGB seeds.
+~~MLP/LEAR/LSTM g14~~ ✅ (§7.21) → ~~direct LGBM octnov~~ ✅ (§7.22) →
+**LGBM/XGB seeds summer+q1** [ΕΠΟΜΕΝΟ — αναβαθμίστηκε σε προτεραιότητα: ξεκλειδώνει
+headline-eligibility] → direct LGBM q1 (λύνει τα loadfc/noroll MIXED) → direct XGB →
+SS q1 → SS step-decay summer → vintage-XGB → [G6 μετά: pricelags].
