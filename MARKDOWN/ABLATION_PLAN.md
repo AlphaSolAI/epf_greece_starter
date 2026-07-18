@@ -953,6 +953,36 @@ case όπου θα χρησιμοποιούσαμε static-Q1 direct αντί γ
       αλλά το recursive dense 142.97 ήταν ήδη καλύτερο — καμία νέα ΑΔΜΗΕ-claim από το direct.
     - **Runtime σημείωση**: το direct `loadfc` arm ήταν παθολογικά αργό (14942s vs 443-3675s
       τα άλλα) — για το q1 direct στάδιο, το loadfc arm εκτιμάται ~5-6h μόνο του.
+      **✏️ Διόρθωση (2026-07-18, §7.23)**: το q1 loadfc πήρε 514s — ο μηχανισμός ήταν
+      contention του μηχανήματος (80x swing σε πανομοιότυπα configs μέσα στην ίδια ουρά,
+      π.χ. 553s vs 49689s το ίδιο seed spec), ΟΧΙ ιδιότητα του config. Ουσία επαληθευμένη
+      (triaging-suspicious-results: #features 17/35/35/15/18 ανά arm, preds διαφέρουν
+      2160/2160, n=2160, configs σωστά στο JSON).
+23. **Mega queue seeds+direct-q1 — harvest (2026-07-17/18, `scripts/load_seeds_directq1_queue.sh`,
+    41/41 OK 0 FAILED, log `logs/load_seeds_directq1_queue.log`, preflight+poison PASS).**
+    Αναπαραγωγή: `bash scripts/load_seeds_directq1_queue.sh` (idempotent).
+    - **Direct LGBM q1 g12 (3ο window, `runs/load_direct/q1_lgbm_dirw_g12_*.json`,
+      baseline 269.61)**: `dense` −10.73 · `genlags` +11.36 · `loadfc` −5.46 · `noroll` +14.57.
+      **Με τα 3 windows πλέον (§7.21/22)**: `dense` ΒΟΗΘΑΕΙ **3/3** (−16.1/−18.0/−10.7) ·
+      `genlags` ΒΛΑΠΤΕΙ **3/3** (+17.0/+30.8/+11.4) → και τα δύο ισχυρά ACCEPT-candidates
+      για direct-LGBM-load. `loadfc` 2/3 βοηθάει (−15.2/+0.7/−5.5, octnov στο noise) ·
+      `noroll` MIXED με εποχιακό μοτίβο (roll βλάπτει summer, βοηθάει octnov/q1).
+    - **Direct vs recursive q1 g12 (ίδιο spec, vs `runs/load_contest/q1_lgbm_recw_g12_*`)**:
+      recursive κερδίζει **5/5** (dir−rec: +13.6/+11.4/+31.1/+81.8/+25.6). Συνολική εικόνα
+      3 windows: summer direct 3/4, octnov recursive 5/5, q1 recursive 5/5 → **recursive
+      παραμένει η default στρατηγική και για load**· το direct πλεονέκτημα είναι
+      αποκλειστικά summer φαινόμενο (PENDING ερμηνεία, πιθανό intraday-rollout-σφάλμα
+      στη ζέστη).
+    - **LGBM seeds summer+q1 (24 runs, `runs/load_contest_seeds/{summer,q1}_lgbm_recw_{g12,g14}_{dense,mv,densemv}_s{7,123}.json`
+      + υπάρχοντα s42)**: std 1.7-5.5 MW σε όλα τα 12 κελιά, **καμία αναστροφή προσήμου** —
+      τα summer/q1 ranking (densemv/mv > dense) κρατάνε σε 3/3 seeds. Μαζί με το octnov
+      seed hardening (2026-07-11): **LGBM seed coverage ΠΛΗΡΕΣ σε 3 windows × 2 gates**.
+    - **XGB dense seeds (12 runs, 3 windows × 2 gates × s{7,123} + s42)**: dense βοηθάει
+      σε **18/18 κελιά-seeds** (Δ −0.8 έως −13.9), std 0.6-4.2. **XGB octnov (χωρίς
+      καιρό) < ΑΔΜΗΕ 146.81 σε ΟΛΑ τα seeds και στα 2 gates**: g12 137.5/139.6/138.8 ·
+      g14 143.8/142.7/142.9 → το «κερδίζουμε ΑΔΜΗΕ στο octnov» είναι πλέον **seed-robust
+      cross-gate ΚΑΙ σε 2ο αλγόριθμο** (καθαρά features, όχι oracle — Α6 συμβατό).
+    - Όλα PENDING §2-level μέχρι validity-reviewer + αποδοχή χρήστη.
 
 ## 8. Επόμενα βήματα
 
@@ -1037,12 +1067,16 @@ SS×weekly · henex_premarket.
   ✅ **g14 loadfc ΕΓΙΝΕ (2026-07-16/17, §7.21)**: ίδιο πρόσημο 3/3 (octnov−2.62/q1−50.61/
   summer−104.76) — επιβεβαιώνει cross-gate, ΠΙΟ δυνατό effect στο summer απ' ό,τι στο g12.
   g14 seed-check ΔΕΝ έγινε (χαμηλή προτεραιότητα).
-- ✅ **direct LGBM summer+octnov g12 ΕΓΙΝΑΝ (2026-07-16/17, §7.21-22,
-  `runs/load_direct/{summer,octnov}_lgbm_dirw_g12_*.json`)**: 2/2 windows — `dense`
-  βοηθάει (−16/−18) και `genlags` βλάπτει (+17/+31) → ACCEPT-candidates (validity-reviewer
-  εκκρεμεί)· `loadfc`/`noroll` **MIXED** (θέλουν q1). Direct-vs-recursive: summer direct
-  κερδίζει 3/4, octnov recursive κερδίζει 5/5 → strategy×window interaction, το direct
-  πλεονέκτημα είναι summer-specific. q1 direct = επόμενο (loadfc arm ~5-6h, αργό).
+- ✅ **direct LGBM ΠΛΗΡΕΣ — 3/3 windows g12 (2026-07-16/18, §7.21-23,
+  `runs/load_direct/{summer,octnov,q1}_lgbm_dirw_g12_*.json`)**: `dense` ΒΟΗΘΑΕΙ 3/3
+  (−16/−18/−11), `genlags` ΒΛΑΠΤΕΙ 3/3 (+17/+31/+11) → ACCEPT-candidates· `loadfc` 2/3
+  (octnov noise)· `noroll` MIXED εποχιακό. Direct-vs-recursive: recursive κερδίζει
+  octnov 5/5 ΚΑΙ q1 5/5, direct μόνο summer 3/4 → **recursive παραμένει default για
+  load**, direct = summer-φαινόμενο.
+- ✅ **Seeds ΠΛΗΡΗ (2026-07-17/18, §7.23)**: LGBM {dense,mv,densemv} × 3 windows × 2 gates
+  × 3 seeds — std ≤5.5, καμία αναστροφή· XGB dense × 3 windows × 2 gates × 3 seeds —
+  βοηθάει 18/18. **XGB octnov < ΑΔΜΗΕ σε όλα τα seeds, και στα 2 gates** (g12 137.5-139.6,
+  g14 142.7-143.8 vs 146.81) — καθαρά features, Α6 συμβατό.
 - Ευρήματα (όλα PENDING §2-level· MLP/LSTM headline-eligible μετά seed-checks, LEAR εξ ορισμού
   deterministic — δεν χρειάζεται headline seeds με την ίδια έννοια):
   dense 12/12+3/3+3/3 cross-algo cross-gate (LGBM/XGB/MLP/LEAR, 3 windows × g12+g14) ·
@@ -1051,20 +1085,17 @@ SS×weekly · henex_premarket.
   model-specific vs LGBM/XGB όπου βοηθούν) confirmed cross-gate.
 
 ### ❌ ΛΕΙΠΟΥΝ για ΠΛΗΡΕΣ ablation (σειρά προτεραιότητας)
-1. **direct strategy πλήρες** (πρώτο LGBM summer g12 πέρασμα έγινε, §7.21): LGBM octnov+q1 g12
-   (1 window τη φορά, ΑΡΓΟ) → XGB direct 3 windows × g12 → MLP/LEAR/LSTM g14 seed-checks
-   (χαμηλή προτεραιότητα — ίδιο pattern με g12, απίθανο να αλλάξει).
+1. **direct XGB** 3 windows × g12 (το direct-LGBM έκλεισε 3/3 — cross-algo confirm του
+   direct verdict)· MLP/LEAR/LSTM g14 seed-checks (χαμηλή προτεραιότητα).
 2. **SS completeness**: q1 SS (bounded-out μέχρι τώρα) LGBM+XGB {base,dense}×g12 · step-decay
    probe («σκαλί») στο summer (ό,τι είδαμε ήταν linear default — μήπως step > linear;).
 3. **meteo_vintage cross-algo**: XGB + {mv, densemv} × 3 windows × 2 gates (μόνο LGBM έγινε).
 4. **Gated (μπλοκαρισμένα σε data)**: `+pricelags` (χρειάζεται G6 price ingest στο load parquet) ·
    `+meteo` oracle = DEPRECATED (Α6, μόνο ως oracle αναφορά, ΠΟΤΕ ΔΕΚΤΟ vs ΑΔΜΗΕ).
-5. **Seeds για headline (LGBM/XGB)**: summer/q1 νικητές θέλουν seeds {7,123} πλήρη (μόνο
-   octnov σκληρύνθηκε πλήρως μέχρι στιγμής). ✅ MLP/LEAR/LSTM seeds έγιναν ήδη σε αυτό το
-   session (§18b, §7.19c) — μόνο LGBM/XGB απομένουν για πλήρες headline seed coverage.
+5. ~~Seeds για headline (LGBM/XGB)~~ ✅ **ΕΓΙΝΑΝ ΟΛΑ (2026-07-18, §7.23)** — LGBM+XGB+MLP+
+   LEAR+LSTM πλήρες seed coverage σε 3 windows (LGBM/XGB και σε 2 gates).
 
 ### Καθαρή σειρά σταδίων (κάθε γραμμή = 1 μικρό detached stage)
-~~MLP/LEAR/LSTM g14~~ ✅ (§7.21) → ~~direct LGBM octnov~~ ✅ (§7.22) →
-**LGBM/XGB seeds summer+q1** [ΕΠΟΜΕΝΟ — αναβαθμίστηκε σε προτεραιότητα: ξεκλειδώνει
-headline-eligibility] → direct LGBM q1 (λύνει τα loadfc/noroll MIXED) → direct XGB →
-SS q1 → SS step-decay summer → vintage-XGB → [G6 μετά: pricelags].
+~~MLP/LEAR/LSTM g14~~ ✅ (§7.21) → ~~direct LGBM octnov~~ ✅ (§7.22) → ~~LGBM/XGB seeds
+summer+q1~~ ✅ (§7.23) → ~~direct LGBM q1~~ ✅ (§7.23) → **direct XGB (3 windows)**
+[ΕΠΟΜΕΝΟ] → SS q1 → SS step-decay summer → vintage-XGB → [G6 μετά: pricelags].
