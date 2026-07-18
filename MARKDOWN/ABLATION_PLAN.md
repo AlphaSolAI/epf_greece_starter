@@ -1089,10 +1089,11 @@ SS×weekly · henex_premarket.
   g14 seed-check ΔΕΝ έγινε (χαμηλή προτεραιότητα).
 - ✅ **direct LGBM ΠΛΗΡΕΣ — 3/3 windows g12 (2026-07-16/18, §7.21-23,
   `runs/load_direct/{summer,octnov,q1}_lgbm_dirw_g12_*.json`)**: `dense` ΒΟΗΘΑΕΙ 3/3
-  (−16/−18/−11), `genlags` ΒΛΑΠΤΕΙ 3/3 (+17/+31/+11) → ACCEPT-candidates· `loadfc` 2/3
-  (octnov noise)· `noroll` MIXED εποχιακό. Direct-vs-recursive: recursive κερδίζει
-  octnov 5/5 ΚΑΙ q1 5/5, direct μόνο summer 3/4 → **recursive παραμένει default για
-  load**, direct = summer-φαινόμενο.
+  (−16/−18/−11), `genlags` ΒΛΑΠΤΕΙ 3/3 (+17/+31/+11) → **ACCEPT (validity-review Ε3,
+  scoped direct-LGBM-weekly-g12)**· `loadfc` 2/3 (octnov noise)· `noroll` MIXED εποχιακό.
+  Direct-vs-recursive (**Ε4 PENDING ως γενικός κανόνας**): interaction — rec κερδίζει
+  q1+octnov (9/10 σημαντικά), dir κερδίζει summer (4/5)· ΜΟΝΟ το loadfc-scoped «rec >
+  dir 3/3 (−81.8/−84.1/−23.8)» δικαιολογεί default, και μόνο για spec με loadfc.
 - ✅ **Seeds ΠΛΗΡΗ (2026-07-17/18, §7.23)**: LGBM {dense,mv,densemv} × 3 windows × 2 gates
   × 3 seeds — std ≤5.5, καμία αναστροφή· XGB dense × 3 windows × 2 gates × 3 seeds —
   βοηθάει 18/18. **XGB octnov < ΑΔΜΗΕ σε όλα τα seeds, και στα 2 gates** (g12 137.5-139.6,
