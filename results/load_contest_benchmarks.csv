@@ -1,0 +1,10 @@
+window,benchmark,MAE_MW,n
+q1,ADMIE_load_fc,175.5617,2160
+q1,naive_lag168,367.6713,2160
+q1,naive_lag24,343.1301,2160
+summer,ADMIE_load_fc,170.7604,2208
+summer,naive_lag168,603.8854,2208
+summer,naive_lag24,408.0924,2208
+octnov,ADMIE_load_fc,146.8095,1463
+octnov,naive_lag168,237.7794,1463
+octnov,naive_lag24,269.0754,1463

@@ -52,17 +52,25 @@ PASS φρέσκο. Πλήρης τεκμηρίωση: `ABLATION_PLAN §5.12δ`. 
 - Παλιό headline **15.17 ΣΕ ΑΝΑΣΤΟΛΗ** (leaked). Νέο headline candidate: `default,dense`
   weekly retrain recursive Q1=17.035/Summer=13.812 — **ΔΕΝ κλειδώνει** πριν: (1) σωστό
   seed re-run (weekly, όχι static), (2) LOAD poisoning check, (3) SS 2ο algorithm/window.
-- **LOAD contest (G7, 2026-07-11)**: Batches 1-3 DONE (72 weekly runs, 0 FAILED,
-  `runs/load_contest/`). **`meteo_vintage` (G5, έντιμος D-1 καιρός) live end-to-end**
-  (audit→TDD wiring→poison/control→smoke→batch· `docs/features/meteo_vintage/{design,deploy}.md`).
-  Ευρήματα (pre-gate PASS, αποδοχή=χρήστης): (α) **octnov: κερδίζουμε ΑΔΜΗΕ** — vintage
-  arms 128.5-133.1 & XGB dense ΧΩΡΙΣ καιρό 137.5/143.8 vs 146.81, σε 2 gates (και το
-  ΑΔΜΗΕ-aligned g14)· window-specific, 1 seed. (β) **dense: §2 12/12 σε LGBM+XGB**.
-  (γ) vintage κρατά 36-78% του oracle meteo οφέλους → παλιά oracle-meteo συμπεράσματα
-  ήταν ~2.8× φουσκωμένα (Α6 δικαιωμένο). (δ) q1/summer: ΑΔΜΗΕ προηγείται (175.6/170.8
-  vs 214.8+/250.5+)· διαγνωστικό: χάνουμε σε regime μεταβάσεις + βάθος recursive rollout
-  (σφάλμα 135→320 MW μέσα στη μέρα), ΟΧΙ στη ζέστη per se — επόμενα stages (σειρά χρήστη):
-  SS → direct. Πλήρης αφήγηση: `reports/feature_lifecycle_meteo_vintage_20260710.md`.
+- **LOAD contest (G7) — κατάσταση 2026-07-18 (πλήρης χάρτης: ABLATION §9, entries §7.19-23)**:
+  Batches 1-3 (72 runs) + MLP/LEAR/LSTM 3 windows × 2 gates + direct LGBM 3 windows +
+  seeds ΠΛΗΡΗ (LGBM {dense,mv,densemv} + XGB dense × 3 windows × 2 gates × 3 seeds) —
+  όλα 0 FAILED. **`meteo_vintage` (G5) live end-to-end**. Ευρήματα (PENDING —
+  validity-reviewer σε εξέλιξη, αποδοχή=χρήστης):
+  (α) **octnov: κερδίζουμε ΑΔΜΗΕ seed-robust** — XGB dense ΧΩΡΙΣ καιρό g12
+  137.5/139.6/138.8 · g14 143.8/142.7/142.9 vs 146.81, 3 seeds × 2 gates (§7.23)·
+  window-specific (q1/summer: ΑΔΜΗΕ μπροστά). (β) **dense: βοηθάει σε ΟΛΟΥΣ τους
+  αλγορίθμους** (LGBM/XGB/MLP/LEAR × 3 windows × 2 gates· XGB 18/18 κελιά-seeds).
+  (γ) vintage κρατά 36-78% του oracle οφέλους (Α6 δικαιωμένο). (δ) **recursive
+  παραμένει default και για load**: direct κερδίζει ΜΟΝΟ summer (3/4), recursive
+  octnov 5/5 + q1 5/5 (§7.23)· direct dense 3/3 / genlags 3/3 εσωτερικά συνεπή.
+  (ε) **LSTM**: root-cause fix (exposure bias) → βέλτιστο config `calendar+loadfc`
+  3/3 windows × 2 gates. Τρέχει τώρα: direct XGB 3 windows (cross-algo confirm).
+  **VALIDITY REVIEW 2026-07-18** (`reports/qa/validity_review_load_20260718.md`):
+  Ε1 dense ACCEPT · Ε2 LSTM-loadfc ACCEPT (static-only, non-tradeable eval flags) ·
+  Ε3 direct dense/genlags ACCEPT (scoped) · Ε4 recursive-default PENDING (summer
+  αναστροφή — μόνο interaction ή loadfc-scoped μορφή) · Ε5 XGB<ΑΔΜΗΕ octnov ACCEPT
+  window-specific (headline ΑΠΟΡΡΙΦΘΗΚΕ). **Οριστικό ΔΕΚΤΟ = απόφαση χρήστη.**
 
 ## 2. VALIDITY GATE (συγχωνευμένο checklist — έλεγχος πριν από κάθε claim)
 

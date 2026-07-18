@@ -983,6 +983,26 @@ case όπου θα χρησιμοποιούσαμε static-Q1 direct αντί γ
       g14 143.8/142.7/142.9 → το «κερδίζουμε ΑΔΜΗΕ στο octnov» είναι πλέον **seed-robust
       cross-gate ΚΑΙ σε 2ο αλγόριθμο** (καθαρά features, όχι oracle — Α6 συμβατό).
     - Όλα PENDING §2-level μέχρι validity-reviewer + αποδοχή χρήστη.
+24. **VALIDITY REVIEW πέρασε (2026-07-18, subagent validity-reviewer, πλήρης αναφορά:
+    `reports/qa/validity_review_load_20260718.md` + benchmarks persisted:
+    `results/load_contest_benchmarks.csv`).** Verdicts (οριστικοποίηση ΔΕΚΤΟ = χρήστης):
+    - **Ε1 dense cross-algo cross-gate → ACCEPT.** 23/24 κελιά αρνητικά (4 algos × 3
+      windows × 2 gates)· LGBM 12/12 + XGB 18/18 seed-σετ· MLP = «5/6 κελιά, q1-g12
+      flip = seed noise (3 seeds/arm)»· LEAR = «seed-invariant by construction —
+      verified bit-identical».
+    - **Ε2 LSTM calendar+loadfc → ACCEPT** με 3 flags: static-only · non-tradeable
+      LSTM eval pipeline (απόλυτα MAE ΟΧΙ σε leaderboard/vs-ΑΔΜΗΕ) · anchored σε
+      q1+summer (octnov συνεπές αλλά εντός noise).
+    - **Ε3 direct dense 3/3 + genlags 3/3 → ACCEPT** scoped «direct LGBM weekly g12»·
+      το genlags-hurts ΔΕΝ γενικεύεται στο recursive (αντίθετο πρόσημο 2/3 εκεί).
+    - **Ε4 «recursive default για load» → PENDING** ως γενικός κανόνας (summer
+      αναστροφή +26..+44 σε 4/5 specs). Επιτρεπτές ΔΕΚΤΟ μορφές: interaction
+      («rec κερδίζει q1+octnov, dir κερδίζει summer») ή loadfc-scoped («με loadfc,
+      rec > dir 3/3: −81.8/−84.1/−23.8»).
+    - **Ε5 XGB dense (no-meteo) < ΑΔΜΗΕ octnov → ACCEPT window-specific** (6/6
+      seeds×gates < 146.81, min margin 2.99 ≫ std)· ΥΠΟΧΡΕΩΤΙΚΑ δίπλα: «ΑΔΜΗΕ
+      κερδίζει q1 (175.6 vs 242-245) + summer (170.8 vs 335-357)»· headline
+      εκδοχή ΑΠΟΡΡΙΦΘΗΚΕ.
 
 ## 8. Επόμενα βήματα
 
